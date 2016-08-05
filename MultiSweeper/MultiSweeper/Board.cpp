@@ -9,11 +9,10 @@ Board::Board(int width, int height, int nmines)
 	for (int i = 0; i < height; i++) {
 		mPos[i].resize(width, FREE);
 	}
-	mTotalMines = 0;
+	mTotalMines = nmines;
 	mWidth = width;
 	mHeight = height;
 }
-
 
 Board::~Board()
 {

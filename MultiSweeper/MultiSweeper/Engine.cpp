@@ -7,7 +7,6 @@ int Engine::MAX_PLAYERS = 4;
 Engine::Engine()
 {
 	this->currentStatus = START;
-	this->currentNumPlayers = 0;
 
 	this->mBoard = unique_ptr<Board>(new Board(10, 5, 10));
 }
@@ -24,7 +23,12 @@ void Engine::joinGame(string username) {
 
 }
 
-void Engine::getStatus() const {
+void Engine::turnPlayed(int x, int y)
+{
+}
+
+void Engine::surrender(Player player)
+{
 }
 
 ostream& operator<<(ostream& os, const Engine& obj) {
