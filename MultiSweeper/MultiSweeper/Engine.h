@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Board.h"
+#include "InterfaceVisual.h"
 #include <string>
 
 class Engine
@@ -24,5 +25,6 @@ private:
 	Status currentStatus;
 	unsigned int currentNumPlayers;
 	std::unique_ptr<Board> mBoard;
+	std::unique_ptr<InterfaceVisual> mInteraction;
 };
 

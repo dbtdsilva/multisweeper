@@ -11,7 +11,6 @@ public:
 	virtual ~Board();
 	friend std::ostream& operator<<(std::ostream& os, const Board& obj);
 
-private:
 	enum Position {
 		FREE,
 		MINE,
@@ -20,6 +19,7 @@ private:
 		MINE_DESTROYED
 	};
 
+private:
 	std::vector<std::vector<Position> > mPos;
 	int mHeight;
 	int mWidth;
