@@ -25,6 +25,10 @@ void Engine::joinGame(string username) {
 
 void Engine::turnPlayed(int x, int y)
 {
+	Position revealed = mBoard->revealPosition(x, y);
+	if (revealed == MINE) {
+		// Next player
+	}
 }
 
 void Engine::surrender(Player player)

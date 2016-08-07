@@ -4,6 +4,17 @@
 #include <vector>
 
 using namespace std;
+
+enum Position {
+	FREE,
+	MINE
+};
+
+struct BoardPos {
+	Position state{ FREE };
+	bool revealed{ false };
+};
+
 class Board
 {
 public:	
@@ -12,19 +23,14 @@ public:
 
 	void generateMines();
 	void modifyBoard(int width, int height, int totalMines);
-	friend std::ostream& operator<<(std::ostream& os, const Board& obj);
+	Position revealPosition(int x, int y);
 
-	enum Position {
-		FREE,
-		MINE,
-		FREE_DISCOVERED,
-		MINE_DISCOVERED
-	};
+	friend std::ostream& operator<<(std::ostream& os, const Board& obj);
 
 private:
 	void clearMines();
 
-	std::vector<std::vector<Position> > mPos;
+	std::vector<std::vector<BoardPos> > mPos;
 	int mHeight;
 	int mWidth;
 	int mTotalMines;
