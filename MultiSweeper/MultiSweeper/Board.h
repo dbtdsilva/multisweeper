@@ -24,6 +24,7 @@ public:
 	void generateMines();
 	void modifyBoard(int width, int height, int totalMines);
 	Position revealPosition(int x, int y);
+	bool allMinesRevealed();
 
 	friend std::ostream& operator<<(std::ostream& os, const Board& obj);
 
@@ -34,5 +35,5 @@ private:
 	int mHeight;
 	int mWidth;
 	int mTotalMines;
-
+	int mTotalMinesRevealed;
 };

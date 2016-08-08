@@ -7,6 +7,9 @@ using namespace std;
 
 Board::Board(int width, int height, int totalMines)
 {
+	if (width * height <= totalMines) {
+		throw runtime_error("Total number of mines should be less than the board size");
+	}
 	this->modifyBoard(width, height, totalMines);
 	this->generateMines();
 }
@@ -47,8 +50,11 @@ void Board::modifyBoard(int width, int height, int totalMines) {
 
 Position Board::revealPosition(int x, int y) {
 	if (mPos[y][x].revealed) {
-		// Throw error
+		throw runtime_error("Position was already revealed");
 	}
+
+	if (mPos[y][x].state == MINE)
+		mTotalMinesRevealed++;
 	mPos[y][x].revealed = true;
 	return mPos[y][x].state;
 }
@@ -60,6 +66,11 @@ void Board::clearMines() {
 			mPos[h][w].revealed = false;
 		}
 	}
+	this->mTotalMinesRevealed = 0;
+}
+
+bool Board::allMinesRevealed() {
+	return mTotalMinesRevealed == mTotalMines;
 }
 
 ostream& operator<<(ostream& os, const Board& obj) {
