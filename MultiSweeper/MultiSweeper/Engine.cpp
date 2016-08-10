@@ -13,8 +13,8 @@ Engine::Engine(InterfaceVisual* iv)
 	this->currentStatus = START;
 	this->currentPlayerIdx = 0;
 	this->currentPlayer = nullptr;
-	this->mBoard = unique_ptr<Board>(new Board(10, 5, 1000));
-	this->mInteraction = unique_ptr<InterfaceVisual>(iv);
+	this->mBoard = unique_ptr<Board>(new Board(10, 5, 10));
+	this->mInteraction = iv;
 }
 
 Engine::~Engine()

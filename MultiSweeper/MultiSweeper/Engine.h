@@ -32,8 +32,8 @@ private:
 
 	int currentPlayerIdx;
 	Player* currentPlayer;
+	InterfaceVisual* mInteraction;
 	std::vector<Player> mPlayers;
 	std::unique_ptr<Board> mBoard;
-	std::unique_ptr<InterfaceVisual> mInteraction;
 };
 

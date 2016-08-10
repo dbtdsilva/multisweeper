@@ -31,11 +31,12 @@ void Board::generateMines() {
 		mineW = rand() % mWidth;
 		mineH = rand() % mHeight;
 
-		if (mPos[mineH][mineW].state == MINE) {
+		if (mPos[mineH][mineW].state == FREE) {
 			mPos[mineH][mineW].state = MINE;
 			minesPlaced++;
 		}
 	}
+	int x = 1;
 }
 
 void Board::modifyBoard(int width, int height, int totalMines) {
