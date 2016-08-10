@@ -8,7 +8,7 @@
 class Engine
 {
 public:
-	Engine();
+	Engine(InterfaceVisual* iv);
 	virtual ~Engine();
 
 	void startGame();
@@ -24,8 +24,7 @@ private:
 
 	enum Status {
 		START,
-		RUN,
-		FINISH
+		RUN
 	};
 
 	static int MAX_PLAYERS;

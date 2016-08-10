@@ -16,3 +16,7 @@ Player::Player(string username)
 Player::~Player()
 {
 }
+
+string Player::getUsername() {
+	return username;
+}

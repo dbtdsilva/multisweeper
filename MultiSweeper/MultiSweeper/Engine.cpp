@@ -8,12 +8,13 @@ using namespace std;
 
 int Engine::MAX_PLAYERS = 4;
 
-Engine::Engine()
+Engine::Engine(InterfaceVisual* iv)
 {
 	this->currentStatus = START;
 	this->currentPlayerIdx = 0;
 	this->currentPlayer = nullptr;
 	this->mBoard = unique_ptr<Board>(new Board(10, 5, 1000));
+	this->mInteraction = unique_ptr<InterfaceVisual>(iv);
 }
 
 Engine::~Engine()
@@ -21,14 +22,14 @@ Engine::~Engine()
 }
 
 void Engine::startGame() {
-	if (currentStatus != START)
+	if (currentStatus == RUN)
 		throw runtime_error("Game has already started");
 	this->currentStatus = RUN;
 	random_shuffle(mPlayers.begin(), mPlayers.end());
 }
 
 void Engine::joinGame(string username) {
-	if (currentStatus != START)
+	if (currentStatus == RUN)
 		throw runtime_error("Game already started, players won't be able to join now");
 	Player p(username);
 	mPlayers.push_back(p);
@@ -44,7 +45,7 @@ void Engine::turnPlayed(int x, int y)
 		nextPlayer();
 
 	if (isGameFinished()) {
-		currentStatus = FINISH;
+		currentStatus = START;
 		currentPlayer = nullptr;
 	}
 }
