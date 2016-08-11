@@ -56,7 +56,7 @@ void Engine::surrender(Player player)
 
 Player* Engine::nextPlayer() {
 	if (currentPlayer == nullptr) {
-		srand(time(NULL));
+		srand((unsigned int) time(NULL));
 		currentPlayerIdx = rand() % mPlayers.size();
 		currentPlayer = &mPlayers[currentPlayerIdx];
 		return currentPlayer;

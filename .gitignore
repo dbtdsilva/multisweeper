@@ -1,4 +1,7 @@
-﻿### C++ ###
+﻿### Project specific ###
+PDCurses34/
+
+### C++ ###
 # Prerequisites
 *.d
 

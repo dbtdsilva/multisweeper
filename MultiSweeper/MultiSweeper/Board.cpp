@@ -24,7 +24,7 @@ void Board::generateMines() {
 	}
 	clearMines();
 
-	srand(time(NULL));
+	srand((unsigned int) time(NULL));
 	int minesPlaced = 0;
 	int mineW, mineH;
 	while (minesPlaced < mTotalMines) {
