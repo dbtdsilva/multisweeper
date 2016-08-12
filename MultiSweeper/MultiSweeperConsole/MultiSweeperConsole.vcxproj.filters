@@ -18,12 +18,18 @@
     <ClInclude Include="SweeperConsole.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SweeperCurses.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SweeperConsole.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MultiSweeperConsole.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SweeperCurses.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

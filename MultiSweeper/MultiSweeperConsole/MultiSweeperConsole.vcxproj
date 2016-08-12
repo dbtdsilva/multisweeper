@@ -138,10 +138,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="SweeperConsole.h" />
+    <ClInclude Include="SweeperCurses.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiSweeperConsole.cpp" />
     <ClCompile Include="SweeperConsole.cpp" />
+    <ClCompile Include="SweeperCurses.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MultiSweeper\MultiSweeper.vcxproj">
