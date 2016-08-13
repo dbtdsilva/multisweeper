@@ -120,22 +120,22 @@ void Curses::paintMenu(vector<cmd> options, int old_option, int new_option)
 
 		attrset(A_BOLD);
 		string headerMessage = "MultiSweeper Console";
-		mvaddstr(2, (COLS - headerMessage.size()) / 2, headerMessage.c_str());
+		mvaddstr(2, (COLS - (int)headerMessage.size()) / 2, headerMessage.c_str());
 		attrset(A_NORMAL);
 
 		for (i = 0; i < options.size(); i++)
-			mvaddstr(menuMargin + i, (COLS - options[i].text.size()) / 2, options[i].text.c_str());
+			mvaddstr(menuMargin + i, (COLS - (int)options[i].text.size()) / 2, options[i].text.c_str());
 	}
 	else
-		mvaddstr(menuMargin + old_option, (COLS - options[old_option].text.size()) / 2, options[old_option].text.c_str());
+		mvaddstr(menuMargin + old_option, (COLS - (int)options[old_option].text.size()) / 2, options[old_option].text.c_str());
 
 	attrset(A_REVERSE);
-	mvaddstr(menuMargin + new_option, (COLS - options[new_option].text.size()) / 2, options[new_option].text.c_str());
+	mvaddstr(menuMargin + new_option, (COLS - (int)options[new_option].text.size()) / 2, options[new_option].text.c_str());
 	attrset(A_NORMAL);
 
 
 	string bottomMessage = "Use UP and DOWN Arrows to move and ENTER to select";
-	mvaddstr(LINES - 3, (COLS - bottomMessage.length()) / 2, bottomMessage.c_str());
+	mvaddstr(LINES - 3, (COLS - (int)bottomMessage.length()) / 2, bottomMessage.c_str());
 	refresh();
 }
 
