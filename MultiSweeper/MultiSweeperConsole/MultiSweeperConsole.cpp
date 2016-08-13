@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "SweeperConsole.h"
-#include "SweeperCurses.h"
+#include "Curses.h"
 #include "Engine.h"
 
 using namespace std;
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 	unique_ptr<SweeperConsole> pSweeperConsole = unique_ptr<SweeperConsole>(new SweeperConsole());
 	unique_ptr<Engine> pEngine = unique_ptr<Engine>(new Engine(pSweeperConsole.get()));
 
-	unique_ptr<SweeperCurses> pSweeperCurses = unique_ptr<SweeperCurses>(new SweeperCurses());
+	unique_ptr<Curses> pSweeperCurses = unique_ptr<Curses>(new Curses());
 	pSweeperCurses->loop();
 
 	return 0;

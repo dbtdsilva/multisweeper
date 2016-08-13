@@ -137,13 +137,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="SweeperConsole.h" />
-    <ClInclude Include="SweeperCurses.h" />
+    <ClInclude Include="Console.h" />
+    <ClInclude Include="Curses.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiSweeperConsole.cpp" />
-    <ClCompile Include="SweeperConsole.cpp" />
-    <ClCompile Include="SweeperCurses.cpp" />
+    <ClCompile Include="Console.cpp" />
+    <ClCompile Include="Curses.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MultiSweeper\MultiSweeper.vcxproj">
