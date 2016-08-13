@@ -11,6 +11,22 @@ Curses::Curses()
 
 	this->width = 120;
 	this->height = 14;
+
+	mMainuOptions = {
+		{ "Instructions", nullptr },
+		{ "Modify Board", [=](WINDOW * win) { state = BOARD_OPTIONS; paintMenu(mBoardOptions, -1, 0); } },
+		{ "Add/Remove Players", nullptr },
+		{ "Start Game", nullptr },
+		{ "Quit", nullptr }
+	};
+
+	mBoardOptions = {
+		{ "Change rows", nullptr },
+		{ "Change lines", nullptr },
+		{ "Change number of mines", nullptr },
+		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; paintMenu(mMainuOptions, -1, 0); } }
+	};
+	state = MAIN_MENU;
 }
 
 Curses::~Curses()
@@ -20,14 +36,7 @@ Curses::~Curses()
 void Curses::loop() {
 	init();
 
-	vector<cmd> options = {
-		{ "Instructions", nullptr },
-		{ "Modify Board", nullptr },
-		{ "Add/Remove Players", nullptr },
-		{ "Start Game", nullptr }
-	};
-	paintMenu(options, old_option, new_option);
-
+	paintMenu(mMainuOptions, old_option, new_option);
 	while (true)
 	{
 		noecho();
@@ -36,53 +45,29 @@ void Curses::loop() {
 
 		key = getch();
 
-		switch (key)
-		{
-		case 10:
-		case 13:
-		case KEY_ENTER:
-			old_option = -1;
-			erase();
-			refresh();
-			(*options[new_option].function)(win);
-			erase();
-			paintMenu(options, old_option, new_option);
+		switch (state) {
+		case MAIN_MENU:
+			displayMenu(mMainuOptions);
 			break;
-
-		case KEY_PPAGE:
-		case KEY_HOME:
-			old_option = new_option;
-			new_option = 0;
-			paintMenu(options, old_option, new_option);
+		case BOARD_OPTIONS:
+			displayMenu(mBoardOptions);
 			break;
-
-		case KEY_NPAGE:
-		case KEY_END:
-			old_option = new_option;
-			new_option = (int)options.size() - 1;
-			paintMenu(options, old_option, new_option);
+		case INSTRUCTIONS:
 			break;
-
-		case KEY_UP:
-			old_option = new_option;
-			new_option = (new_option == 0) ?
-				new_option : new_option - 1;
-			paintMenu(options, old_option, new_option);
+		case PLAYERS:
 			break;
-
-		case KEY_DOWN:
-			old_option = new_option;
-			new_option = (new_option == options.size() - 1) ?
-				new_option : new_option + 1;
-			paintMenu(options, old_option, new_option);
+		case MODIFY_LINES:
 			break;
-		case 'Q':
-		case 'q':
-			quit = TRUE;
+		case MODIFY_ROWS:
+			break;
+		case MODIFY_MINES:
+			break;
+		case GAME:
+			break;
+		case QUIT:
+			quit = false;
+			break;
 		}
-
-		if (quit == TRUE)
-			break;
 	}
 
 	delwin(win);
@@ -125,37 +110,75 @@ void Curses::init()
 
 void Curses::paintMenu(vector<cmd> options, int old_option, int new_option)
 {
-	vector<cmd> mainMenu = {
-		{ "Instructions", nullptr },
-		{ "Modify Board", nullptr },
-		{ "Add/Remove Players", nullptr },
-		{ "Start Game", nullptr }
-	};
-	int lmarg = (COLS - height) / 2,
-		tmarg = (LINES - ((int)options.size() + 2)) / 2;
+	int lmarg = (COLS - height) / 2;
+	int tmarg = (LINES - ((int)options.size() + 2)) / 2;
+	int menuMargin = 7;
 
 	if (old_option == -1)
 	{
 		int i;
 
 		attrset(A_BOLD);
-		mvaddstr(tmarg - 3, lmarg - 5, "MultiSweeper Console");
+		string headerMessage = "MultiSweeper Console";
+		mvaddstr(2, (COLS - headerMessage.size()) / 2, headerMessage.c_str());
 		attrset(A_NORMAL);
 
 		for (i = 0; i < options.size(); i++)
-			mvaddstr(tmarg + i, lmarg, options[i].text);
+			mvaddstr(menuMargin + i, (COLS - options[i].text.size()) / 2, options[i].text.c_str());
 	}
 	else
-		mvaddstr(tmarg + old_option, lmarg, options[old_option].text);
+		mvaddstr(menuMargin + old_option, (COLS - options[old_option].text.size()) / 2, options[old_option].text.c_str());
 
 	attrset(A_REVERSE);
-	mvaddstr(tmarg + new_option, lmarg, options[new_option].text);
+	mvaddstr(menuMargin + new_option, (COLS - options[new_option].text.size()) / 2, options[new_option].text.c_str());
 	attrset(A_NORMAL);
 
-	mvaddstr(tmarg + (int)options.size() + 2, lmarg - 23, "Use Up and Down Arrows to select - Enter to run - Q to quit");
+
+	string bottomMessage = "Use UP and DOWN Arrows to move and ENTER to select";
+	mvaddstr(LINES - 3, (COLS - bottomMessage.length()) / 2, bottomMessage.c_str());
 	refresh();
 }
 
-void Curses::displayMenu(std::vector<cmd> vec)
+void Curses::displayMenu(std::vector<cmd> options)
 {
+	switch (key)
+	{
+	case 10:
+	case 13:
+	case KEY_ENTER:
+		old_option = -1;
+		erase();
+		options[new_option].function(win);
+		new_option = 0;
+		refresh();
+		break;
+
+	case KEY_PPAGE:
+	case KEY_HOME:
+		old_option = new_option;
+		new_option = 0;
+		paintMenu(options, old_option, new_option);
+		break;
+
+	case KEY_NPAGE:
+	case KEY_END:
+		old_option = new_option;
+		new_option = (int)options.size() - 1;
+		paintMenu(options, old_option, new_option);
+		break;
+
+	case KEY_UP:
+		old_option = new_option;
+		new_option = (new_option == 0) ?
+			new_option : new_option - 1;
+		paintMenu(options, old_option, new_option);
+		break;
+
+	case KEY_DOWN:
+		old_option = new_option;
+		new_option = (new_option == options.size() - 1) ?
+			new_option : new_option + 1;
+		paintMenu(options, old_option, new_option);
+		break;
+	}
 }

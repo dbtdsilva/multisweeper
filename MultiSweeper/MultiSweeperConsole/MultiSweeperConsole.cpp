@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "SweeperConsole.h"
+#include "Console.h"
 #include "Curses.h"
 #include "Engine.h"
 
@@ -28,7 +28,7 @@ void introTest(WINDOW *);
 
 int main(int argc, char *argv[])
 {
-	unique_ptr<SweeperConsole> pSweeperConsole = unique_ptr<SweeperConsole>(new SweeperConsole());
+	unique_ptr<Console> pSweeperConsole = unique_ptr<Console>(new Console());
 	unique_ptr<Engine> pEngine = unique_ptr<Engine>(new Engine(pSweeperConsole.get()));
 
 	unique_ptr<Curses> pSweeperCurses = unique_ptr<Curses>(new Curses());
