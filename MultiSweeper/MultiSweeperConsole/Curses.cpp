@@ -14,17 +14,17 @@ Curses::Curses()
 
 	mMainuOptions = {
 		{ "Instructions", nullptr },
-		{ "Modify Board", [=](WINDOW * win) { state = BOARD_OPTIONS; paintMenu(mBoardOptions, -1, 0); } },
+		{ "Modify Board", [=](WINDOW * win) { state = BOARD_OPTIONS; } },
 		{ "Add/Remove Players", nullptr },
 		{ "Start Game", nullptr },
-		{ "Quit", nullptr }
+		{ "Exit", [=](WINDOW * win) { state = EXIT_REQUEST; } }
 	};
 
 	mBoardOptions = {
 		{ "Change rows", nullptr },
 		{ "Change lines", nullptr },
 		{ "Change number of mines", nullptr },
-		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; paintMenu(mMainuOptions, -1, 0); } }
+		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; } }
 	};
 	state = MAIN_MENU;
 }
@@ -36,39 +36,16 @@ Curses::~Curses()
 void Curses::loop() {
 	init();
 
-	paintMenu(mMainuOptions, old_option, new_option);
-	while (true)
-	{
+	//displayMenu(mMainuOptions);
+	do {
+		displayCurses();
 		noecho();
 		keypad(stdscr, TRUE);
 		raw();
 
-		key = getch();
-
-		switch (state) {
-		case MAIN_MENU:
-			displayMenu(mMainuOptions);
-			break;
-		case BOARD_OPTIONS:
-			displayMenu(mBoardOptions);
-			break;
-		case INSTRUCTIONS:
-			break;
-		case PLAYERS:
-			break;
-		case MODIFY_LINES:
-			break;
-		case MODIFY_ROWS:
-			break;
-		case MODIFY_MINES:
-			break;
-		case GAME:
-			break;
-		case QUIT:
-			quit = false;
-			break;
-		}
-	}
+		int key = getch();
+		processKey(key);		
+	} while (state != EXIT_REQUEST);
 
 	delwin(win);
 	endwin();
@@ -108,7 +85,53 @@ void Curses::init()
 	erase();
 }
 
-void Curses::paintMenu(vector<cmd> options, int old_option, int new_option)
+void Curses::displayCurses() {
+	switch (state) {
+	case MAIN_MENU:
+		displayMenu(mMainuOptions);
+		break;
+	case BOARD_OPTIONS:
+		displayMenu(mBoardOptions);
+		break;
+	case INSTRUCTIONS:
+		break;
+	case PLAYERS:
+		break;
+	case MODIFY_LINES:
+		break;
+	case MODIFY_ROWS:
+		break;
+	case MODIFY_MINES:
+		break;
+	case GAME:
+		break;
+	}
+}
+
+void Curses::processKey(int key) {
+	switch (state) {
+	case MAIN_MENU:
+		processMenuKey(key, mMainuOptions);
+		break;
+	case BOARD_OPTIONS:
+		processMenuKey(key, mBoardOptions);
+		break;
+	case INSTRUCTIONS:
+		break;
+	case PLAYERS:
+		break;
+	case MODIFY_LINES:
+		break;
+	case MODIFY_ROWS:
+		break;
+	case MODIFY_MINES:
+		break;
+	case GAME:
+		break;
+	}
+}
+
+void Curses::displayMenu(vector<cmd> options)
 {
 	int lmarg = (COLS - height) / 2;
 	int tmarg = (LINES - ((int)options.size() + 2)) / 2;
@@ -139,7 +162,7 @@ void Curses::paintMenu(vector<cmd> options, int old_option, int new_option)
 	refresh();
 }
 
-void Curses::displayMenu(std::vector<cmd> options)
+void Curses::processMenuKey(int key, vector<cmd> options)
 {
 	switch (key)
 	{
@@ -150,35 +173,30 @@ void Curses::displayMenu(std::vector<cmd> options)
 		erase();
 		options[new_option].function(win);
 		new_option = 0;
-		refresh();
 		break;
 
 	case KEY_PPAGE:
 	case KEY_HOME:
 		old_option = new_option;
 		new_option = 0;
-		paintMenu(options, old_option, new_option);
 		break;
 
 	case KEY_NPAGE:
 	case KEY_END:
 		old_option = new_option;
 		new_option = (int)options.size() - 1;
-		paintMenu(options, old_option, new_option);
 		break;
 
 	case KEY_UP:
 		old_option = new_option;
 		new_option = (new_option == 0) ?
 			new_option : new_option - 1;
-		paintMenu(options, old_option, new_option);
 		break;
 
 	case KEY_DOWN:
 		old_option = new_option;
 		new_option = (new_option == options.size() - 1) ?
 			new_option : new_option + 1;
-		paintMenu(options, old_option, new_option);
 		break;
 	}
 }

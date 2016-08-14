@@ -28,18 +28,19 @@ private:
 		MODIFY_ROWS,
 		MODIFY_MINES,
 		GAME,
-		QUIT
+		EXIT_REQUEST
 	};
 
 	void init();
-	void paintMenu(std::vector<cmd> options, int, int);
-	void displayMenu(std::vector<cmd> vec);
+	void displayCurses();
+	void processKey(int key);
+	void displayMenu(std::vector<cmd> options);
+	void processMenuKey(int key, std::vector<cmd> vec);
 
 	VisualState state;
 	std::vector<cmd> mMainuOptions, mBoardOptions;
-	int key, old_option = -1, new_option = 0;
+	int old_option = -1, new_option = 0;
 	unsigned int height, width;
-	bool quit = false;
 	WINDOW *win;
 };
 
