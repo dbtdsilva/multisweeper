@@ -36,13 +36,8 @@ Curses::~Curses()
 void Curses::loop() {
 	init();
 
-	//displayMenu(mMainuOptions);
 	do {
 		displayCurses();
-		noecho();
-		keypad(stdscr, TRUE);
-		raw();
-
 		int key = getch();
 		processKey(key);		
 	} while (state != EXIT_REQUEST);
@@ -82,6 +77,14 @@ void Curses::init()
 		wbkgd(win, A_REVERSE);
 	}
 
+	// Removed cursor visibility from terminal
+	curs_set(false);
+	// Removed the output of the key input from the user
+	noecho();
+	// Changed to keypad to accept KEY_HOME, KEY_UP, etc
+	keypad(stdscr, true);
+	// Characters typed are immediately passed through to the user program
+	raw();
 	erase();
 }
 
