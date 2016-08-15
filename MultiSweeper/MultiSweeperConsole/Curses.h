@@ -3,6 +3,8 @@
 #include <curses.h>
 #include <vector>
 #include <functional>
+#include "Engine.h"
+#include "Console.h"
 
 class Curses
 {
@@ -12,18 +14,20 @@ public:
 
 	void loop();
 private:
-
 	struct command
 	{
 		std::string text;
 		std::function<void(WINDOW *)> function;
 	};
 	typedef struct command cmd;
+
 	enum VisualState {
 		MAIN_MENU,
 		BOARD_OPTIONS,
 		INSTRUCTIONS,
-		PLAYERS,
+		PLAYERS_OPTIONS,
+		PLAYER_ADD,
+		PLAYER_REMOVE,
 		MODIFY_LINES,
 		MODIFY_ROWS,
 		MODIFY_MINES,
@@ -37,10 +41,12 @@ private:
 	void displayMenu(std::vector<cmd> options);
 	void processMenuKey(int key, std::vector<cmd> vec);
 
+	std::unique_ptr<Console> pSweeperConsole;
+	std::unique_ptr<Engine> pEngine;
 	VisualState state;
-	std::vector<cmd> mMainuOptions, mBoardOptions;
-	int old_option = -1, new_option = 0;
+	std::vector<cmd> mMainuOptions, mBoardOptions, mPlayersOptions;
+	int old_option, new_option;
 	unsigned int height, width;
-	WINDOW *win;
+	WINDOW *window;
 };
 

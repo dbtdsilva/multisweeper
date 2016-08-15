@@ -1,6 +1,6 @@
 #include "Curses.h"
-
 #include <locale.h>
+#include "Console.h"
 
 using namespace std;
 typedef struct command cmd;
@@ -12,21 +12,35 @@ Curses::Curses()
 	this->width = 120;
 	this->height = 14;
 
-	mMainuOptions = {
-		{ "Instructions", nullptr },
+	this->new_option = 0;
+	this->old_option = -1;
+
+	init();
+
+	this->pSweeperConsole = unique_ptr<Console>(new Console(window));
+	this->pEngine = unique_ptr<Engine>(new Engine(pSweeperConsole.get()));
+
+	this->mMainuOptions = {
+		{ "Instructions", [=](WINDOW * win) { state = INSTRUCTIONS; } },
 		{ "Modify Board", [=](WINDOW * win) { state = BOARD_OPTIONS; } },
-		{ "Add/Remove Players", nullptr },
-		{ "Start Game", nullptr },
+		{ "Add/Remove Players", [=](WINDOW * win) { state = PLAYERS_OPTIONS; } },
+		{ "Start Game", [=](WINDOW * win) { state = GAME; } },
 		{ "Exit", [=](WINDOW * win) { state = EXIT_REQUEST; } }
 	};
 
-	mBoardOptions = {
-		{ "Change rows", nullptr },
-		{ "Change lines", nullptr },
-		{ "Change number of mines", nullptr },
+	this->mBoardOptions = {
+		{ "Change rows", [=](WINDOW * win) { state = MODIFY_ROWS; } },
+		{ "Change lines", [=](WINDOW * win) { state = MODIFY_LINES; } },
+		{ "Change number of mines", [=](WINDOW * win) { state = MODIFY_MINES; } },
 		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; } }
 	};
-	state = MAIN_MENU;
+
+	this->mPlayersOptions = {
+		{ "Add player", [=](WINDOW * win) { state = PLAYER_ADD; } },
+		{ "Remove player", [=](WINDOW * win) { state = PLAYER_REMOVE; } },
+		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; } }
+	};
+	this->state = MAIN_MENU;
 }
 
 Curses::~Curses()
@@ -34,15 +48,13 @@ Curses::~Curses()
 }
 
 void Curses::loop() {
-	init();
-
 	do {
 		displayCurses();
 		int key = getch();
 		processKey(key);		
 	} while (state != EXIT_REQUEST);
 
-	delwin(win);
+	delwin(window);
 	endwin();
 }
 
@@ -59,8 +71,8 @@ void Curses::init()
 		start_color();
 #endif
 
-	win = newwin(height, width, (LINES - height) / 2, (COLS - width) / 2);
-	if (win == NULL)
+	window = newwin(height, width, (LINES - height) / 2, (COLS - width) / 2);
+	if (window == NULL)
 	{
 		endwin();
 		throw runtime_error("Failed to create window using PDCurses");
@@ -72,9 +84,9 @@ void Curses::init()
 	if (has_colors() && has_color_available)
 	{
 		init_pair(1, COLOR_WHITE, COLOR_BLUE);
-		wbkgd(win, COLOR_PAIR(1));
+		wbkgd(window, COLOR_PAIR(1));
 	} else {
-		wbkgd(win, A_REVERSE);
+		wbkgd(window, A_REVERSE);
 	}
 
 	// Removed cursor visibility from terminal
@@ -98,7 +110,12 @@ void Curses::displayCurses() {
 		break;
 	case INSTRUCTIONS:
 		break;
-	case PLAYERS:
+	case PLAYERS_OPTIONS:
+		displayMenu(mPlayersOptions);
+		break;
+	case PLAYER_ADD:
+		break;
+	case PLAYER_REMOVE:
 		break;
 	case MODIFY_LINES:
 		break;
@@ -120,8 +137,14 @@ void Curses::processKey(int key) {
 		processMenuKey(key, mBoardOptions);
 		break;
 	case INSTRUCTIONS:
+		state = MAIN_MENU;	// Any key to continue
 		break;
-	case PLAYERS:
+	case PLAYERS_OPTIONS:
+		processMenuKey(key, mPlayersOptions);
+		break;
+	case PLAYER_ADD:
+		break;
+	case PLAYER_REMOVE:
 		break;
 	case MODIFY_LINES:
 		break;
@@ -174,7 +197,7 @@ void Curses::processMenuKey(int key, vector<cmd> options)
 	case KEY_ENTER:
 		old_option = -1;
 		erase();
-		options[new_option].function(win);
+		options[new_option].function(window);
 		new_option = 0;
 		break;
 

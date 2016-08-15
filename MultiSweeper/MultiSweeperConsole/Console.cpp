@@ -4,8 +4,9 @@
 
 using namespace std;
 
-Console::Console()
+Console::Console(WINDOW * window)
 {
+	this->window = window;
 }
 
 

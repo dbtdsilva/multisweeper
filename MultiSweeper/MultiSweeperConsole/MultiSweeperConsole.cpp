@@ -28,9 +28,6 @@ void introTest(WINDOW *);
 
 int main(int argc, char *argv[])
 {
-	unique_ptr<Console> pSweeperConsole = unique_ptr<Console>(new Console());
-	unique_ptr<Engine> pEngine = unique_ptr<Engine>(new Engine(pSweeperConsole.get()));
-
 	unique_ptr<Curses> pSweeperCurses = unique_ptr<Curses>(new Curses());
 	pSweeperCurses->loop();
 
