@@ -60,16 +60,16 @@ void Curses::loop() {
 
 void Curses::init()
 {
-#ifdef XCURSES
+	#ifdef XCURSES
 	Xinitscr(argc, argv);
-#else
+	#else
 	initscr();
-#endif
+	#endif
 
-#ifdef A_COLOR
+	#ifdef A_COLOR
 	if (has_colors())
 		start_color();
-#endif
+	#endif
 
 	window = newwin(height, width, (LINES - height) / 2, (COLS - width) / 2);
 	if (window == NULL)
@@ -78,9 +78,9 @@ void Curses::init()
 		throw runtime_error("Failed to create window using PDCurses");
 	}
 	bool has_color_available = false;
-#ifdef A_COLOR
+	#ifdef A_COLOR
 	has_color_available = true;
-#endif
+	#endif
 	if (has_colors() && has_color_available)
 	{
 		init_pair(1, COLOR_WHITE, COLOR_BLUE);
