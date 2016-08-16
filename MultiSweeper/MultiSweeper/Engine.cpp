@@ -8,12 +8,20 @@ using namespace std;
 
 int Engine::MAX_PLAYERS = 4;
 
-Engine::Engine(InterfaceVisual* iv)
+Engine::Engine() : Engine(nullptr)
+{
+}
+
+Engine::Engine(InterfaceVisual* iv) : Engine(iv, 10, 5, 10)
+{
+}
+
+Engine::Engine(InterfaceVisual* iv, int nRows, int nCols, int nMines) 
 {
 	this->currentStatus = START;
 	this->currentPlayerIdx = 0;
 	this->currentPlayer = nullptr;
-	this->mBoard = unique_ptr<Board>(new Board(10, 5, 10));
+	this->mBoard = unique_ptr<Board>(new Board(nRows, nCols, nMines));
 	this->mInteraction = iv;
 }
 

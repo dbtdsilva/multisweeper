@@ -8,7 +8,9 @@
 class Engine
 {
 public:
+	Engine();
 	Engine(InterfaceVisual* iv);
+	Engine(InterfaceVisual* iv, int nRows, int nCols, int nMines);
 	virtual ~Engine();
 
 	void startGame();
