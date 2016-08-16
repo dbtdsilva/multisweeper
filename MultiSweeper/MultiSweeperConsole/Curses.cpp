@@ -1,5 +1,6 @@
 #include "Curses.h"
 #include <locale.h>
+#include <iostream>
 #include "Console.h"
 
 using namespace std;
@@ -10,7 +11,7 @@ Curses::Curses()
 	setlocale(LC_ALL, "");
 
 	this->width = 120;
-	this->height = 14;
+	this->height = 30;
 
 	this->new_option = 0;
 	this->old_option = -1;
@@ -71,12 +72,13 @@ void Curses::init()
 		start_color();
 	#endif
 
-	window = newwin(height, width, (LINES - height) / 2, (COLS - width) / 2);
+	window = newwin(height, width, 0, 0);
 	if (window == NULL)
 	{
 		endwin();
 		throw runtime_error("Failed to create window using PDCurses");
 	}
+
 	bool has_color_available = false;
 	#ifdef A_COLOR
 	has_color_available = true;
@@ -109,6 +111,17 @@ void Curses::displayCurses() {
 		displayMenu(mBoardOptions);
 		break;
 	case INSTRUCTIONS:
+		displayInstructions();
+		/*mvaddstr(1, 1, " Please enter the number of mines: ");
+		refresh();
+		echo();
+		curs_set(true);	
+		mvscanw(2, 2, "%s", &a);
+		noecho();
+		curs_set(false);
+		mvaddstr(3, 2, a.c_str());
+		mvaddstr(11, 1, " Press any key to continue");
+		refresh();*/
 		break;
 	case PLAYERS_OPTIONS:
 		displayMenu(mPlayersOptions);
@@ -138,6 +151,7 @@ void Curses::processKey(int key) {
 		break;
 	case INSTRUCTIONS:
 		state = MAIN_MENU;	// Any key to continue
+		erase();
 		break;
 	case PLAYERS_OPTIONS:
 		processMenuKey(key, mPlayersOptions);
@@ -157,34 +171,57 @@ void Curses::processKey(int key) {
 	}
 }
 
+void Curses::displayInstructions() {
+	attrset(A_BOLD);
+	mvaddstrCentered(1, "INSTRUCTIONS");
+	attrset(A_NORMAL);
+
+	mvaddstrCentered(3, "The objective of the game consists in DISCOVERING the MAXIMUM ");
+	mvaddstrCentered(4, "number of MINES as possible. ");
+	mvaddstrCentered(5, "There will be a board 2D with mines hidden on it. Until players");
+	mvaddstrCentered(6, "find all the mines on the board, the game will not finish.");
+	mvaddstrCentered(7, "On your turn, you might select a position to reveal.");
+
+	attrset(A_BOLD);
+	mvaddstrCentered(9, "Every square has a meaning:");
+	attrset(A_NORMAL);
+	mvaddstrCentered(10, "Number on the square is the number of adjacent mines.");
+	mvaddstrCentered(11, "E.g. \"4\" means that there is 4 mines adjacent to that square.");
+	mvaddstrCentered(12, "\"X\" is a revealed mine");
+	mvaddstrCentered(13, "\"O\" appears when there is no adjacent mines to this square");
+	mvaddstrCentered(14, "If the square is empty, it has not been revealed yet.");
+
+	attrset(A_BOLD);
+	mvaddstrCentered(16, "Press any key to continue");
+	attrset(A_NORMAL);
+}
+
+void Curses::mvaddstrCentered(int row, string str) {
+	mvaddstr(row, (COLS - (int)str.size()) / 2, str.c_str());
+}
+
 void Curses::displayMenu(vector<cmd> options)
 {
-	int lmarg = (COLS - height) / 2;
-	int tmarg = (LINES - ((int)options.size() + 2)) / 2;
 	int menuMargin = 7;
 
-	if (old_option == -1)
-	{
+	if (old_option == -1) {
 		int i;
 
 		attrset(A_BOLD);
-		string headerMessage = "MultiSweeper Console";
-		mvaddstr(2, (COLS - (int)headerMessage.size()) / 2, headerMessage.c_str());
+		mvaddstrCentered(2, "MultiSweeper Console");
 		attrset(A_NORMAL);
 
 		for (i = 0; i < options.size(); i++)
-			mvaddstr(menuMargin + i, (COLS - (int)options[i].text.size()) / 2, options[i].text.c_str());
+			mvaddstrCentered(menuMargin + i, options[i].text);
+	} else {
+		mvaddstrCentered(menuMargin + old_option, options[old_option].text);
 	}
-	else
-		mvaddstr(menuMargin + old_option, (COLS - (int)options[old_option].text.size()) / 2, options[old_option].text.c_str());
 
 	attrset(A_REVERSE);
-	mvaddstr(menuMargin + new_option, (COLS - (int)options[new_option].text.size()) / 2, options[new_option].text.c_str());
+	mvaddstrCentered(menuMargin + new_option, options[new_option].text);
 	attrset(A_NORMAL);
 
-
-	string bottomMessage = "Use UP and DOWN Arrows to move and ENTER to select";
-	mvaddstr(LINES - 3, (COLS - (int)bottomMessage.length()) / 2, bottomMessage.c_str());
+	mvaddstrCentered(LINES - 3, "Use UP and DOWN Arrows to move and ENTER to select");
 	refresh();
 }
 

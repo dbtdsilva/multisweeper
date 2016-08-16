@@ -39,14 +39,17 @@ private:
 	void displayCurses();
 	void processKey(int key);
 	void displayMenu(std::vector<cmd> options);
+	void displayInstructions();
 	void processMenuKey(int key, std::vector<cmd> vec);
+
+	void mvaddstrCentered(int row, string str);
 
 	std::unique_ptr<Console> pSweeperConsole;
 	std::unique_ptr<Engine> pEngine;
 	VisualState state;
 	std::vector<cmd> mMainuOptions, mBoardOptions, mPlayersOptions;
 	int old_option, new_option;
-	unsigned int height, width;
+	int height, width;
 	WINDOW *window;
 };
 
