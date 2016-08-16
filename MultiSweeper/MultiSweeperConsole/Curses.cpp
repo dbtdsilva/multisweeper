@@ -15,8 +15,6 @@ Curses::Curses()
 	this->new_option = 0;
 	this->old_option = -1;
 
-	init();
-
 	this->pSweeperConsole = unique_ptr<Console>(new Console(window));
 	this->pEngine = unique_ptr<Engine>(new Engine(pSweeperConsole.get()));
 
@@ -41,6 +39,8 @@ Curses::Curses()
 		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; } }
 	};
 	this->state = MAIN_MENU;
+	
+	init();
 }
 
 Curses::~Curses()
