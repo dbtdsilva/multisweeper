@@ -185,11 +185,12 @@ void Curses::displayInstructions() {
 	attrset(A_BOLD);
 	mvaddstrCentered(9, "Every square has a meaning:");
 	attrset(A_NORMAL);
-	mvaddstrCentered(10, "Number on the square is the number of adjacent mines.");
-	mvaddstrCentered(11, "E.g. \"4\" means that there is 4 mines adjacent to that square.");
-	mvaddstrCentered(12, "\"X\" is a revealed mine");
-	mvaddstrCentered(13, "\"O\" appears when there is no adjacent mines to this square");
-	mvaddstrCentered(14, "If the square is empty, it has not been revealed yet.");
+	// Left aligned and centered according to the biggest bullet item
+	mvaddstr(10, (COLS - 62) / 2, "* Number on the square is the number of adjacent mines;");
+	mvaddstr(11, (COLS - 62) / 2, "\tE.g. \"4\" means that there is 4 mines adjacent to that square");
+	mvaddstr(12, (COLS - 62) / 2, "* \"X\" is a revealed mine;");
+	mvaddstr(13, (COLS - 62) / 2, "* \"O\" appears when there is no adjacent mines to this square;");
+	mvaddstr(14, (COLS - 62) / 2, "* If the square is empty, it has not been revealed yet;");
 
 	attrset(A_BOLD);
 	mvaddstrCentered(16, "Press any key to continue");
