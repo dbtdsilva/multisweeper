@@ -295,3 +295,28 @@ void Curses::processMenuKey(int key, vector<cmd> options)
 		break;
 	}
 }
+
+template<typename T>
+void Curses::mvscanwRobust(string introText, int rowStart, T * returnValue)
+{
+	attrset(A_BOLD);
+	mvaddstrCentered(rowStart, introText);
+	attrset(A_NORMAL);
+	refresh();
+	echo();
+	curs_set(true);
+	if (is_same<T, int>::value) {
+		mvscanw(rowStart + 1, (COLS - 2) / 2, "%d", returnValue);
+	}
+	else if (is_same<T, string>::value) {
+		mvscanw(rowStart + 1, (COLS - 10) / 2, "%s", returnValue);
+	}
+	else {
+		throw runtime_error("Invalid type received into the function readValue");
+	}
+	noecho();
+	curs_set(false);
+	attrset(A_BOLD);
+	mvaddstrCentered(rowStart + 4, "Press any key to continue");
+	attrset(A_NORMAL);
+}
