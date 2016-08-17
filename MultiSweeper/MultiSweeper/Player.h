@@ -8,7 +8,7 @@ public:
 	Player(std::string username);
 	~Player();
 
-	std::string getUsername();
+	std::string const& getUsername() const;
 private:
 	std::string username;
 

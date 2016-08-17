@@ -8,7 +8,7 @@ using namespace std;
 typedef struct command cmd;
 
 Curses::Curses() :
-	width(120),	height(30),	new_option(0),	old_option(-1),	mCols(20),	mRows(10),	mMines(10),
+	width(120),	height(30),	new_option(0), old_option(-1), mCols(20), mRows(10), mMines(10),
 	pSweeperConsole(unique_ptr<Console>(new Console(window))),
 	pEngine(unique_ptr<Engine>(new Engine(pSweeperConsole.get(), mRows, mCols, mMines))),
 	playerList(pEngine->getPlayersList()),
@@ -30,7 +30,6 @@ Curses::Curses() :
 	state(MAIN_MENU)
 {
 	setlocale(LC_ALL, "");
-	
 	init();
 }
 
@@ -110,6 +109,7 @@ void Curses::displayCurses() {
 		addPlayer();
 		break;
 	case PLAYER_REMOVE:
+		removePlayer();
 		break;
 	case MODIFY_COLS:
 		modifyCols();
@@ -190,10 +190,10 @@ void Curses::displayBoardStatus(int row) {
 }
 
 void Curses::displayGameStatus(int row) {
-	stringstream ss;
 	if (playerList.empty()) {
 		mvaddstrCentered(row, "There is no players registered yet");
 	} else {
+		stringstream ss;
 		ss << playerList.size() << " players registered";
 		mvaddstrCentered(row, ss.str());
 	}
@@ -228,12 +228,23 @@ void Curses::modifyMines() {
 void Curses::addPlayer() {
 	string username;
 	mvscanwRobust("Enter player's username", 3, &username);
-	pEngine->joinGame(username);
-	int x = 5;
+	pEngine->joinGame(username.c_str());
 }
 
 void Curses::removePlayer() {
+	attrset(A_BOLD);
+	mvaddstrCentered(1, "Current player list");
+	attrset(A_NORMAL);
+	stringstream ss;
+	for (int i = 0; i < playerList.size(); i++) {
+		ss.str("");
+		ss << i << ": " << playerList[i].getUsername();
+		mvaddstr(i + 2, (COLS - 20) / 2, ss.str().c_str());
+	}
 
+	int id;
+	mvscanwRobust("Enter player's ID that you which to remove", (int)playerList.size() + 3, &id);
+	pEngine->leaveGame(id);
 }
 
 void Curses::mvaddstrCentered(int row, string str) {
@@ -310,7 +321,7 @@ void Curses::processMenuKey(int key, vector<cmd> options)
 }
 
 template<typename T>
-void Curses::mvscanwRobust(string introText, int rowStart, T * returnValue)
+void Curses::mvscanwRobust(string introText, int rowStart, T* returnValue)
 {
 	attrset(A_BOLD);
 	mvaddstrCentered(rowStart, introText);
@@ -322,7 +333,7 @@ void Curses::mvscanwRobust(string introText, int rowStart, T * returnValue)
 		mvscanw(rowStart + 1, (COLS - 2) / 2, "%d", returnValue);
 	}
 	else if (is_same<T, string>::value) {
-		mvscanw(rowStart + 1, (COLS - 10) / 2, "%s", returnValue);
+		mvscanw(rowStart + 1, (COLS - (int)introText.size()) / 2, "%s", returnValue);
 	}
 	else {
 		throw runtime_error("Invalid type received into the function readValue");

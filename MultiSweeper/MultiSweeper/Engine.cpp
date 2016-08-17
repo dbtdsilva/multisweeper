@@ -1,5 +1,6 @@
 #include "Engine.h"
 
+#include <string>
 #include <random>
 #include <time.h>
 #include <algorithm>
@@ -41,6 +42,14 @@ void Engine::joinGame(string username) {
 		throw runtime_error("Game already started, players won't be able to join now");
 	Player p(username);
 	mPlayers.push_back(p);
+}
+
+void Engine::leaveGame(string username) {
+	//mPlayers.erase(remove(mPlayers.begin(), mPlayers.end(), username), mPlayers.end());
+}
+
+void Engine::leaveGame(int id) {
+	mPlayers.erase(mPlayers.begin() + id);
 }
 
 void Engine::modifyBoard(int nRows, int nCols) {

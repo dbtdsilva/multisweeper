@@ -16,7 +16,9 @@ public:
 	void startGame();
 	void modifyBoard(int nRows, int nCols);
 	void modifyNumberMines(int nMines);
-	void joinGame(const std::string username);
+	void joinGame(std::string username);
+	void leaveGame(std::string username);
+	void leaveGame(int id);
 	void turnPlayed(int x, int y);
 	void surrender(Player player);
 
