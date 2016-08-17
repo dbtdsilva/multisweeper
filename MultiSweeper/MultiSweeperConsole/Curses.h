@@ -44,6 +44,8 @@ private:
 	void modifyRows();
 	void modifyCols();
 	void modifyMines();
+	void addPlayer();
+	void removePlayer();
 	void displayBoardStatus(int row);
 	void displayGameStatus(int row);
 
@@ -51,14 +53,13 @@ private:
 	void mvscanwRobust(string introText, int rowStart, T * returnValue);
 	void mvaddstrCentered(int row, string str);
 
-	// Game related
 	int mRows, mCols, mMines;
-	// Curses related
-	std::unique_ptr<Console> pSweeperConsole;
-	std::unique_ptr<Engine> pEngine;
 	VisualState state;
 	std::vector<cmd> mMainuOptions, mBoardOptions, mPlayersOptions;
 	int old_option, new_option;
 	int height, width;
 	WINDOW *window;
+	std::unique_ptr<Console> pSweeperConsole;
+	std::unique_ptr<Engine> pEngine;
+	vector<Player> const& playerList;
 };

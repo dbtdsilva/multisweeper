@@ -7,22 +7,13 @@
 using namespace std;
 typedef struct command cmd;
 
-Curses::Curses()
+Curses::Curses() :
+	width(120),	height(30),	new_option(0),	old_option(-1),	mCols(20),	mRows(10),	mMines(10),
+	pSweeperConsole(unique_ptr<Console>(new Console(window))),
+	pEngine(unique_ptr<Engine>(new Engine(pSweeperConsole.get(), mRows, mCols, mMines))),
+	playerList(pEngine->getPlayersList())
 {
 	setlocale(LC_ALL, "");
-
-	this->width = 120;
-	this->height = 30;
-
-	this->new_option = 0;
-	this->old_option = -1;
-
-	this->mCols = 20;
-	this->mRows = 10;
-	this->mMines = 10;
-
-	this->pSweeperConsole = unique_ptr<Console>(new Console(window));
-	this->pEngine = unique_ptr<Engine>(new Engine(pSweeperConsole.get(), mRows, mCols, mMines));
 
 	this->mMainuOptions = {
 		{ "Instructions", [=](WINDOW * win) { state = INSTRUCTIONS; } },
@@ -122,6 +113,7 @@ void Curses::displayCurses() {
 		displayMenu(mPlayersOptions);
 		break;
 	case PLAYER_ADD:
+		addPlayer();
 		break;
 	case PLAYER_REMOVE:
 		break;
@@ -155,8 +147,9 @@ void Curses::processKey(int key) {
 		processMenuKey(key, mPlayersOptions);
 		break;
 	case PLAYER_ADD:
-		break;
 	case PLAYER_REMOVE:
+		state = PLAYERS_OPTIONS;
+		erase();
 		break;
 	case MODIFY_COLS:
 	case MODIFY_ROWS:
@@ -204,11 +197,10 @@ void Curses::displayBoardStatus(int row) {
 
 void Curses::displayGameStatus(int row) {
 	stringstream ss;
-	vector<Player> players = pEngine->getPlayersList();
-	if (players.empty()) {
+	if (playerList.empty()) {
 		mvaddstrCentered(row, "There is no players registered yet");
 	} else {
-		ss << players.size() << " players registered";
+		ss << playerList.size() << " players registered";
 		mvaddstrCentered(row, ss.str());
 	}
 }
@@ -237,6 +229,17 @@ void Curses::modifyMines() {
 	this->mMines = nMines;
 	pEngine->modifyNumberMines(nMines);
 	displayBoardStatus(6);
+}
+
+void Curses::addPlayer() {
+	string username;
+	mvscanwRobust("Enter player's username", 3, &username);
+	pEngine->joinGame(username);
+	int x = 5;
+}
+
+void Curses::removePlayer() {
+
 }
 
 void Curses::mvaddstrCentered(int row, string str) {
