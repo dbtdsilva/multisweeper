@@ -5,12 +5,12 @@
 
 using namespace std;
 
-Board::Board(int width, int height, int totalMines)
+Board::Board(int rows, int cols, int totalMines)
 {
-	if (width * height <= totalMines) {
+	if (rows * cols <= totalMines) {
 		throw runtime_error("Total number of mines should be less than the board size");
 	}
-	this->modifyBoard(width, height, totalMines);
+	this->modifyBoard(rows, cols, totalMines);
 	this->generateMines();
 }
 
@@ -19,34 +19,41 @@ Board::~Board()
 }
 
 void Board::generateMines() {
-	if (mTotalMines >= mWidth * mHeight) {
+	if (mTotalMines >= mRows * mCols) {
 		return;
 	}
 	clearMines();
 
 	srand((unsigned int) time(NULL));
 	int minesPlaced = 0;
-	int mineW, mineH;
+	int mineC, mineR;
 	while (minesPlaced < mTotalMines) {
-		mineW = rand() % mWidth;
-		mineH = rand() % mHeight;
+		mineC = rand() % mCols;
+		mineR = rand() % mRows;
 
-		if (mPos[mineH][mineW].state == FREE) {
-			mPos[mineH][mineW].state = MINE;
+		if (mPos[mineR][mineC].state == FREE) {
+			mPos[mineR][mineC].state = MINE;
 			minesPlaced++;
 		}
 	}
 	int x = 1;
 }
 
-void Board::modifyBoard(int width, int height, int totalMines) {
-	this->mPos.resize(height);
-	for (int i = 0; i < height; i++) {
-		this->mPos[i].resize(width);
+void Board::modifyBoard(int rows, int cols, int totalMines) {
+	this->modifyBoard(rows, cols);
+}
+
+void Board::modifyBoard(int rows, int cols) {
+	this->mPos.resize(rows);
+	for (int i = 0; i < rows; i++) {
+		this->mPos[i].resize(cols);
 	}
+	this->mCols = cols;
+	this->mRows = rows;
+}
+
+void Board::modifyNumberMines(int totalMines) {
 	this->mTotalMines = totalMines;
-	this->mWidth = width;
-	this->mHeight = height;
 }
 
 Position Board::revealPosition(int x, int y) {
@@ -61,8 +68,8 @@ Position Board::revealPosition(int x, int y) {
 }
 
 void Board::clearMines() {
-	for (int h = 0; h < mHeight; h++) {
-		for (int w = 0; w < mWidth; w++) {
+	for (int h = 0; h < mRows; h++) {
+		for (int w = 0; w < mCols; w++) {
 			mPos[h][w].state = FREE;
 			mPos[h][w].revealed = false;
 		}
@@ -75,8 +82,8 @@ bool Board::allMinesRevealed() {
 }
 
 ostream& operator<<(ostream& os, const Board& obj) {
-	for (int i = 0; i < obj.mHeight; i++) {
-		for (int j = 0; j < obj.mWidth; j++) {
+	for (int i = 0; i < obj.mRows; i++) {
+		for (int j = 0; j < obj.mCols; j++) {
 			os << obj.mPos[i][j].state;
 		}
 		os << endl;

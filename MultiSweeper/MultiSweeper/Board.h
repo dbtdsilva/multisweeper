@@ -18,11 +18,13 @@ struct BoardPos {
 class Board
 {
 public:	
-	Board(int width, int height, int totalMines);
+	Board(int rows, int cols, int totalMines);
 	virtual ~Board();
 
 	void generateMines();
-	void modifyBoard(int width, int height, int totalMines);
+	void modifyBoard(int nRows, int nCols, int totalMines);
+	void modifyBoard(int nRows, int nCols);
+	void modifyNumberMines(int totalMines);
 	Position revealPosition(int x, int y);
 	bool allMinesRevealed();
 
@@ -32,8 +34,5 @@ private:
 	void clearMines();
 
 	std::vector<std::vector<BoardPos> > mPos;
-	int mHeight;
-	int mWidth;
-	int mTotalMines;
-	int mTotalMinesRevealed;
+	int mRows, mCols, mTotalMines, mTotalMinesRevealed;
 };
