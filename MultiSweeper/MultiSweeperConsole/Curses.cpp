@@ -11,31 +11,25 @@ Curses::Curses() :
 	width(120),	height(30),	new_option(0),	old_option(-1),	mCols(20),	mRows(10),	mMines(10),
 	pSweeperConsole(unique_ptr<Console>(new Console(window))),
 	pEngine(unique_ptr<Engine>(new Engine(pSweeperConsole.get(), mRows, mCols, mMines))),
-	playerList(pEngine->getPlayersList())
-{
-	setlocale(LC_ALL, "");
-
-	this->mMainuOptions = {
+	playerList(pEngine->getPlayersList()),
+	mMainuOptions({
 		{ "Instructions", [=](WINDOW * win) { state = INSTRUCTIONS; } },
 		{ "Modify Board", [=](WINDOW * win) { state = BOARD_OPTIONS; } },
 		{ "Add/Remove Players", [=](WINDOW * win) { state = PLAYERS_OPTIONS; } },
 		{ "Start Game", [=](WINDOW * win) { state = GAME; } },
-		{ "Exit", [=](WINDOW * win) { state = EXIT_REQUEST; } }
-	};
-
-	this->mBoardOptions = {
+		{ "Exit", [=](WINDOW * win) { state = EXIT_REQUEST; } } }),
+	mBoardOptions({
 		{ "Change rows", [=](WINDOW * win) { state = MODIFY_ROWS; } },
 		{ "Change lines", [=](WINDOW * win) { state = MODIFY_COLS; } },
 		{ "Change number of mines", [=](WINDOW * win) { state = MODIFY_MINES; } },
-		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; } }
-	};
-
-	this->mPlayersOptions = {
+		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; } } }),
+	mPlayersOptions({
 		{ "Add player", [=](WINDOW * win) { state = PLAYER_ADD; } },
 		{ "Remove player", [=](WINDOW * win) { state = PLAYER_REMOVE; } },
-		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; } }
-	};
-	this->state = MAIN_MENU;
+		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; } }}),
+	state(MAIN_MENU)
+{
+	setlocale(LC_ALL, "");
 	
 	init();
 }
