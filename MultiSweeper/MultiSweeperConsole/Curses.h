@@ -28,7 +28,7 @@ private:
 		PLAYERS_OPTIONS,
 		PLAYER_ADD,
 		PLAYER_REMOVE,
-		MODIFY_LINES,
+		MODIFY_COLS,
 		MODIFY_ROWS,
 		MODIFY_MINES,
 		GAME,
@@ -41,9 +41,18 @@ private:
 	void displayMenu(std::vector<cmd> options);
 	void displayInstructions();
 	void processMenuKey(int key, std::vector<cmd> vec);
+	void modifyRows();
+	void modifyCols();
+	void modifyMines();
+	void displayBoardStatus(int row);
 
+	template <typename T>
+	void mvscanwRobust(string introText, int rowStart, T * returnValue);
 	void mvaddstrCentered(int row, string str);
 
+	// Game related
+	int mRows, mCols, mMines;
+	// Curses related
 	std::unique_ptr<Console> pSweeperConsole;
 	std::unique_ptr<Engine> pEngine;
 	VisualState state;
@@ -53,3 +62,27 @@ private:
 	WINDOW *window;
 };
 
+template<typename T>
+inline void Curses::mvscanwRobust(string introText, int rowStart, T * returnValue)
+{
+	attrset(A_BOLD);
+	mvaddstrCentered(rowStart, introText);
+	attrset(A_NORMAL);
+	refresh();
+	echo();
+	curs_set(true);
+	if (is_same<T, int>::value) {
+		mvscanw(rowStart + 1, (COLS - 2) / 2, "%d", returnValue);
+	}
+	else if (is_same<T, string>::value) {
+		mvscanw(rowStart + 1, (COLS - 10)/ 2, "%s", returnValue);
+	}
+	else {
+		throw runtime_error("Invalid type received into the function readValue");
+	}
+	noecho();
+	curs_set(false);
+	attrset(A_BOLD);
+	mvaddstrCentered(rowStart + 4, "Press any key to continue");
+	attrset(A_NORMAL);
+}

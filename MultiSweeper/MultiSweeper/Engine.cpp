@@ -43,6 +43,14 @@ void Engine::joinGame(string username) {
 	mPlayers.push_back(p);
 }
 
+void Engine::modifyBoard(int nRows, int nCols) {
+	mBoard->modifyBoard(nRows, nCols);
+}
+
+void Engine::modifyNumberMines(int nMines) {
+	mBoard->modifyNumberMines(nMines);
+}
+
 void Engine::turnPlayed(int x, int y)
 {
 	if (currentStatus != RUN)

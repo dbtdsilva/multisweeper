@@ -14,6 +14,8 @@ public:
 	virtual ~Engine();
 
 	void startGame();
+	void modifyBoard(int nRows, int nCols);
+	void modifyNumberMines(int nMines);
 	void joinGame(const std::string username);
 	void turnPlayed(int x, int y);
 	void surrender(Player player);

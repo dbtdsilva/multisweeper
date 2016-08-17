@@ -1,6 +1,7 @@
 #include "Curses.h"
 #include <locale.h>
 #include <iostream>
+#include <sstream>
 #include "Console.h"
 
 using namespace std;
@@ -16,8 +17,12 @@ Curses::Curses()
 	this->new_option = 0;
 	this->old_option = -1;
 
+	this->mCols = 20;
+	this->mRows = 10;
+	this->mMines = 10;
+
 	this->pSweeperConsole = unique_ptr<Console>(new Console(window));
-	this->pEngine = unique_ptr<Engine>(new Engine(pSweeperConsole.get()));
+	this->pEngine = unique_ptr<Engine>(new Engine(pSweeperConsole.get(), mRows, mCols, mMines));
 
 	this->mMainuOptions = {
 		{ "Instructions", [=](WINDOW * win) { state = INSTRUCTIONS; } },
@@ -29,7 +34,7 @@ Curses::Curses()
 
 	this->mBoardOptions = {
 		{ "Change rows", [=](WINDOW * win) { state = MODIFY_ROWS; } },
-		{ "Change lines", [=](WINDOW * win) { state = MODIFY_LINES; } },
+		{ "Change lines", [=](WINDOW * win) { state = MODIFY_COLS; } },
 		{ "Change number of mines", [=](WINDOW * win) { state = MODIFY_MINES; } },
 		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; } }
 	};
@@ -112,16 +117,6 @@ void Curses::displayCurses() {
 		break;
 	case INSTRUCTIONS:
 		displayInstructions();
-		/*mvaddstr(1, 1, " Please enter the number of mines: ");
-		refresh();
-		echo();
-		curs_set(true);	
-		mvscanw(2, 2, "%s", &a);
-		noecho();
-		curs_set(false);
-		mvaddstr(3, 2, a.c_str());
-		mvaddstr(11, 1, " Press any key to continue");
-		refresh();*/
 		break;
 	case PLAYERS_OPTIONS:
 		displayMenu(mPlayersOptions);
@@ -130,11 +125,14 @@ void Curses::displayCurses() {
 		break;
 	case PLAYER_REMOVE:
 		break;
-	case MODIFY_LINES:
+	case MODIFY_COLS:
+		modifyCols();
 		break;
 	case MODIFY_ROWS:
+		modifyRows();
 		break;
 	case MODIFY_MINES:
+		modifyMines();
 		break;
 	case GAME:
 		break;
@@ -160,11 +158,11 @@ void Curses::processKey(int key) {
 		break;
 	case PLAYER_REMOVE:
 		break;
-	case MODIFY_LINES:
-		break;
+	case MODIFY_COLS:
 	case MODIFY_ROWS:
-		break;
 	case MODIFY_MINES:
+		state = BOARD_OPTIONS;	// Any key to continue
+		erase();
 		break;
 	case GAME:
 		break;
@@ -195,6 +193,39 @@ void Curses::displayInstructions() {
 	attrset(A_BOLD);
 	mvaddstrCentered(16, "Press any key to continue");
 	attrset(A_NORMAL);
+}
+
+void Curses::displayBoardStatus(int row) {
+	stringstream ss;
+	ss << "Board has " << mRows << " rows and " << mCols << " columns";
+	ss << " with " << mMines << " mines";
+	mvaddstrCentered(row, ss.str());
+}
+void Curses::modifyRows() {
+	int nRows;
+	displayBoardStatus(1);
+	mvscanwRobust("Enter the total number of ROWS", 3, &nRows);
+	this->mRows = nRows;
+	pEngine->modifyBoard(mRows, mCols);
+	displayBoardStatus(6);
+}
+
+void Curses::modifyCols() {
+	int nCols;
+	displayBoardStatus(1);
+	mvscanwRobust("Enter the total number of COLUMNS", 3, &nCols);
+	this->mCols = nCols;
+	pEngine->modifyBoard(mRows, mCols);
+	displayBoardStatus(6);
+}
+
+void Curses::modifyMines() {
+	int nMines;
+	displayBoardStatus(1);
+	mvscanwRobust("Enter the total number of MINES", 3, &nMines);
+	this->mMines = nMines;
+	pEngine->modifyNumberMines(nMines);
+	displayBoardStatus(6);
 }
 
 void Curses::mvaddstrCentered(int row, string str) {
