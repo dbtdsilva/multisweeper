@@ -201,6 +201,17 @@ void Curses::displayBoardStatus(int row) {
 	ss << " with " << mMines << " mines";
 	mvaddstrCentered(row, ss.str());
 }
+
+void Curses::displayGameStatus(int row) {
+	stringstream ss;
+	vector<Player> players = pEngine->getPlayersList();
+	if (players.empty()) {
+		mvaddstrCentered(row, "There is no players registered yet");
+	} else {
+		ss << players.size() << " players registered";
+		mvaddstrCentered(row, ss.str());
+	}
+}
 void Curses::modifyRows() {
 	int nRows;
 	displayBoardStatus(1);
@@ -234,14 +245,17 @@ void Curses::mvaddstrCentered(int row, string str) {
 
 void Curses::displayMenu(vector<cmd> options)
 {
-	int menuMargin = 7;
+	int menuMargin = 3;
 
 	if (old_option == -1) {
 		int i;
 
 		attrset(A_BOLD);
-		mvaddstrCentered(2, "MultiSweeper Console");
+		mvaddstrCentered(1, "MultiSweeper Console");
 		attrset(A_NORMAL);
+
+		displayGameStatus(LINES - 5);
+		displayBoardStatus(LINES - 4);
 
 		for (i = 0; i < options.size(); i++)
 			mvaddstrCentered(menuMargin + i, options[i].text);
@@ -253,7 +267,9 @@ void Curses::displayMenu(vector<cmd> options)
 	mvaddstrCentered(menuMargin + new_option, options[new_option].text);
 	attrset(A_NORMAL);
 
-	mvaddstrCentered(LINES - 3, "Use UP and DOWN Arrows to move and ENTER to select");
+	attrset(A_BOLD);
+	mvaddstrCentered(LINES - 3, " > Use UP and DOWN Arrows to move and ENTER to select <");
+	attrset(A_NORMAL);
 	refresh();
 }
 

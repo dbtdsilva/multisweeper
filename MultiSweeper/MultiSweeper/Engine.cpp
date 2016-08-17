@@ -85,6 +85,10 @@ Player* Engine::getCurrentPlayer() {
 	return currentPlayer;
 }
 
+std::vector<Player> Engine::getPlayersList() {
+	return mPlayers;
+}
+
 bool Engine::isGameFinished() {
 	return mBoard->allMinesRevealed();
 }

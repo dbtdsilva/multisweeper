@@ -20,6 +20,7 @@ public:
 	void turnPlayed(int x, int y);
 	void surrender(Player player);
 	Player* getCurrentPlayer();
+	std::vector<Player> getPlayersList();
 
 	friend std::ostream& operator<<(std::ostream& os, const Engine& obj);
 private:

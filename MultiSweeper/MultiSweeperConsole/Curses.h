@@ -45,6 +45,7 @@ private:
 	void modifyCols();
 	void modifyMines();
 	void displayBoardStatus(int row);
+	void displayGameStatus(int row);
 
 	template <typename T>
 	void mvscanwRobust(string introText, int rowStart, T * returnValue);
