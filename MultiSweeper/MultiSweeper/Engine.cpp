@@ -45,7 +45,9 @@ void Engine::joinGame(string username) {
 }
 
 void Engine::leaveGame(string username) {
-	//mPlayers.erase(remove(mPlayers.begin(), mPlayers.end(), username), mPlayers.end());
+	auto it = std::find(mPlayers.begin(), mPlayers.end(), username);
+	if (it != mPlayers.end())
+		mPlayers.erase(it);
 }
 
 void Engine::leaveGame(int id) {

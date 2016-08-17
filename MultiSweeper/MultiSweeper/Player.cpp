@@ -12,11 +12,14 @@ Player::Player(string username) :
 	this->minesRevealed = 0;
 }
 
-
 Player::~Player()
 {
 }
 
 string const& Player::getUsername() const {
 	return username;
+}
+
+bool Player::operator==(const Player& other) const {
+	return this->username == other.username;
 }

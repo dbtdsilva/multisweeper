@@ -9,6 +9,7 @@ public:
 	~Player();
 
 	std::string const& getUsername() const;
+	bool operator==(const Player& other) const;
 private:
 	std::string username;
 
