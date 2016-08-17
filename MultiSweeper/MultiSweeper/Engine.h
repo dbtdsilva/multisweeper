@@ -19,8 +19,9 @@ public:
 	void joinGame(const std::string username);
 	void turnPlayed(int x, int y);
 	void surrender(Player player);
-	Player* getCurrentPlayer();
-	std::vector<Player> getPlayersList();
+
+	Player const& getCurrentPlayer() const;
+	std::vector<Player> const& getPlayersList() const;
 
 	friend std::ostream& operator<<(std::ostream& os, const Engine& obj);
 private:

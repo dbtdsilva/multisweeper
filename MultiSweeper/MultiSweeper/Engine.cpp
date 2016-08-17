@@ -81,11 +81,11 @@ Player* Engine::nextPlayer() {
 	return currentPlayer;
 }
 
-Player* Engine::getCurrentPlayer() {
-	return currentPlayer;
+Player const& Engine::getCurrentPlayer() const {
+	return *currentPlayer;
 }
 
-std::vector<Player> Engine::getPlayersList() {
+std::vector<Player> const& Engine::getPlayersList() const {
 	return mPlayers;
 }
 
