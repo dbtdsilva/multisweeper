@@ -6,7 +6,7 @@
 #include "Engine.h"
 #include "Console.h"
 
-class Curses
+class Curses : public InterfaceVisual
 {
 public:
 	Curses();
@@ -35,6 +35,13 @@ private:
 		EXIT_REQUEST
 	};
 
+	// InterfaceVirtual related
+	virtual void gameStarted();
+	virtual void gameFinished();
+	virtual void boardPosRevealed(int x, int y, Position state);
+	virtual void boardCreated(int height, int width);
+	virtual void playerWon(Player player);
+
 	void init();
 	void displayCurses();
 	void processKey(int key);
@@ -48,6 +55,7 @@ private:
 	void removePlayer();
 	void displayBoardStatus(int row);
 	void displayGameStatus(int row);
+	void displayGame();
 
 	template <typename T>
 	void mvscanwRobust(string introText, int rowStart, T * returnValue);
@@ -59,7 +67,6 @@ private:
 	int old_option, new_option;
 	int height, width;
 	WINDOW *window;
-	std::unique_ptr<Console> pSweeperConsole;
 	std::unique_ptr<Engine> pEngine;
 	vector<Player> const& playerList;
 };

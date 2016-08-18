@@ -137,12 +137,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Console.h" />
     <ClInclude Include="Curses.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiSweeperConsole.cpp" />
-    <ClCompile Include="Console.cpp" />
     <ClCompile Include="Curses.cpp" />
   </ItemGroup>
   <ItemGroup>

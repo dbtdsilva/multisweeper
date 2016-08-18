@@ -9,8 +9,7 @@ typedef struct command cmd;
 
 Curses::Curses() :
 	width(120),	height(30),	new_option(0), old_option(-1), mCols(20), mRows(10), mMines(10),
-	pSweeperConsole(unique_ptr<Console>(new Console(window))),
-	pEngine(unique_ptr<Engine>(new Engine(pSweeperConsole.get(), mRows, mCols, mMines))),
+	pEngine(unique_ptr<Engine>(new Engine(this, mRows, mCols, mMines))),
 	playerList(pEngine->getPlayersList()),
 	mMainuOptions({
 		{ "Instructions", [=](WINDOW * win) { state = INSTRUCTIONS; } },
@@ -121,6 +120,7 @@ void Curses::displayCurses() {
 		modifyMines();
 		break;
 	case GAME:
+		displayGame();
 		break;
 	}
 }
@@ -198,6 +198,36 @@ void Curses::displayGameStatus(int row) {
 		mvaddstrCentered(row, ss.str());
 	}
 }
+
+void Curses::displayGame() {
+
+	for (int i = 0; i < mRows; i++) {
+		for (int j = 0; j < mCols; j++) {
+			mvaddstr(i, j * 2 + 1, "x");
+		}
+	}
+}
+
+void Curses::gameStarted() {
+	cout << "Game has started!" << endl;
+}
+
+void Curses::gameFinished() {
+	cout << "Game has finished!" << endl;
+}
+
+void Curses::boardPosRevealed(int x, int y, Position state) {
+	cout << state << " found" << endl;
+}
+
+void Curses::boardCreated(int height, int width) {
+	cout << "Board created" << endl;
+}
+
+void Curses::playerWon(Player player) {
+	cout << player.getUsername() << " has won" << endl;
+}
+
 void Curses::modifyRows() {
 	int nRows;
 	displayBoardStatus(1);
