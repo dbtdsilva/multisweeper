@@ -19,7 +19,7 @@ public:
 	void joinGame(std::string username);
 	void leaveGame(std::string username);
 	void leaveGame(int id);
-	void turnPlayed(int x, int y);
+	void turnPlayed(int row, int col);
 	void surrender(Player player);
 
 	Player const& getCurrentPlayer() const;

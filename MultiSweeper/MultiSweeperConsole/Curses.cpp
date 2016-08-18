@@ -134,12 +134,13 @@ void Curses::processKey(int key) {
 	case BOARD_OPTIONS:
 		processMenuKey(key, mBoardOptions);
 		break;
-	case INSTRUCTIONS:
-		state = MAIN_MENU;	// Any key to continue
-		erase();
-		break;
 	case PLAYERS_OPTIONS:
 		processMenuKey(key, mPlayersOptions);
+		break;
+	case INSTRUCTIONS:
+	case GAME:
+		state = MAIN_MENU;	// Any key to continue
+		erase();
 		break;
 	case PLAYER_ADD:
 	case PLAYER_REMOVE:
@@ -151,8 +152,6 @@ void Curses::processKey(int key) {
 	case MODIFY_MINES:
 		state = BOARD_OPTIONS;	// Any key to continue
 		erase();
-		break;
-	case GAME:
 		break;
 	}
 }
@@ -202,11 +201,11 @@ void Curses::displayGameStatus(int row) {
 
 void Curses::displayGame() {
 	pEngine->startGame();
-	for (int i = 0; i < mRows; i++) {
+	/*for (int i = 0; i < mRows; i++) {
 		for (int j = 0; j < mCols; j++) {
-			mvaddstr(i, j * 2 + 1, "x");
+			mvaddstr(i, j * 2 + 1, "");
 		}
-	}
+	}*/
 
 	tuple<int, int> newPosSelected = { 0, 0 };
 	int& row = get<0>(newPosSelected);
@@ -215,15 +214,13 @@ void Curses::displayGame() {
 	representBoardCursor(row, col);
 	int key;
 	while (gameIsRunning) {
-		int key = getch();
+		key = getch();
 		switch (key)
 		{
 		case 10:
 		case 13:
 		case KEY_ENTER:
 			pEngine->turnPlayed(row, col);
-			row = 0;
-			col = 0;
 			break;
 		case KEY_DOWN:
 			row = row < mRows - 1 ? row + 1 : row;
