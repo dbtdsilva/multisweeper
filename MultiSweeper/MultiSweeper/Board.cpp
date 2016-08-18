@@ -61,11 +61,15 @@ list<BoardPos> Board::revealPosition(int row, int col) {
 	if (mPos[row][col].revealed) {
 		throw runtime_error("Position was already revealed");
 	}
-
+	list<BoardPos> positionsRevealed;
+	positionsRevealed.push_back(BoardPos{ mPos[row][col].state, row, col });
 	if (mPos[row][col].state == MINE) {
 		mTotalMinesRevealed++;
+	} else {
+
+	}
 	mPos[row][col].revealed = true;
-	return mPos[row][col].state;
+	return positionsRevealed;
 }
 
 void Board::clearMines() {
