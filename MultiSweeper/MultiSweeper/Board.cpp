@@ -41,6 +41,7 @@ void Board::generateMines() {
 
 void Board::modifyBoard(int rows, int cols, int totalMines) {
 	this->modifyBoard(rows, cols);
+	this->modifyNumberMines(totalMines);
 }
 
 void Board::modifyBoard(int rows, int cols) {

@@ -64,15 +64,15 @@ void Engine::modifyNumberMines(int nMines) {
 	mBoard->modifyNumberMines(nMines);
 }
 
-void Engine::turnPlayed(int x, int y)
+void Engine::turnPlayed(int row, int col)
 {
 	if (currentStatus != RUN)
 		throw runtime_error("Game isn't running");
 
-	Position revealed = mBoard->revealPosition(x, y);
+	Position revealed = mBoard->revealPosition(row, col);
 	if (revealed == FREE) 
 		nextPlayer();
-	this->mInteraction->boardPosRevealed(x, y, revealed);
+	this->mInteraction->boardPosRevealed(row, col, revealed);
 
 	if (isGameFinished()) {
 		currentStatus = START;
