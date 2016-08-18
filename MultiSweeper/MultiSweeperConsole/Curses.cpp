@@ -261,8 +261,10 @@ void Curses::gameFinished() {
 	gameIsRunning = false;
 }
 
-void Curses::boardPosRevealed(int row, int col, Position state) {
-	mvaddstr(row, col * 2 + 1, state == MINE ? "X" : "O");
+void Curses::boardPosRevealed(list<BoardPos> positions) {
+	for (BoardPos pos : positions) {
+		mvaddstr(pos.row, pos.col * 2 + 1, pos.state == MINE ? "X" : "O");
+	}
 }
 
 void Curses::boardCreated(int height, int width) {

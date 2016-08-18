@@ -3,6 +3,7 @@
 #include <string>
 #include <random>
 #include <time.h>
+#include <list>
 #include <algorithm>
 
 using namespace std;
@@ -69,10 +70,18 @@ void Engine::turnPlayed(int row, int col)
 	if (currentStatus != RUN)
 		throw runtime_error("Game isn't running");
 
-	Position revealed = mBoard->revealPosition(row, col);
-	if (revealed == FREE) 
+	list<BoardPos> listRevealed = mBoard->revealPosition(row, col);
+	bool foundMine = false;
+	for (BoardPos revealed : listRevealed) {
+		if (revealed.state == MINE) {
+			foundMine = true;
+			break;
+		}
+	}
+
+	if (!foundMine) 
 		nextPlayer();
-	this->mInteraction->boardPosRevealed(row, col, revealed);
+	this->mInteraction->boardPosRevealed(listRevealed);
 
 	if (isGameFinished()) {
 		currentStatus = START;
