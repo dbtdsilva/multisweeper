@@ -48,6 +48,7 @@ private:
 	void displayMenu(std::vector<cmd> options);
 	void displayInstructions();
 	void processMenuKey(int key, std::vector<cmd> vec);
+	void representBoardCursor(int new_row, int new_col);
 	void modifyRows();
 	void modifyCols();
 	void modifyMines();
@@ -64,9 +65,11 @@ private:
 	int mRows, mCols, mMines;
 	VisualState state;
 	std::vector<cmd> mMainuOptions, mBoardOptions, mPlayersOptions;
+	std::tuple<int, int> boardPosSelected;
 	int old_option, new_option;
 	int height, width;
 	WINDOW *window;
 	std::unique_ptr<Engine> pEngine;
+	bool gameIsRunning;
 	vector<Player> const& playerList;
 };

@@ -35,6 +35,8 @@ void Engine::startGame() {
 		throw runtime_error("Game has already started");
 	this->currentStatus = RUN;
 	random_shuffle(mPlayers.begin(), mPlayers.end());
+
+	this->mInteraction->gameStarted();
 }
 
 void Engine::joinGame(string username) {
@@ -70,10 +72,12 @@ void Engine::turnPlayed(int x, int y)
 	Position revealed = mBoard->revealPosition(x, y);
 	if (revealed == FREE) 
 		nextPlayer();
+	this->mInteraction->boardPosRevealed(x, y, revealed);
 
 	if (isGameFinished()) {
 		currentStatus = START;
 		currentPlayer = nullptr;
+		this->mInteraction->gameFinished();
 	}
 }
 

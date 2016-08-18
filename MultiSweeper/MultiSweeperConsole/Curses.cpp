@@ -2,7 +2,7 @@
 #include <locale.h>
 #include <iostream>
 #include <sstream>
-#include "Console.h"
+#include <tuple>
 
 using namespace std;
 typedef struct command cmd;
@@ -26,7 +26,8 @@ Curses::Curses() :
 		{ "Add player", [=](WINDOW * win) { state = PLAYER_ADD; } },
 		{ "Remove player", [=](WINDOW * win) { state = PLAYER_REMOVE; } },
 		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; } }}),
-	state(MAIN_MENU)
+	state(MAIN_MENU),
+	gameIsRunning(false)
 {
 	setlocale(LC_ALL, "");
 	init();
@@ -200,24 +201,71 @@ void Curses::displayGameStatus(int row) {
 }
 
 void Curses::displayGame() {
-
+	pEngine->startGame();
 	for (int i = 0; i < mRows; i++) {
 		for (int j = 0; j < mCols; j++) {
 			mvaddstr(i, j * 2 + 1, "x");
 		}
 	}
+
+	tuple<int, int> newPosSelected = { 0, 0 };
+	int& row = get<0>(newPosSelected);
+	int& col = get<1>(newPosSelected);
+
+	representBoardCursor(row, col);
+	int key;
+	while (gameIsRunning) {
+		int key = getch();
+		switch (key)
+		{
+		case 10:
+		case 13:
+		case KEY_ENTER:
+			pEngine->turnPlayed(row, col);
+			row = 0;
+			col = 0;
+			break;
+		case KEY_DOWN:
+			row = row < mRows - 1 ? row + 1 : row;
+			break;
+		case KEY_UP:
+			row = row > 0 ? row - 1 : row;
+			break;
+		case KEY_LEFT:
+			col = col > 0 ? col - 1 : col;
+			break;
+		case KEY_RIGHT:
+			col = col < mCols - 1? col + 1 : col;
+			break;
+		}
+		representBoardCursor(row, col);
+	}
+}
+
+void Curses::representBoardCursor(int new_row, int new_col) {
+	int& row = get<0>(boardPosSelected);
+	int& col = get<1>(boardPosSelected);
+
+	mvaddstr(row, col * 2, " ");
+	mvaddstr(row, col * 2 + 2, " ");
+
+	row = new_row;
+	col = new_col;
+
+	mvaddstr(row, col * 2, "[");
+	mvaddstr(row, col * 2 + 2, "]");
 }
 
 void Curses::gameStarted() {
-	cout << "Game has started!" << endl;
+	gameIsRunning = true;
 }
 
 void Curses::gameFinished() {
-	cout << "Game has finished!" << endl;
+	gameIsRunning = false;
 }
 
-void Curses::boardPosRevealed(int x, int y, Position state) {
-	cout << state << " found" << endl;
+void Curses::boardPosRevealed(int row, int col, Position state) {
+	mvaddstr(row, col * 2 + 1, state == MINE ? "X" : "O");
 }
 
 void Curses::boardCreated(int height, int width) {

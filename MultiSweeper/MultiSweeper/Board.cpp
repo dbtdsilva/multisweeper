@@ -56,15 +56,15 @@ void Board::modifyNumberMines(int totalMines) {
 	this->mTotalMines = totalMines;
 }
 
-Position Board::revealPosition(int x, int y) {
-	if (mPos[y][x].revealed) {
+Position Board::revealPosition(int row, int col) {
+	if (mPos[row][col].revealed) {
 		throw runtime_error("Position was already revealed");
 	}
 
-	if (mPos[y][x].state == MINE)
+	if (mPos[row][col].state == MINE)
 		mTotalMinesRevealed++;
-	mPos[y][x].revealed = true;
-	return mPos[y][x].state;
+	mPos[row][col].revealed = true;
+	return mPos[row][col].state;
 }
 
 void Board::clearMines() {
