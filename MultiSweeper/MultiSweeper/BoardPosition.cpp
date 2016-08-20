@@ -3,7 +3,7 @@
 using namespace std;
 
 
-BoardPosition::BoardPosition(int row, int col) : BoardPosition(row, col, true)
+BoardPosition::BoardPosition(int row, int col) : BoardPosition(row, col, false)
 {
 }
 
@@ -29,8 +29,8 @@ void BoardPosition::setFree() {
 	this->mine = false;
 }
 
-void BoardPosition::setRevealed(bool const& isRevealed) {
-	revealed = isRevealed;
+void BoardPosition::setRevealed() {
+	revealed = true;
 }
 
 unsigned int const& BoardPosition::getCountNeighbourMines() const {
@@ -43,10 +43,6 @@ bool const& BoardPosition::isRevealed() const {
 
 bool const& BoardPosition::isMine() const {
 	return mine;
-}
-
-bool const& BoardPosition::isFree() const {
-	return !mine;
 }
 
 std::tuple<int, int> const& BoardPosition::getPosition() const {

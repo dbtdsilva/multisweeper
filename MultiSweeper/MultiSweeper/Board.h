@@ -22,6 +22,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const Board& obj);
 
 private:
+	list<BoardPosition *> revealFreePositions(int row, int col);
 	void clearMines();
 
 	std::vector<std::vector<std::unique_ptr<BoardPosition> > > mPos;

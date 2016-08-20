@@ -27,12 +27,30 @@ void Board::generateMines() {
 		mineC = rand() % mCols;
 		mineR = rand() % mRows;
 
-		if (mPos[mineR][mineC]->isFree()) {
+		if (!mPos[mineR][mineC]->isMine()) {
 			mPos[mineR][mineC]->setMine();
 			minesPlaced++;
 		}
 	}
-	int x = 1;
+
+	int positionMineCounter;
+	// Run over all board
+	for (int row = 0; row < mRows; row++) {
+		positionMineCounter = 0;
+		for (int col = 0; col < mCols; col++) {
+			// Count all mines in adjacencies and itself
+			for (int adjRow = -1; adjRow <= 1; adjRow++) {
+				for (int adjCol = -1; adjCol <= 1; adjCol++) {
+					if (row + adjRow >= 0 && row + adjRow < mRows 
+							&& col + adjCol >= 0 && col + adjCol < mCols 
+							&& mPos[row + adjRow][col + adjCol]->isMine()) {
+						positionMineCounter++;
+					}
+				}
+			}
+			mPos[row][col]->setCountNeighbourMines(positionMineCounter);
+		}
+	}
 }
 
 void Board::modifyBoard(int rows, int cols, int totalMines) {
@@ -52,25 +70,48 @@ void Board::modifyBoard(int rows, int cols, int totalMines) {
 }
 
 list<BoardPosition *> Board::revealPosition(int row, int col) {
+	list<BoardPosition *> positionsRevealed;
+	// If the position was already revealed, return empty.
 	if (mPos[row][col]->isRevealed()) {
 		throw runtime_error("Position was already revealed");
 	}
-	list<BoardPosition *> positionsRevealed;
 	positionsRevealed.push_back(mPos[row][col].get());
 	if (mPos[row][col]->isMine()) {
 		mTotalMinesRevealed++;
 	} else {
-
+		for (BoardPosition * freePosition : revealFreePositions(row, col))
+			positionsRevealed.push_back(freePosition);
 	}
-	mPos[row][col]->setRevealed(true);
+	mPos[row][col]->setRevealed();
+	return positionsRevealed;
+}
+
+list<BoardPosition *> Board::revealFreePositions(int row, int col) {
+	list<BoardPosition *> positionsRevealed;
+	for (int adjRow = -1; adjRow <= 1; adjRow++) {
+		for (int adjCol = -1; adjCol <= 1; adjCol++) {
+			if ((adjRow != 0 || adjCol != 0) 
+					&& row + adjRow >= 0 && row + adjRow < mRows
+					&& col + adjCol >= 0 && col + adjCol < mCols
+					&& !mPos[row + adjRow][col + adjCol]->isMine()) {
+				mPos[row + adjRow][col + adjCol]->setRevealed();
+				positionsRevealed.push_back(mPos[row + adjRow][col + adjCol].get());
+				if (mPos[row + adjRow][col + adjCol]->getCountNeighbourMines() == 0 &&
+					!mPos[row + adjRow][col + adjCol]->isRevealed())
+				{
+					for (BoardPosition * freePosition : revealFreePositions(row + adjRow, col + adjCol))
+						positionsRevealed.push_back(freePosition);
+				}
+			}
+		}
+	}
 	return positionsRevealed;
 }
 
 void Board::clearMines() {
-	for (int h = 0; h < mRows; h++) {
-		for (int w = 0; w < mCols; w++) {
-			mPos[h][w]->setFree();
-			mPos[h][w]->setRevealed(false);
+	for (int i = 0; i < mRows; i++) {
+		for (int j = 0; j < mCols; j++) {
+			mPos[i][j] = unique_ptr<BoardPosition>(new BoardPosition(i, j));
 		}
 	}
 	this->mTotalMinesRevealed = 0;

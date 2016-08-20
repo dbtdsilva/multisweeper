@@ -8,7 +8,13 @@ using namespace std;
 typedef struct command cmd;
 
 Curses::Curses() :
-	width(120),	height(30),	new_option(0), old_option(-1), mCols(20), mRows(10), mMines(10),
+	width(120),	
+	height(30),	
+	new_option(0), 
+	old_option(-1), 
+	mCols(20), 
+	mRows(10), 
+	mMines(10),
 	pEngine(unique_ptr<Engine>(new Engine(this, mRows, mCols, mMines))),
 	playerList(pEngine->getPlayersList()),
 	mMainuOptions({
@@ -201,11 +207,6 @@ void Curses::displayGameStatus(int row) {
 
 void Curses::displayGame() {
 	pEngine->startGame();
-	/*for (int i = 0; i < mRows; i++) {
-		for (int j = 0; j < mCols; j++) {
-			mvaddstr(i, j * 2 + 1, "");
-		}
-	}*/
 
 	tuple<int, int> newPosSelected = { 0, 0 };
 	int& row = get<0>(newPosSelected);
@@ -264,7 +265,8 @@ void Curses::gameFinished() {
 void Curses::boardPosRevealed(list<BoardPosition *> positions) {
 	for (BoardPosition * pos : positions) {
 		tuple<int, int> const& position = pos->getPosition();
-		mvaddstr(get<0>(position), get<1>(position) * 2 + 1, pos->isMine() ? "X" : "O");
+		mvaddstr(get<0>(position), get<1>(position) * 2 + 1, pos->isMine() ?
+			"X" : to_string(pos->getCountNeighbourMines()).c_str());
 	}
 }
 

@@ -12,12 +12,11 @@ public:
 	void setCountNeighbourMines(unsigned int const& countNeighbourMines);
 	void setMine();
 	void setFree();
-	void setRevealed(bool const& isRevealed);
+	void setRevealed();
 
 	unsigned int const& getCountNeighbourMines() const;
 	bool const& isRevealed() const;
 	bool const& isMine() const;
-	bool const& isFree() const;
 	std::tuple<int, int> const& getPosition() const;
 
 private:
