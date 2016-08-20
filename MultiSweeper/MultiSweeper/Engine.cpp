@@ -57,12 +57,8 @@ void Engine::leaveGame(int id) {
 	mPlayers.erase(mPlayers.begin() + id);
 }
 
-void Engine::modifyBoard(int nRows, int nCols) {
-	mBoard->modifyBoard(nRows, nCols);
-}
-
-void Engine::modifyNumberMines(int nMines) {
-	mBoard->modifyNumberMines(nMines);
+void Engine::modifyBoard(int nRows, int nCols, int nTotalMines) {
+	mBoard->modifyBoard(nRows, nCols, nTotalMines);
 }
 
 void Engine::turnPlayed(int row, int col)
@@ -70,10 +66,10 @@ void Engine::turnPlayed(int row, int col)
 	if (currentStatus != RUN)
 		throw runtime_error("Game isn't running");
 
-	list<BoardPos> listRevealed = mBoard->revealPosition(row, col);
+	list<BoardPosition *> listRevealed = mBoard->revealPosition(row, col);
 	bool foundMine = false;
-	for (BoardPos revealed : listRevealed) {
-		if (revealed.state == MINE) {
+	for (BoardPosition * revealed : listRevealed) {
+		if (revealed->isMine()) {
 			foundMine = true;
 			break;
 		}

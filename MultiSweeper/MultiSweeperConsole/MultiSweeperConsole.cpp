@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include "Console.h"
 #include "Curses.h"
 #include "Engine.h"
 

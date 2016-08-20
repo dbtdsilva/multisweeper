@@ -261,9 +261,10 @@ void Curses::gameFinished() {
 	gameIsRunning = false;
 }
 
-void Curses::boardPosRevealed(list<BoardPos> positions) {
-	for (BoardPos pos : positions) {
-		mvaddstr(pos.row, pos.col * 2 + 1, pos.state == MINE ? "X" : "O");
+void Curses::boardPosRevealed(list<BoardPosition *> positions) {
+	for (BoardPosition * pos : positions) {
+		tuple<int, int> const& position = pos->getPosition();
+		mvaddstr(get<0>(position), get<1>(position) * 2 + 1, pos->isMine() ? "X" : "O");
 	}
 }
 
@@ -280,7 +281,7 @@ void Curses::modifyRows() {
 	displayBoardStatus(1);
 	mvscanwRobust("Enter the total number of ROWS", 3, &nRows);
 	this->mRows = nRows;
-	pEngine->modifyBoard(mRows, mCols);
+	pEngine->modifyBoard(mRows, mCols, mMines);
 	displayBoardStatus(6);
 }
 
@@ -289,7 +290,7 @@ void Curses::modifyCols() {
 	displayBoardStatus(1);
 	mvscanwRobust("Enter the total number of COLUMNS", 3, &nCols);
 	this->mCols = nCols;
-	pEngine->modifyBoard(mRows, mCols);
+	pEngine->modifyBoard(mRows, mCols, mMines);
 	displayBoardStatus(6);
 }
 
@@ -298,7 +299,7 @@ void Curses::modifyMines() {
 	displayBoardStatus(1);
 	mvscanwRobust("Enter the total number of MINES", 3, &nMines);
 	this->mMines = nMines;
-	pEngine->modifyNumberMines(nMines);
+	pEngine->modifyBoard(mRows, mCols, mMines);
 	displayBoardStatus(6);
 }
 

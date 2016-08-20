@@ -10,7 +10,7 @@ public:
 
 	virtual void gameStarted() = 0;
 	virtual void gameFinished() = 0;
-	virtual void boardPosRevealed(list<BoardPos> states) = 0;
+	virtual void boardPosRevealed(list<BoardPosition *> states) = 0;
 	virtual void boardCreated(int height, int width) = 0;
 	virtual void playerWon(Player player) = 0;
 };

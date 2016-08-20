@@ -4,7 +4,6 @@
 #include <vector>
 #include <functional>
 #include "Engine.h"
-#include "Console.h"
 
 class Curses : public InterfaceVisual
 {
@@ -13,6 +12,13 @@ public:
 	virtual ~Curses();
 
 	void loop();
+
+	// InterfaceVirtual related
+	virtual void gameStarted();
+	virtual void gameFinished();
+	virtual void boardPosRevealed(list<BoardPosition *> states);
+	virtual void boardCreated(int height, int width);
+	virtual void playerWon(Player player);
 private:
 	struct command
 	{
@@ -34,13 +40,6 @@ private:
 		GAME,
 		EXIT_REQUEST
 	};
-
-	// InterfaceVirtual related
-	virtual void gameStarted();
-	virtual void gameFinished();
-	virtual void boardPosRevealed(list<BoardPos> states);
-	virtual void boardCreated(int height, int width);
-	virtual void playerWon(Player player);
 
 	void init();
 	void displayCurses();

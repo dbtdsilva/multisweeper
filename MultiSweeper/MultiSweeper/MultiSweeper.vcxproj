@@ -119,12 +119,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
+    <ClInclude Include="BoardPosition.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="InterfaceVisual.h" />
     <ClInclude Include="Player.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="BoardPosition.cpp" />
     <ClCompile Include="InterfaceVisual.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Player.cpp" />
