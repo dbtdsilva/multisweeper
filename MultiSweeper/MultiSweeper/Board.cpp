@@ -36,8 +36,8 @@ void Board::generateMines() {
 	int positionMineCounter;
 	// Run over all board
 	for (int row = 0; row < mRows; row++) {
-		positionMineCounter = 0;
 		for (int col = 0; col < mCols; col++) {
+			positionMineCounter = 0;
 			// Count all mines in adjacencies and itself
 			for (int adjRow = -1; adjRow <= 1; adjRow++) {
 				for (int adjCol = -1; adjCol <= 1; adjCol++) {
@@ -88,20 +88,20 @@ list<BoardPosition *> Board::revealPosition(int row, int col) {
 
 list<BoardPosition *> Board::revealFreePositions(int row, int col) {
 	list<BoardPosition *> positionsRevealed;
+	mPos[row][col]->setRevealed();
+	if (mPos[row][col]->getCountNeighbourMines() != 0)
+		return positionsRevealed;
+
 	for (int adjRow = -1; adjRow <= 1; adjRow++) {
 		for (int adjCol = -1; adjCol <= 1; adjCol++) {
 			if ((adjRow != 0 || adjCol != 0) 
 					&& row + adjRow >= 0 && row + adjRow < mRows
 					&& col + adjCol >= 0 && col + adjCol < mCols
-					&& !mPos[row + adjRow][col + adjCol]->isMine()) {
-				mPos[row + adjRow][col + adjCol]->setRevealed();
+					&& !mPos[row + adjRow][col + adjCol]->isRevealed())
+			{
 				positionsRevealed.push_back(mPos[row + adjRow][col + adjCol].get());
-				if (mPos[row + adjRow][col + adjCol]->getCountNeighbourMines() == 0 &&
-					!mPos[row + adjRow][col + adjCol]->isRevealed())
-				{
-					for (BoardPosition * freePosition : revealFreePositions(row + adjRow, col + adjCol))
-						positionsRevealed.push_back(freePosition);
-				}
+				for (BoardPosition * freePosition : revealFreePositions(row + adjRow, col + adjCol))
+					positionsRevealed.push_back(freePosition);
 			}
 		}
 	}
