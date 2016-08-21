@@ -23,7 +23,7 @@ Engine::Engine(InterfaceVisual* iv, int nRows, int nCols, int nMines)
 	this->currentStatus = START;
 	this->currentPlayerIdx = 0;
 	this->currentPlayer = nullptr;
-	this->mBoard = unique_ptr<Board>(new Board(nRows, nCols, nMines));
+	this->mBoard =  make_unique<Board>(nRows, nCols, nMines);
 	this->mInteraction = iv;
 }
 

@@ -7,7 +7,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	unique_ptr<Curses> pSweeperCurses = unique_ptr<Curses>(new Curses());
+	unique_ptr<Curses> pSweeperCurses = make_unique<Curses>();
 	pSweeperCurses->loop();
 
 	return 0;

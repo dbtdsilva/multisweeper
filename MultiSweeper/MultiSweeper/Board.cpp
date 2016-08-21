@@ -60,7 +60,7 @@ void Board::modifyBoard(int rows, int cols, int totalMines) {
 	for (int i = 0; i < rows; i++) {
 		this->mPos[i].resize(cols);
 		for (int j = 0; j < cols; j++) {
-			this->mPos[i][j] = unique_ptr<BoardPosition>(new BoardPosition(i, j));
+			this->mPos[i][j] = make_unique<BoardPosition>(i, j);
 		}
 	}
 	this->mCols = cols;
@@ -111,7 +111,7 @@ list<BoardPosition *> Board::revealFreePositions(int row, int col) {
 void Board::clearMines() {
 	for (int i = 0; i < mRows; i++) {
 		for (int j = 0; j < mCols; j++) {
-			mPos[i][j] = unique_ptr<BoardPosition>(new BoardPosition(i, j));
+			mPos[i][j] = make_unique<BoardPosition>(i, j);
 		}
 	}
 	this->mTotalMinesRevealed = 0;

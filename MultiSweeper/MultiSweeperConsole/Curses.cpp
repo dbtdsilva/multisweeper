@@ -8,14 +8,8 @@ using namespace std;
 typedef struct command cmd;
 
 Curses::Curses() :
-	width(120),	
-	height(30),	
-	new_option(0), 
-	old_option(-1), 
-	mCols(20), 
-	mRows(10), 
-	mMines(10),
-	pEngine(unique_ptr<Engine>(new Engine(this, mRows, mCols, mMines))),
+	width(120),	height(30),	new_option(0), old_option(-1), mCols(20), mRows(10), mMines(10),
+	pEngine(make_unique<Engine>(this, mRows, mCols, mMines)),
 	playerList(pEngine->getPlayersList()),
 	mMainuOptions({
 		{ "Instructions", [=](WINDOW * win) { state = INSTRUCTIONS; } },
