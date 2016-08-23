@@ -10,7 +10,7 @@ typedef struct command cmd;
 Curses::Curses() :
 	width(120),	height(30),	new_option(0), old_option(-1), mCols(20), mRows(10), mMines(10),
 	pEngine(make_unique<Engine>(this, mRows, mCols, mMines)),
-	playerList(pEngine->getPlayersList()),
+	playerList(pEngine->get_players_list()),
 	mMainuOptions({
 		{ "Instructions", [=](WINDOW * win) { state = INSTRUCTIONS; } },
 		{ "Modify Board", [=](WINDOW * win) { state = BOARD_OPTIONS; } },
@@ -200,22 +200,27 @@ void Curses::displayGameStatus(int row) {
 }
 
 void Curses::displayGame() {
-	pEngine->startGame();
+	pEngine->start_game();
 
 	tuple<int, int> newPosSelected = { 0, 0 };
 	int& row = get<0>(newPosSelected);
 	int& col = get<1>(newPosSelected);
 
-	representBoardCursor(row, col);
 	int key;
+	stringstream ss;
+	Player const& p = pEngine->get_current_player();
 	while (gameIsRunning) {
+		representBoardCursor(row, col, 2, (COLS - (mCols * 2 + 2)) / 2);
+		ss.str("");
+		ss << "Current player: " << p.getUsername();
+		mvaddstrCentered(0, ss.str());
 		key = getch();
 		switch (key)
 		{
 		case 10:
 		case 13:
 		case KEY_ENTER:
-			pEngine->turnPlayed(row, col);
+			pEngine->turn_played(row, col);
 			break;
 		case KEY_DOWN:
 			row = row < mRows - 1 ? row + 1 : row;
@@ -230,45 +235,59 @@ void Curses::displayGame() {
 			col = col < mCols - 1? col + 1 : col;
 			break;
 		}
-		representBoardCursor(row, col);
 	}
 }
 
-void Curses::representBoardCursor(int new_row, int new_col) {
+void Curses::representBoardCursor(int newRow, int newCol, int rowOffset, int colOffset) {
 	int& row = get<0>(boardPosSelected);
 	int& col = get<1>(boardPosSelected);
 
-	mvaddstr(row, col * 2, " ");
-	mvaddstr(row, col * 2 + 2, " ");
+	mvaddstr(rowOffset + row, colOffset + col * 2, " ");
+	mvaddstr(rowOffset + row, colOffset + col * 2 + 2, " ");
 
-	row = new_row;
-	col = new_col;
+	row = newRow;
+	col = newCol;
 
-	mvaddstr(row, col * 2, "[");
-	mvaddstr(row, col * 2 + 2, "]");
+	mvaddstr(rowOffset + row, colOffset + col * 2, "[");
+	mvaddstr(rowOffset + row, colOffset + col * 2 + 2, "]");
 }
 
-void Curses::gameStarted() {
+void Curses::game_started() {
 	gameIsRunning = true;
 }
 
-void Curses::gameFinished() {
+void Curses::game_finished() {
 	gameIsRunning = false;
 }
 
-void Curses::boardPosRevealed(list<BoardPosition *> positions) {
+void Curses::dispatch_error(const SweeperError& err) {
+	displayError(err.get_error_code(), err.get_message());
+}
+
+void Curses::displayError(int row, std::string error) {
+	attrset(A_BOLD);
+	init_pair(1, COLOR_RED, COLOR_BLACK);
+	attron(COLOR_PAIR(1));
+	mvaddstrCentered(row, error);
+	attroff(COLOR_PAIR(1));
+	attrset(A_NORMAL);
+	refresh();
+}
+
+void Curses::board_position_revealed(list<BoardPosition *> positions) {
 	for (BoardPosition * pos : positions) {
 		tuple<int, int> const& position = pos->getPosition();
-		mvaddstr(get<0>(position), get<1>(position) * 2 + 1, pos->isMine() ?
+		mvaddstr(2 + get<0>(position), 
+			(COLS - (mCols * 2 + 2)) / 2 + get<1>(position) * 2 + 1, pos->isMine() ?
 			"X" : to_string(pos->getCountNeighbourMines()).c_str());
 	}
 }
 
-void Curses::boardCreated(int height, int width) {
+void Curses::board_created(int height, int width) {
 	cout << "Board created" << endl;
 }
 
-void Curses::playerWon(Player player) {
+void Curses::player_won(Player player) {
 	cout << player.getUsername() << " has won" << endl;
 }
 
@@ -276,8 +295,12 @@ void Curses::modifyRows() {
 	int nRows;
 	displayBoardStatus(1);
 	mvscanwRobust("Enter the total number of ROWS", 3, &nRows);
+	if (nRows <= 0 || nRows >= mRows) {
+		displayError(3, "Number of rows inserted is invalid");
+		return;
+	}
 	this->mRows = nRows;
-	pEngine->modifyBoard(mRows, mCols, mMines);
+	pEngine->modify_board(mRows, mCols, mMines);
 	displayBoardStatus(6);
 }
 
@@ -286,7 +309,7 @@ void Curses::modifyCols() {
 	displayBoardStatus(1);
 	mvscanwRobust("Enter the total number of COLUMNS", 3, &nCols);
 	this->mCols = nCols;
-	pEngine->modifyBoard(mRows, mCols, mMines);
+	pEngine->modify_board(mRows, mCols, mMines);
 	displayBoardStatus(6);
 }
 
@@ -295,14 +318,14 @@ void Curses::modifyMines() {
 	displayBoardStatus(1);
 	mvscanwRobust("Enter the total number of MINES", 3, &nMines);
 	this->mMines = nMines;
-	pEngine->modifyBoard(mRows, mCols, mMines);
+	pEngine->modify_board(mRows, mCols, mMines);
 	displayBoardStatus(6);
 }
 
 void Curses::addPlayer() {
 	string username;
 	mvscanwRobust("Enter player's username", 3, &username);
-	pEngine->joinGame(username.c_str());
+	pEngine->join_game(username.c_str());
 }
 
 void Curses::removePlayer() {
@@ -318,7 +341,7 @@ void Curses::removePlayer() {
 
 	int id;
 	mvscanwRobust("Enter player's ID that you which to remove", (int)playerList.size() + 3, &id);
-	pEngine->leaveGame(id);
+	pEngine->leave_game(id);
 }
 
 void Curses::mvaddstrCentered(int row, string str) {

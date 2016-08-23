@@ -14,11 +14,12 @@ public:
 	void loop();
 
 	// InterfaceVirtual related
-	virtual void gameStarted();
-	virtual void gameFinished();
-	virtual void boardPosRevealed(list<BoardPosition *> states);
-	virtual void boardCreated(int height, int width);
-	virtual void playerWon(Player player);
+	virtual void game_started();
+	virtual void game_finished();
+	virtual void board_position_revealed(std::list<BoardPosition *> states);
+	virtual void board_created(int height, int width);
+	virtual void player_won(Player player);
+	virtual void dispatch_error(const SweeperError& error);
 private:
 	struct command
 	{
@@ -47,7 +48,7 @@ private:
 	void displayMenu(std::vector<cmd> options);
 	void displayInstructions();
 	void processMenuKey(int key, std::vector<cmd> vec);
-	void representBoardCursor(int new_row, int new_col);
+	void representBoardCursor(int newRow, int newCol, int rowOffset, int colOffset);
 	void modifyRows();
 	void modifyCols();
 	void modifyMines();
@@ -56,6 +57,7 @@ private:
 	void displayBoardStatus(int row);
 	void displayGameStatus(int row);
 	void displayGame();
+	void displayError(int row, std::string);
 
 	template <typename T>
 	void mvscanwRobust(string introText, int rowStart, T * returnValue);

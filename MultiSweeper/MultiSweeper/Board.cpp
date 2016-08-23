@@ -9,7 +9,7 @@ using namespace std;
 
 Board::Board(int rows, int cols, int totalMines)
 {
-	this->modifyBoard(rows, cols, totalMines);
+	this->modify_board(rows, cols, totalMines);
 }
 
 Board::~Board()
@@ -55,7 +55,7 @@ void Board::generateMines() {
 	}
 }
 
-void Board::modifyBoard(int rows, int cols, int totalMines) {
+void Board::modify_board(int rows, int cols, int totalMines) {
 	this->mTotalMines = totalMines;
 	
 	this->mPos.resize(rows);

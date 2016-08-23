@@ -15,7 +15,7 @@ public:
 	virtual ~Board();
 
 	void generateMines();
-	void modifyBoard(int nRows, int nCols, int totalMines);
+	void modify_board(int nRows, int nCols, int totalMines);
 	list<BoardPosition *> revealPosition(int x, int y);
 	bool allMinesRevealed();
 

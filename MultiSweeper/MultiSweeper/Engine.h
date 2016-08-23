@@ -13,30 +13,30 @@ public:
 	Engine(InterfaceVisual* iv, int nRows, int nCols, int nMines);
 	virtual ~Engine();
 
-	void startGame();
-	void modifyBoard(int nRows, int nCols, int nTotalMines);
-	void joinGame(std::string username);
-	void leaveGame(std::string username);
-	void leaveGame(int id);
-	void turnPlayed(int row, int col);
+	void start_game();
+	void modify_board(int nRows, int nCols, int nTotalMines);
+	void join_game(std::string username);
+	void leave_game(std::string username);
+	void leave_game(int id);
+	void turn_played(int row, int col);
 	void surrender(Player player);
 
-	Player const& getCurrentPlayer() const;
-	std::vector<Player> const& getPlayersList() const;
+	Player const& get_current_player() const;
+	std::vector<Player> const& get_players_list() const;
 
 	friend std::ostream& operator<<(std::ostream& os, const Engine& obj);
 private:
-	Player* nextPlayer();
+	Player* next_player();
 
 	enum Status {
 		START,
 		RUN
 	};
 
-	bool isGameFinished();
-	void assertGameStatus(Status expected);
+	bool is_game_finished();
+	bool verify_game_status(Status expected);
 
-	static int MAX_PLAYERS;
+	const int kMaxPlayers;
 	Status currentStatus;
 
 	int currentPlayerIdx;
