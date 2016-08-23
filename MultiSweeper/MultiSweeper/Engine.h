@@ -26,13 +26,15 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const Engine& obj);
 private:
-	bool isGameFinished();
 	Player* nextPlayer();
 
 	enum Status {
 		START,
 		RUN
 	};
+
+	bool isGameFinished();
+	void assertGameStatus(Status expected);
 
 	static int MAX_PLAYERS;
 	Status currentStatus;

@@ -5,6 +5,8 @@
 #include <time.h>
 #include <list>
 #include <algorithm>
+#include "SweeperException.h"
+#include "SweeperError.h"
 
 using namespace std;
 
@@ -32,39 +34,41 @@ Engine::~Engine()
 }
 
 void Engine::startGame() {
-	if (currentStatus == RUN)
-		throw runtime_error("Game has already started");
+	assertGameStatus(START);
+	if (this->mPlayers.size() == 0)
+		throw SweeperException(SweeperError::NO_PLAYERS);
 	this->currentStatus = RUN;
 	random_shuffle(mPlayers.begin(), mPlayers.end());
+	nextPlayer();
 
 	this->mInteraction->gameStarted();
 }
 
 void Engine::joinGame(string username) {
-	if (currentStatus == RUN)
-		throw runtime_error("Game already started, players won't be able to join now");
+	assertGameStatus(START);
 	Player p(username);
 	mPlayers.push_back(p);
 }
 
 void Engine::leaveGame(string username) {
+	assertGameStatus(START);
 	auto it = std::find(mPlayers.begin(), mPlayers.end(), username);
 	if (it != mPlayers.end())
 		mPlayers.erase(it);
 }
 
 void Engine::leaveGame(int id) {
+	assertGameStatus(START);
 	mPlayers.erase(mPlayers.begin() + id);
 }
 
 void Engine::modifyBoard(int nRows, int nCols, int nTotalMines) {
+	assertGameStatus(START);
 	mBoard->modifyBoard(nRows, nCols, nTotalMines);
 }
 
-void Engine::turnPlayed(int row, int col)
-{
-	if (currentStatus != RUN)
-		throw runtime_error("Game isn't running");
+void Engine::turnPlayed(int row, int col) {
+	assertGameStatus(RUN);
 
 	list<BoardPosition *> listRevealed = mBoard->revealPosition(row, col);
 	bool foundMine = false;
@@ -91,6 +95,8 @@ void Engine::surrender(Player player)
 }
 
 Player* Engine::nextPlayer() {
+	assertGameStatus(RUN);
+
 	if (currentPlayer == nullptr) {
 		srand((unsigned int) time(NULL));
 		currentPlayerIdx = rand() % mPlayers.size();
@@ -109,11 +115,21 @@ std::vector<Player> const& Engine::getPlayersList() const {
 	return mPlayers;
 }
 
+ostream& operator<<(ostream& os, const Engine& obj) {
+	os << *(obj.mBoard);
+	return os;
+}
+
 bool Engine::isGameFinished() {
 	return mBoard->allMinesRevealed();
 }
 
-ostream& operator<<(ostream& os, const Engine& obj) {
-	os << *(obj.mBoard);
-	return os;
+void Engine::assertGameStatus(Status expected) {
+	if (expected == currentStatus)
+		return;
+
+	if (currentStatus == START)
+		throw SweeperException(SweeperError::GAME_NOT_RUNNING);
+	if (currentStatus == RUN)
+		throw SweeperException(SweeperError::GAME_ALREADY_STARTED);
 }
