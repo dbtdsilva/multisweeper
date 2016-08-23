@@ -5,7 +5,7 @@
 using namespace std;
 
 SweeperException::SweeperException(SweeperError err) :
-	err(err), runtime_error(err.get_message())
+	err_(err), runtime_error(err.get_message())
 {
 }
 
@@ -15,6 +15,10 @@ SweeperException::~SweeperException()
 
 const char* SweeperException::what() const throw() {
 	stringstream ss;
-	ss << "Error " << err.get_error_code() << ":" << err.get_message();
+	ss << "Error " << err_.get_error_code() << ":" << err_.get_message();
 	return ss.str().c_str();
+}
+
+SweeperError const& SweeperException::get_sweeper_error() const {
+	return err_;
 }
