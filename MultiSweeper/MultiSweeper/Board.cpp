@@ -3,6 +3,8 @@
 #include <random>
 #include <time.h>
 
+#include "SweeperException.h"
+
 using namespace std;
 
 Board::Board(int rows, int cols, int totalMines)
@@ -16,7 +18,7 @@ Board::~Board()
 
 void Board::generateMines() {
 	if (mTotalMines >= mRows * mCols) {
-		throw runtime_error("Total number of mines should be less than the board size");
+		throw SweeperException(SweeperError::MINES_EXCEED);
 	}
 	clearMines();
 
@@ -73,7 +75,7 @@ list<BoardPosition *> Board::revealPosition(int row, int col) {
 	list<BoardPosition *> positionsRevealed;
 	// If the position was already revealed, return empty.
 	if (mPos[row][col]->isRevealed()) {
-		throw runtime_error("Position was already revealed");
+		throw SweeperException(SweeperError::POSITION_ALREADY_REVEALED);
 	}
 	positionsRevealed.push_back(mPos[row][col].get());
 	if (mPos[row][col]->isMine()) {

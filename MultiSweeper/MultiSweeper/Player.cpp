@@ -23,3 +23,8 @@ string const& Player::getUsername() const {
 bool Player::operator==(const Player& other) const {
 	return this->username == other.username;
 }
+
+ostream& operator<<(ostream& os, const Player& obj) {
+	os << obj.username;
+	return os;
+}

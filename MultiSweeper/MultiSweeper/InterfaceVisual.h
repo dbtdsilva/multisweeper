@@ -11,11 +11,11 @@ public:
 	InterfaceVisual();
 	virtual ~InterfaceVisual();
 
-	virtual void gameStarted() = 0;
-	virtual void gameFinished() = 0;
-	virtual void boardPosRevealed(std::list<BoardPosition *> states) = 0;
-	virtual void boardCreated(int height, int width) = 0;
-	virtual void playerWon(Player player) = 0;
-	virtual void errorOccured(const SweeperError& error);
+	virtual void game_started() = 0;
+	virtual void game_finished() = 0;
+	virtual void board_position_revealed(std::list<BoardPosition *> states) = 0;
+	virtual void board_created(int height, int width) = 0;
+	virtual void player_won(Player player) = 0;
+	virtual void dispatch_error(const SweeperError& error);
 };
 

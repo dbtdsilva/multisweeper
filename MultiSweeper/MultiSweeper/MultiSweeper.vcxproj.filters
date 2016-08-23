@@ -30,6 +30,12 @@
     <ClInclude Include="BoardPosition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SweeperException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SweeperError.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Board.cpp">
@@ -45,6 +51,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BoardPosition.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SweeperException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SweeperError.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

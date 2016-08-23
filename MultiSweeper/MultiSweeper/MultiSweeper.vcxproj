@@ -123,6 +123,8 @@
     <ClInclude Include="Engine.h" />
     <ClInclude Include="InterfaceVisual.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="SweeperError.h" />
+    <ClInclude Include="SweeperException.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
@@ -130,6 +132,8 @@
     <ClCompile Include="InterfaceVisual.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="SweeperError.cpp" />
+    <ClCompile Include="SweeperException.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

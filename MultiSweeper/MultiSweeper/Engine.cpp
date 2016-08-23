@@ -36,12 +36,12 @@ Engine::~Engine()
 void Engine::startGame() {
 	assertGameStatus(START);
 	if (this->mPlayers.size() == 0)
-		throw SweeperException(SweeperError::NO_PLAYERS);
+		mInteraction->dispatch_error(SweeperError::NO_PLAYERS);
 	this->currentStatus = RUN;
 	random_shuffle(mPlayers.begin(), mPlayers.end());
 	nextPlayer();
 
-	this->mInteraction->gameStarted();
+	this->mInteraction->game_started();
 }
 
 void Engine::joinGame(string username) {
@@ -64,13 +64,24 @@ void Engine::leaveGame(int id) {
 
 void Engine::modifyBoard(int nRows, int nCols, int nTotalMines) {
 	assertGameStatus(START);
-	mBoard->modifyBoard(nRows, nCols, nTotalMines);
+	try {
+		mBoard->modifyBoard(nRows, nCols, nTotalMines);
+	} catch (SweeperException& ex) {
+		mInteraction->dispatch_error(ex.get_sweeper_error());
+	}
 }
 
 void Engine::turnPlayed(int row, int col) {
 	assertGameStatus(RUN);
 
-	list<BoardPosition *> listRevealed = mBoard->revealPosition(row, col);
+	list<BoardPosition *> listRevealed;
+	try {
+		listRevealed = mBoard->revealPosition(row, col);
+	} catch (SweeperException& ex) {
+		mInteraction->dispatch_error(ex.get_sweeper_error());
+		return;
+	}
+
 	bool foundMine = false;
 	for (BoardPosition * revealed : listRevealed) {
 		if (revealed->isMine()) {
@@ -81,12 +92,12 @@ void Engine::turnPlayed(int row, int col) {
 
 	if (!foundMine) 
 		nextPlayer();
-	this->mInteraction->boardPosRevealed(listRevealed);
+	this->mInteraction->board_position_revealed(listRevealed);
 
 	if (isGameFinished()) {
 		currentStatus = START;
 		currentPlayer = nullptr;
-		this->mInteraction->gameFinished();
+		this->mInteraction->game_finished();
 	}
 }
 
@@ -129,7 +140,7 @@ void Engine::assertGameStatus(Status expected) {
 		return;
 
 	if (currentStatus == START)
-		throw SweeperException(SweeperError::GAME_NOT_RUNNING);
+		mInteraction->dispatch_error(SweeperError::GAME_NOT_RUNNING);
 	if (currentStatus == RUN)
-		throw SweeperException(SweeperError::GAME_ALREADY_STARTED);
+		mInteraction->dispatch_error(SweeperError::GAME_ALREADY_STARTED);
 }

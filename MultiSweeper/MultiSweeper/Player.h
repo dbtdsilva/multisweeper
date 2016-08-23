@@ -10,6 +10,7 @@ public:
 
 	std::string const& getUsername() const;
 	bool operator==(const Player& other) const;
+	friend std::ostream& operator<<(std::ostream& os, const Player& obj);
 private:
 	std::string username;
 
