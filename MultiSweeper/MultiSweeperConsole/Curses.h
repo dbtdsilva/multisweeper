@@ -72,4 +72,5 @@ private:
 	std::unique_ptr<Engine> engine_;
 	bool game_is_running_;
 	vector<Player> const& player_list_;
+	int color_schema_index_;
 };

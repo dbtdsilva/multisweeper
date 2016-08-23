@@ -9,7 +9,7 @@ typedef struct command cmd;
 
 Curses::Curses() :
 	width_(120), height_(30), menu_new_opt_(0), menu_old_opt_(-1),
-	cols_(20), rows_(10), mines_(10),
+	cols_(20), rows_(10), mines_(10), color_schema_index_(2),
 	engine_(make_unique<Engine>(this, rows_, cols_, mines_)),
 	player_list_(engine_->get_players_list()),
 	options_main_({
@@ -41,6 +41,10 @@ Curses::~Curses()
 void Curses::loop() 
 {
 	do {
+		attron(COLOR_PAIR(color_schema_index_));
+		border(ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE, 
+			ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
+		attroff(COLOR_PAIR(color_schema_index_));
 		display_curses();
 		int key = getch();
 		process_key(key);		
@@ -76,7 +80,12 @@ void Curses::init()
 	#endif
 	if (has_colors() && has_color_available)
 	{
-		init_pair(1, COLOR_WHITE, COLOR_BLUE);
+		init_pair(1, COLOR_WHITE, COLOR_BLACK);
+		init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+		init_pair(3, COLOR_CYAN, COLOR_BLACK);
+		init_pair(4, COLOR_RED, COLOR_BLACK);
+		init_pair(5, COLOR_GREEN, COLOR_BLACK);
+		init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
 		wbkgd(window_, COLOR_PAIR(1));
 	} else {
 		wbkgd(window_, A_REVERSE);
@@ -183,7 +192,9 @@ void Curses::display_instructions()
 	mvaddstr(14, (COLS - 62) / 2, "* If the square is empty, it has not been revealed yet;");
 
 	attrset(A_BOLD);
+	attron(COLOR_PAIR(color_schema_index_));
 	mvaddstr_centered(16, "Press any key to continue");
+	attroff(COLOR_PAIR(color_schema_index_));
 	attrset(A_NORMAL);
 }
 
@@ -209,18 +220,41 @@ void Curses::display_game_status(int row)
 void Curses::display_game() 
 {
 	engine_->start_game();
+	int row_offset = 2;
+	int col_offset = (COLS - (cols_ * 2 + 2)) / 2;
+	
+	attron(COLOR_PAIR(color_schema_index_));
+	mvaddch(row_offset - 1, col_offset - 1, ACS_ULCORNER);
+	mvaddch(row_offset - 1, col_offset + cols_ * 2 + 1, ACS_URCORNER);
+	mvaddch(row_offset + rows_, col_offset - 1, ACS_LLCORNER);
+	mvaddch(row_offset + rows_, col_offset + cols_ * 2 + 1, ACS_LRCORNER);
+	for (int row = 0; row < rows_; row++) {
+		mvaddch(row + row_offset, col_offset - 1, ACS_VLINE);
+		mvaddch(row + row_offset, col_offset + cols_ * 2 + 1, ACS_VLINE);
+	}
+	for (int col = 0; col < cols_ * 2 + 1; col++) {
+		mvaddch(row_offset + rows_, col + col_offset, ACS_HLINE);
+		mvaddch(row_offset - 1, col + col_offset, ACS_HLINE);
+	}
+	attroff(COLOR_PAIR(color_schema_index_));
 
-	tuple<int, int> newPosSelected = { 0, 0 };
-	int& row = get<0>(newPosSelected);
-	int& col = get<1>(newPosSelected);
+	for (int row = 0; row < rows_; row++) {
+		for (int col = 0; col < cols_; col++) {
+			mvaddch(row + row_offset, 1 + col * 2 + col_offset, 250 | A_ALTCHARSET);
+		}
+	}
+
+	tuple<int, int> new_position_selected = { 0, 0 };
+	int& row = get<0>(new_position_selected);
+	int& col = get<1>(new_position_selected);
 
 	int key;
 	stringstream ss;
-	Player const& p = engine_->get_current_player();
+	Player const& current_player = engine_->get_current_player();
 	while (game_is_running_) {
-		represent_board_cursor(row, col, 2, (COLS - (cols_ * 2 + 2)) / 2);
+		represent_board_cursor(row, col, row_offset, col_offset);
 		ss.str("");
-		ss << "Current player: " << p.get_username();
+		ss << "Current player: " << current_player.get_username();
 		mvaddstr_centered(0, ss.str());
 		key = getch();
 		switch (key)
@@ -257,8 +291,10 @@ void Curses::represent_board_cursor(int new_row, int new_col, int row_offset, in
 	row = new_row;
 	col = new_col;
 
+	attron(COLOR_PAIR(color_schema_index_));
 	mvaddstr(row_offset + row, col_offset + col * 2, "[");
 	mvaddstr(row_offset + row, col_offset + col * 2 + 2, "]");
+	attroff(COLOR_PAIR(color_schema_index_));
 }
 
 void Curses::game_started() 
@@ -273,16 +309,15 @@ void Curses::game_finished()
 
 void Curses::dispatch_error(const SweeperError& err) 
 {
-	display_error(err.get_error_code(), err.get_message());
+	display_error(2, err.get_message());
 }
 
 void Curses::display_error(int row, std::string message) 
 {
 	attrset(A_BOLD);
-	init_pair(1, COLOR_RED, COLOR_BLACK);
-	attron(COLOR_PAIR(1));
+	attron(COLOR_PAIR(4));
 	mvaddstr_centered(row, message);
-	attroff(COLOR_PAIR(1));
+	attroff(COLOR_PAIR(4));
 	attrset(A_NORMAL);
 	refresh();
 }
@@ -291,9 +326,16 @@ void Curses::board_position_revealed(list<BoardPosition *> positions)
 {
 	for (BoardPosition * pos : positions) {
 		tuple<int, int> const& position = pos->get_position();
+
+		string position_character;
+		if (pos->is_mine()) {
+			position_character = "X";
+		} else {
+			int neighbour_mines = pos->get_count_neighbour_mines();
+			position_character = neighbour_mines == 0 ? " " : to_string(neighbour_mines).c_str();
+		}
 		mvaddstr(2 + get<0>(position), 
-			(COLS - (cols_ * 2 + 2)) / 2 + get<1>(position) * 2 + 1, pos->is_mine() ?
-			"X" : to_string(pos->get_count_neighbour_mines()).c_str());
+			(COLS - (cols_ * 2 + 2)) / 2 + get<1>(position) * 2 + 1, position_character.c_str());
 	}
 }
 
@@ -313,12 +355,12 @@ void Curses::modify_rows()
 	display_board_status(1);
 	mvscanw_robust("Enter the total number of ROWS", 3, &nRows);
 	if (nRows <= 0 || nRows >= rows_) {
-		display_error(3, "Number of rows inserted is invalid");
+		display_error(2, "Number of rows inserted is invalid");
 		return;
 	}
 	this->rows_ = nRows;
 	engine_->modify_board(rows_, cols_, mines_);
-	display_board_status(6);
+	display_board_status(7);
 }
 
 void Curses::modify_cols() 
@@ -326,9 +368,13 @@ void Curses::modify_cols()
 	int nCols;
 	display_board_status(1);
 	mvscanw_robust("Enter the total number of COLUMNS", 3, &nCols);
+	if (nCols <= 0 || nCols >= cols_) {
+		display_error(2, "Number of rows inserted is invalid");
+		return;
+	}
 	this->cols_ = nCols;
 	engine_->modify_board(rows_, cols_, mines_);
-	display_board_status(6);
+	display_board_status(7);
 }
 
 void Curses::modify_mines() 
@@ -338,7 +384,7 @@ void Curses::modify_mines()
 	mvscanw_robust("Enter the total number of MINES", 3, &nMines);
 	this->mines_ = nMines;
 	engine_->modify_board(rows_, cols_, mines_);
-	display_board_status(6);
+	display_board_status(7);
 }
 
 void Curses::add_player() 
@@ -378,7 +424,9 @@ void Curses::display_menu(vector<cmd> options)
 		int i;
 
 		attrset(A_BOLD);
+		attron(COLOR_PAIR(color_schema_index_));
 		mvaddstr_centered(1, "MultiSweeper Console");
+		attroff(COLOR_PAIR(color_schema_index_));
 		attrset(A_NORMAL);
 
 		display_game_status(LINES - 5);
@@ -395,7 +443,9 @@ void Curses::display_menu(vector<cmd> options)
 	attrset(A_NORMAL);
 
 	attrset(A_BOLD);
-	mvaddstr_centered(LINES - 3, " > Use UP and DOWN Arrows to move and ENTER to select <");
+	attron(COLOR_PAIR(color_schema_index_));
+	mvaddstr_centered(LINES - 3, "Use UP and DOWN Arrows to move and ENTER to select");
+	attroff(COLOR_PAIR(color_schema_index_));
 	attrset(A_NORMAL);
 	refresh();
 }
@@ -460,6 +510,8 @@ void Curses::mvscanw_robust(string intro, int start_row, T* return_value)
 	noecho();
 	curs_set(false);
 	attrset(A_BOLD);
-	mvaddstr_centered(start_row + 4, "Press any key to continue");
+	attron(COLOR_PAIR(color_schema_index_));
+	mvaddstr_centered(start_row + 3, "Press any key to continue");
+	attroff(COLOR_PAIR(color_schema_index_));
 	attrset(A_NORMAL);
 }

@@ -64,12 +64,12 @@ void Engine::leave_game(int id)
 	players_.erase(players_.begin() + id);
 }
 
-void Engine::modify_board(int nRows, int nCols, int nTotalMines) 
+void Engine::modify_board(int rows, int cols, int total_mines) 
 {
 	if (!verify_game_status(START)) return;
 
 	try {
-		board_->modify_board(nRows, nCols, nTotalMines);
+		board_->modify_board(rows, cols, total_mines);
 	} catch (SweeperException& ex) {
 		interaction_->dispatch_error(ex.get_sweeper_error());
 	}

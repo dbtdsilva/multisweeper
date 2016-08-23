@@ -9,6 +9,11 @@ SweeperException::SweeperException(SweeperError err) :
 {
 }
 
+SweeperException::SweeperException(const SweeperException& ex) : 
+	SweeperException(ex.err_)
+{
+}
+
 SweeperException::~SweeperException()
 {
 }
