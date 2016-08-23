@@ -8,26 +8,27 @@ using namespace std;
 typedef struct command cmd;
 
 Curses::Curses() :
-	width(120),	height(30),	new_option(0), old_option(-1), mCols(20), mRows(10), mMines(10),
-	pEngine(make_unique<Engine>(this, mRows, mCols, mMines)),
-	playerList(pEngine->get_players_list()),
-	mMainuOptions({
-		{ "Instructions", [=](WINDOW * win) { state = INSTRUCTIONS; } },
-		{ "Modify Board", [=](WINDOW * win) { state = BOARD_OPTIONS; } },
-		{ "Add/Remove Players", [=](WINDOW * win) { state = PLAYERS_OPTIONS; } },
-		{ "Start Game", [=](WINDOW * win) { state = GAME; } },
-		{ "Exit", [=](WINDOW * win) { state = EXIT_REQUEST; } } }),
-	mBoardOptions({
-		{ "Change rows", [=](WINDOW * win) { state = MODIFY_ROWS; } },
-		{ "Change lines", [=](WINDOW * win) { state = MODIFY_COLS; } },
-		{ "Change number of mines", [=](WINDOW * win) { state = MODIFY_MINES; } },
-		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; } } }),
-	mPlayersOptions({
-		{ "Add player", [=](WINDOW * win) { state = PLAYER_ADD; } },
-		{ "Remove player", [=](WINDOW * win) { state = PLAYER_REMOVE; } },
-		{ "Return to Main Menu", [=](WINDOW * win) { state = MAIN_MENU; } }}),
-	state(MAIN_MENU),
-	gameIsRunning(false)
+	width_(120), height_(30), menu_new_opt_(0), menu_old_opt_(-1),
+	cols_(20), rows_(10), mines_(10),
+	engine_(make_unique<Engine>(this, rows_, cols_, mines_)),
+	player_list_(engine_->get_players_list()),
+	options_main_({
+		{ "Instructions", [=](WINDOW * win) { state_ = INSTRUCTIONS; } },
+		{ "Modify Board", [=](WINDOW * win) { state_ = BOARD_OPTIONS; } },
+		{ "Add/Remove Players", [=](WINDOW * win) { state_ = PLAYERS_OPTIONS; } },
+		{ "Start Game", [=](WINDOW * win) { state_ = GAME; } },
+		{ "Exit", [=](WINDOW * win) { state_ = EXIT_REQUEST; } } }),
+	options_board_({
+		{ "Change rows", [=](WINDOW * win) { state_ = MODIFY_ROWS; } },
+		{ "Change lines", [=](WINDOW * win) { state_ = MODIFY_COLS; } },
+		{ "Change number of mines", [=](WINDOW * win) { state_ = MODIFY_MINES; } },
+		{ "Return to Main Menu", [=](WINDOW * win) { state_ = MAIN_MENU; } } }),
+	options_players_({
+		{ "Add player", [=](WINDOW * win) { state_ = PLAYER_ADD; } },
+		{ "Remove player", [=](WINDOW * win) { state_ = PLAYER_REMOVE; } },
+		{ "Return to Main Menu", [=](WINDOW * win) { state_ = MAIN_MENU; } }}),
+	state_(MAIN_MENU),
+	game_is_running_(false)
 {
 	setlocale(LC_ALL, "");
 	init();
@@ -39,12 +40,12 @@ Curses::~Curses()
 
 void Curses::loop() {
 	do {
-		displayCurses();
+		display_curses();
 		int key = getch();
-		processKey(key);		
-	} while (state != EXIT_REQUEST);
+		process_key(key);		
+	} while (state_ != EXIT_REQUEST);
 
-	delwin(window);
+	delwin(window_);
 	endwin();
 }
 
@@ -61,8 +62,8 @@ void Curses::init()
 		start_color();
 	#endif
 
-	window = newwin(height, width, 0, 0);
-	if (window == NULL)
+	window_ = newwin(height_, width_, 0, 0);
+	if (window_ == NULL)
 	{
 		endwin();
 		throw runtime_error("Failed to create window using PDCurses");
@@ -75,9 +76,9 @@ void Curses::init()
 	if (has_colors() && has_color_available)
 	{
 		init_pair(1, COLOR_WHITE, COLOR_BLUE);
-		wbkgd(window, COLOR_PAIR(1));
+		wbkgd(window_, COLOR_PAIR(1));
 	} else {
-		wbkgd(window, A_REVERSE);
+		wbkgd(window_, A_REVERSE);
 	}
 
 	// Removed cursor visibility from terminal
@@ -91,84 +92,84 @@ void Curses::init()
 	erase();
 }
 
-void Curses::displayCurses() {
-	switch (state) {
+void Curses::display_curses() {
+	switch (state_) {
 	case MAIN_MENU:
-		displayMenu(mMainuOptions);
+		display_menu(options_main_);
 		break;
 	case BOARD_OPTIONS:
-		displayMenu(mBoardOptions);
+		display_menu(options_board_);
 		break;
 	case INSTRUCTIONS:
-		displayInstructions();
+		display_instructions();
 		break;
 	case PLAYERS_OPTIONS:
-		displayMenu(mPlayersOptions);
+		display_menu(options_players_);
 		break;
 	case PLAYER_ADD:
-		addPlayer();
+		add_player();
 		break;
 	case PLAYER_REMOVE:
-		removePlayer();
+		remove_player();
 		break;
 	case MODIFY_COLS:
-		modifyCols();
+		modify_cols();
 		break;
 	case MODIFY_ROWS:
-		modifyRows();
+		modify_rows();
 		break;
 	case MODIFY_MINES:
-		modifyMines();
+		modify_mines();
 		break;
 	case GAME:
-		displayGame();
+		display_game();
 		break;
 	}
 }
 
-void Curses::processKey(int key) {
-	switch (state) {
+void Curses::process_key(int key) {
+	switch (state_) {
 	case MAIN_MENU:
-		processMenuKey(key, mMainuOptions);
+		process_menu_key(key, options_main_);
 		break;
 	case BOARD_OPTIONS:
-		processMenuKey(key, mBoardOptions);
+		process_menu_key(key, options_board_);
 		break;
 	case PLAYERS_OPTIONS:
-		processMenuKey(key, mPlayersOptions);
+		process_menu_key(key, options_players_);
 		break;
 	case INSTRUCTIONS:
 	case GAME:
-		state = MAIN_MENU;	// Any key to continue
+		state_ = MAIN_MENU;	// Any key to continue
 		erase();
 		break;
 	case PLAYER_ADD:
 	case PLAYER_REMOVE:
-		state = PLAYERS_OPTIONS;
+		state_ = PLAYERS_OPTIONS;
 		erase();
 		break;
 	case MODIFY_COLS:
 	case MODIFY_ROWS:
 	case MODIFY_MINES:
-		state = BOARD_OPTIONS;	// Any key to continue
+		state_ = BOARD_OPTIONS;	// Any key to continue
 		erase();
 		break;
 	}
 }
 
-void Curses::displayInstructions() {
+void Curses::display_instructions() {
 	attrset(A_BOLD);
-	mvaddstrCentered(1, "INSTRUCTIONS");
+	mvaddstr_centered(1, "INSTRUCTIONS");
 	attrset(A_NORMAL);
 
-	mvaddstrCentered(3, "The objective of the game consists in DISCOVERING the MAXIMUM ");
-	mvaddstrCentered(4, "number of MINES as possible. ");
-	mvaddstrCentered(5, "There will be a board 2D with mines hidden on it. Until players");
-	mvaddstrCentered(6, "find all the mines on the board, the game will not finish.");
-	mvaddstrCentered(7, "On your turn, you might select a position to reveal.");
+	mvaddstr_centered(3, "The objective of the game consists in DISCOVERING the MAXIMUM ");
+	mvaddstr_centered(4, "number of MINES as possible. ");
+	mvaddstr_centered(5, "There will be a board 2D with mines hidden on it. Until players");
+	mvaddstr_centered(6, "find all the mines on the board, the game will not finish.");
+	mvaddstr_centered(7, "On your turn, you might select a position to reveal.");
 
 	attrset(A_BOLD);
-	mvaddstrCentered(9, "Every square has a meaning:");
+	mvaddstr_centered(9, "Every square has a meaning:");
 	attrset(A_NORMAL);
 	// Left aligned and centered according to the biggest bullet item
 	mvaddstr(10, (COLS - 62) / 2, "* Number on the square is the number of adjacent mines;");
@@ -178,29 +179,29 @@ void Curses::displayInstructions() {
 	mvaddstr(14, (COLS - 62) / 2, "* If the square is empty, it has not been revealed yet;");
 
 	attrset(A_BOLD);
-	mvaddstrCentered(16, "Press any key to continue");
+	mvaddstr_centered(16, "Press any key to continue");
 	attrset(A_NORMAL);
 }
 
-void Curses::displayBoardStatus(int row) {
+void Curses::display_board_status(int row) {
 	stringstream ss;
-	ss << "Board has " << mRows << " rows and " << mCols << " columns";
-	ss << " with " << mMines << " mines";
-	mvaddstrCentered(row, ss.str());
+	ss << "Board has " << rows_ << " rows and " << cols_ << " columns";
+	ss << " with " << mines_ << " mines";
+	mvaddstr_centered(row, ss.str());
 }
 
-void Curses::displayGameStatus(int row) {
-	if (playerList.empty()) {
-		mvaddstrCentered(row, "There is no players registered yet");
+void Curses::display_game_status(int row) {
+	if (player_list_.empty()) {
+		mvaddstr_centered(row, "There is no players registered yet");
 	} else {
 		stringstream ss;
-		ss << playerList.size() << " players registered";
-		mvaddstrCentered(row, ss.str());
+		ss << player_list_.size() << " players registered";
+		mvaddstr_centered(row, ss.str());
 	}
 }
 
-void Curses::displayGame() {
-	pEngine->start_game();
+void Curses::display_game() {
+	engine_->start_game();
 
 	tuple<int, int> newPosSelected = { 0, 0 };
 	int& row = get<0>(newPosSelected);
@@ -208,22 +209,22 @@ void Curses::displayGame() {
 
 	int key;
 	stringstream ss;
-	Player const& p = pEngine->get_current_player();
-	while (gameIsRunning) {
-		representBoardCursor(row, col, 2, (COLS - (mCols * 2 + 2)) / 2);
+	Player const& p = engine_->get_current_player();
+	while (game_is_running_) {
+		represent_board_cursor(row, col, 2, (COLS - (cols_ * 2 + 2)) / 2);
 		ss.str("");
-		ss << "Current player: " << p.getUsername();
-		mvaddstrCentered(0, ss.str());
+		ss << "Current player: " << p.get_username();
+		mvaddstr_centered(0, ss.str());
 		key = getch();
 		switch (key)
 		{
 		case 10:
 		case 13:
 		case KEY_ENTER:
-			pEngine->turn_played(row, col);
+			engine_->turn_played(row, col);
 			break;
 		case KEY_DOWN:
-			row = row < mRows - 1 ? row + 1 : row;
+			row = row < rows_ - 1 ? row + 1 : row;
 			break;
 		case KEY_UP:
 			row = row > 0 ? row - 1 : row;
@@ -232,43 +233,43 @@ void Curses::displayGame() {
 			col = col > 0 ? col - 1 : col;
 			break;
 		case KEY_RIGHT:
-			col = col < mCols - 1? col + 1 : col;
+			col = col < cols_ - 1? col + 1 : col;
 			break;
 		}
 	}
 }
 
-void Curses::representBoardCursor(int newRow, int newCol, int rowOffset, int colOffset) {
-	int& row = get<0>(boardPosSelected);
-	int& col = get<1>(boardPosSelected);
+void Curses::represent_board_cursor(int new_row, int new_col, int row_offset, int col_offset) {
+	int& row = get<0>(board_position_selected_);
+	int& col = get<1>(board_position_selected_);
 
-	mvaddstr(rowOffset + row, colOffset + col * 2, " ");
-	mvaddstr(rowOffset + row, colOffset + col * 2 + 2, " ");
+	mvaddstr(row_offset + row, col_offset + col * 2, " ");
+	mvaddstr(row_offset + row, col_offset + col * 2 + 2, " ");
 
-	row = newRow;
-	col = newCol;
+	row = new_row;
+	col = new_col;
 
-	mvaddstr(rowOffset + row, colOffset + col * 2, "[");
-	mvaddstr(rowOffset + row, colOffset + col * 2 + 2, "]");
+	mvaddstr(row_offset + row, col_offset + col * 2, "[");
+	mvaddstr(row_offset + row, col_offset + col * 2 + 2, "]");
 }
 
 void Curses::game_started() {
-	gameIsRunning = true;
+	game_is_running_ = true;
 }
 
 void Curses::game_finished() {
-	gameIsRunning = false;
+	game_is_running_ = false;
 }
 
 void Curses::dispatch_error(const SweeperError& err) {
-	displayError(err.get_error_code(), err.get_message());
+	display_error(err.get_error_code(), err.get_message());
 }
 
-void Curses::displayError(int row, std::string error) {
+void Curses::display_error(int row, std::string message) {
 	attrset(A_BOLD);
 	init_pair(1, COLOR_RED, COLOR_BLACK);
 	attron(COLOR_PAIR(1));
-	mvaddstrCentered(row, error);
+	mvaddstr_centered(row, message);
 	attroff(COLOR_PAIR(1));
 	attrset(A_NORMAL);
 	refresh();
@@ -276,10 +277,10 @@ void Curses::displayError(int row, std::string error) {
 
 void Curses::board_position_revealed(list<BoardPosition *> positions) {
 	for (BoardPosition * pos : positions) {
-		tuple<int, int> const& position = pos->getPosition();
+		tuple<int, int> const& position = pos->get_position();
 		mvaddstr(2 + get<0>(position), 
-			(COLS - (mCols * 2 + 2)) / 2 + get<1>(position) * 2 + 1, pos->isMine() ?
-			"X" : to_string(pos->getCountNeighbourMines()).c_str());
+			(COLS - (cols_ * 2 + 2)) / 2 + get<1>(position) * 2 + 1, pos->is_mine() ?
+			"X" : to_string(pos->get_count_neighbour_mines()).c_str());
 	}
 }
 
@@ -288,149 +289,149 @@ void Curses::board_created(int height, int width) {
 }
 
 void Curses::player_won(Player player) {
-	cout << player.getUsername() << " has won" << endl;
+	cout << player.get_username() << " has won" << endl;
 }
 
-void Curses::modifyRows() {
+void Curses::modify_rows() {
 	int nRows;
-	displayBoardStatus(1);
-	mvscanwRobust("Enter the total number of ROWS", 3, &nRows);
-	if (nRows <= 0 || nRows >= mRows) {
-		displayError(3, "Number of rows inserted is invalid");
+	display_board_status(1);
+	mvscanw_robust("Enter the total number of ROWS", 3, &nRows);
+	if (nRows <= 0 || nRows >= rows_) {
+		display_error(3, "Number of rows inserted is invalid");
 		return;
 	}
-	this->mRows = nRows;
-	pEngine->modify_board(mRows, mCols, mMines);
-	displayBoardStatus(6);
+	this->rows_ = nRows;
+	engine_->modify_board(rows_, cols_, mines_);
+	display_board_status(6);
 }
 
-void Curses::modifyCols() {
+void Curses::modify_cols() {
 	int nCols;
-	displayBoardStatus(1);
-	mvscanwRobust("Enter the total number of COLUMNS", 3, &nCols);
-	this->mCols = nCols;
-	pEngine->modify_board(mRows, mCols, mMines);
-	displayBoardStatus(6);
+	display_board_status(1);
+	mvscanw_robust("Enter the total number of COLUMNS", 3, &nCols);
+	this->cols_ = nCols;
+	engine_->modify_board(rows_, cols_, mines_);
+	display_board_status(6);
 }
 
-void Curses::modifyMines() {
+void Curses::modify_mines() {
 	int nMines;
-	displayBoardStatus(1);
-	mvscanwRobust("Enter the total number of MINES", 3, &nMines);
-	this->mMines = nMines;
-	pEngine->modify_board(mRows, mCols, mMines);
-	displayBoardStatus(6);
+	display_board_status(1);
+	mvscanw_robust("Enter the total number of MINES", 3, &nMines);
+	this->mines_ = nMines;
+	engine_->modify_board(rows_, cols_, mines_);
+	display_board_status(6);
 }
 
-void Curses::addPlayer() {
+void Curses::add_player() {
 	string username;
-	mvscanwRobust("Enter player's username", 3, &username);
-	pEngine->join_game(username.c_str());
+	mvscanw_robust("Enter player's username", 3, &username);
+	engine_->join_game(username.c_str());
 }
 
-void Curses::removePlayer() {
+void Curses::remove_player() {
 	attrset(A_BOLD);
-	mvaddstrCentered(1, "Current player list");
+	mvaddstr_centered(1, "Current player list");
 	attrset(A_NORMAL);
 	stringstream ss;
-	for (int i = 0; i < playerList.size(); i++) {
+	for (int i = 0; i < player_list_.size(); i++) {
 		ss.str("");
-		ss << i << ": " << playerList[i].getUsername();
+		ss << i << ": " << player_list_[i].get_username();
 		mvaddstr(i + 2, (COLS - 20) / 2, ss.str().c_str());
 	}
 
 	int id;
-	mvscanwRobust("Enter player's ID that you which to remove", (int)playerList.size() + 3, &id);
-	pEngine->leave_game(id);
+	mvscanw_robust("Enter player's ID that you which to remove", (int)player_list_.size() + 3, &id);
+	engine_->leave_game(id);
 }
 
-void Curses::mvaddstrCentered(int row, string str) {
-	mvaddstr(row, (COLS - (int)str.size()) / 2, str.c_str());
+void Curses::mvaddstr_centered(int row, string message) {
+	mvaddstr(row, (COLS - (int)message.size()) / 2, message.c_str());
 }
 
-void Curses::displayMenu(vector<cmd> options)
+void Curses::display_menu(vector<cmd> options)
 {
 	int menuMargin = 3;
 
-	if (old_option == -1) {
+	if (menu_old_opt_ == -1) {
 		int i;
 
 		attrset(A_BOLD);
-		mvaddstrCentered(1, "MultiSweeper Console");
+		mvaddstr_centered(1, "MultiSweeper Console");
 		attrset(A_NORMAL);
 
-		displayGameStatus(LINES - 5);
-		displayBoardStatus(LINES - 4);
+		display_game_status(LINES - 5);
+		display_board_status(LINES - 4);
 
 		for (i = 0; i < options.size(); i++)
-			mvaddstrCentered(menuMargin + i, options[i].text);
+			mvaddstr_centered(menuMargin + i, options[i].text);
 	} else {
-		mvaddstrCentered(menuMargin + old_option, options[old_option].text);
+		mvaddstr_centered(menuMargin + menu_old_opt_, options[menu_old_opt_].text);
 	}
 
 	attrset(A_REVERSE);
-	mvaddstrCentered(menuMargin + new_option, options[new_option].text);
+	mvaddstr_centered(menuMargin + menu_new_opt_, options[menu_new_opt_].text);
 	attrset(A_NORMAL);
 
 	attrset(A_BOLD);
-	mvaddstrCentered(LINES - 3, " > Use UP and DOWN Arrows to move and ENTER to select <");
+	mvaddstr_centered(LINES - 3, " > Use UP and DOWN Arrows to move and ENTER to select <");
 	attrset(A_NORMAL);
 	refresh();
 }
 
-void Curses::processMenuKey(int key, vector<cmd> options)
+void Curses::process_menu_key(int key, vector<cmd> menu_vector)
 {
 	switch (key)
 	{
 	case 10:
 	case 13:
 	case KEY_ENTER:
-		old_option = -1;
+		menu_old_opt_ = -1;
 		erase();
-		options[new_option].function(window);
-		new_option = 0;
+		menu_vector[menu_new_opt_].function(window_);
+		menu_new_opt_ = 0;
 		break;
 
 	case KEY_PPAGE:
 	case KEY_HOME:
-		old_option = new_option;
-		new_option = 0;
+		menu_old_opt_ = menu_new_opt_;
+		menu_new_opt_ = 0;
 		break;
 
 	case KEY_NPAGE:
 	case KEY_END:
-		old_option = new_option;
-		new_option = (int)options.size() - 1;
+		menu_old_opt_ = menu_new_opt_;
+		menu_new_opt_ = (int)menu_vector.size() - 1;
 		break;
 
 	case KEY_UP:
-		old_option = new_option;
-		new_option = (new_option == 0) ?
-			new_option : new_option - 1;
+		menu_old_opt_ = menu_new_opt_;
+		menu_new_opt_ = (menu_new_opt_ == 0) ?
+			menu_new_opt_ : menu_new_opt_ - 1;
 		break;
 
 	case KEY_DOWN:
-		old_option = new_option;
-		new_option = (new_option == options.size() - 1) ?
-			new_option : new_option + 1;
+		menu_old_opt_ = menu_new_opt_;
+		menu_new_opt_ = (menu_new_opt_ == menu_vector.size() - 1) ?
+			menu_new_opt_ : menu_new_opt_ + 1;
 		break;
 	}
 }
 
 template<typename T>
-void Curses::mvscanwRobust(string introText, int rowStart, T* returnValue)
+void Curses::mvscanw_robust(string intro, int start_row, T* return_value)
 {
 	attrset(A_BOLD);
-	mvaddstrCentered(rowStart, introText);
+	mvaddstr_centered(start_row, intro);
 	attrset(A_NORMAL);
 	refresh();
 	echo();
 	curs_set(true);
 	if (is_same<T, int>::value) {
-		mvscanw(rowStart + 1, (COLS - 2) / 2, "%d", returnValue);
+		mvscanw(start_row + 1, (COLS - 2) / 2, "%d", return_value);
 	}
 	else if (is_same<T, string>::value) {
-		mvscanw(rowStart + 1, (COLS - (int)introText.size()) / 2, "%s", returnValue);
+		mvscanw(start_row + 1, (COLS - (int)intro.size()) / 2, "%s", return_value);
 	}
 	else {
 		throw runtime_error("Invalid type received into the function readValue");
@@ -438,6 +439,6 @@ void Curses::mvscanwRobust(string introText, int rowStart, T* returnValue)
 	noecho();
 	curs_set(false);
 	attrset(A_BOLD);
-	mvaddstrCentered(rowStart + 4, "Press any key to continue");
+	mvaddstr_centered(start_row + 4, "Press any key to continue");
 	attrset(A_NORMAL);
 }

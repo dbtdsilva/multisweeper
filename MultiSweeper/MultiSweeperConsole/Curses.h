@@ -12,7 +12,6 @@ public:
 	virtual ~Curses();
 
 	void loop();
-
 	// InterfaceVirtual related
 	virtual void game_started();
 	virtual void game_finished();
@@ -43,34 +42,34 @@ private:
 	};
 
 	void init();
-	void displayCurses();
-	void processKey(int key);
-	void displayMenu(std::vector<cmd> options);
-	void displayInstructions();
-	void processMenuKey(int key, std::vector<cmd> vec);
-	void representBoardCursor(int newRow, int newCol, int rowOffset, int colOffset);
-	void modifyRows();
-	void modifyCols();
-	void modifyMines();
-	void addPlayer();
-	void removePlayer();
-	void displayBoardStatus(int row);
-	void displayGameStatus(int row);
-	void displayGame();
-	void displayError(int row, std::string);
+	void display_curses();
+	void process_key(int key);
+	void display_menu(std::vector<cmd> options);
+	void display_instructions();
+	void process_menu_key(int key, std::vector<cmd> menu_vector);
+	void represent_board_cursor(int new_row, int new_col, int row_offset, int col_offset);
+	void modify_rows();
+	void modify_cols();
+	void modify_mines();
+	void add_player();
+	void remove_player();
+	void display_board_status(int row);
+	void display_game_status(int row);
+	void display_game();
+	void display_error(int row, std::string message);
 
 	template <typename T>
-	void mvscanwRobust(string introText, int rowStart, T * returnValue);
-	void mvaddstrCentered(int row, string str);
+	void mvscanw_robust(string intro, int start_row, T * return_value);
+	void mvaddstr_centered(int row, string message);
 
-	int mRows, mCols, mMines;
-	VisualState state;
-	std::vector<cmd> mMainuOptions, mBoardOptions, mPlayersOptions;
-	std::tuple<int, int> boardPosSelected;
-	int old_option, new_option;
-	int height, width;
-	WINDOW *window;
-	std::unique_ptr<Engine> pEngine;
-	bool gameIsRunning;
-	vector<Player> const& playerList;
+	int rows_, cols_, mines_;
+	VisualState state_;
+	std::vector<cmd> options_main_, options_board_, options_players_;
+	std::tuple<int, int> board_position_selected_;
+	int menu_old_opt_, menu_new_opt_;
+	int height_, width_;
+	WINDOW *window_;
+	std::unique_ptr<Engine> engine_;
+	bool game_is_running_;
+	vector<Player> const& player_list_;
 };

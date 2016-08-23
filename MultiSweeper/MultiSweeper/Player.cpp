@@ -3,28 +3,28 @@
 using namespace std;
 
 Player::Player(string username) :
-	username(username)
+	username_(username)
 {
-	this->specialUsed = false;
-	this->gamesPlayed = 0;
-	this->gamesWon = 0;
-	this->minesMissed = 0;
-	this->minesRevealed = 0;
+	this->special_used_ = false;
+	this->games_played_ = 0;
+	this->games_won_ = 0;
+	this->mines_missed_ = 0;
+	this->mines_revealed_ = 0;
 }
 
 Player::~Player()
 {
 }
 
-string const& Player::getUsername() const {
-	return username;
+string const& Player::get_username() const {
+	return username_;
 }
 
 bool Player::operator==(const Player& other) const {
-	return this->username == other.username;
+	return this->username_ == other.username_;
 }
 
 ostream& operator<<(ostream& os, const Player& obj) {
-	os << obj.username;
+	os << obj.username_;
 	return os;
 }

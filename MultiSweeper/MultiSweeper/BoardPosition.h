@@ -6,23 +6,23 @@ class BoardPosition
 {
 public:
 	BoardPosition(int row, int col);
-	BoardPosition(int row, int col, bool isMine);
+	BoardPosition(int row, int col, bool is_mine);
 	~BoardPosition();
 
-	void setCountNeighbourMines(unsigned int const& countNeighbourMines);
-	void setMine();
-	void setFree();
-	void setRevealed();
+	void set_count_neighbour_mines(unsigned int const& count_neighbour_mines);
+	void set_mine();
+	void set_free();
+	void set_revealed();
 
-	unsigned int const& getCountNeighbourMines() const;
-	bool const& isRevealed() const;
-	bool const& isMine() const;
-	std::tuple<int, int> const& getPosition() const;
+	unsigned int const& get_count_neighbour_mines() const;
+	bool const& is_revealed() const;
+	bool const& is_mine() const;
+	std::tuple<int, int> const& get_position() const;
 
 private:
-	bool revealed;
-	unsigned int countNeighbourMines;
-	bool mine;
-	std::tuple<int, int> position;
+	bool revealed_;
+	unsigned int count_neighbour_mines_;
+	bool mine_;
+	std::tuple<int, int> position_;
 };
 

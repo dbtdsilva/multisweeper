@@ -14,13 +14,13 @@ Engine::Engine() : Engine(nullptr)
 {
 }
 
-Engine::Engine(InterfaceVisual* iv) : Engine(iv, 10, 5, 10)
+Engine::Engine(InterfaceVisual* interaction) : Engine(interaction, 10, 5, 10)
 {
 }
 
-Engine::Engine(InterfaceVisual* iv, int nRows, int nCols, int nMines) :
-	kMaxPlayers(4), currentStatus(START), currentPlayerIdx(0), currentPlayer(nullptr),
-	mBoard(make_unique<Board>(nRows, nCols, nMines)), mInteraction(iv)
+Engine::Engine(InterfaceVisual* interaction, int rows, int cols, int mines) :
+	kMaxPlayers(4), current_status_(START), current_player_index_(0), current_player_(nullptr),
+	board_(make_unique<Board>(rows, cols, mines)), interaction_(interaction)
 {
 }
 
@@ -30,43 +30,43 @@ Engine::~Engine()
 
 void Engine::start_game() {
 	if (!verify_game_status(START)) return;
-	if (this->mPlayers.size() == 0) {
-		mInteraction->dispatch_error(SweeperError::NO_PLAYERS);
+	if (this->players_.size() == 0) {
+		interaction_->dispatch_error(SweeperError::NO_PLAYERS);
 		return;
 	}
 
-	this->currentStatus = RUN;
-	random_shuffle(mPlayers.begin(), mPlayers.end());
+	this->current_status_ = RUN;
+	random_shuffle(players_.begin(), players_.end());
 	next_player();
 
-	this->mInteraction->game_started();
+	this->interaction_->game_started();
 }
 
 void Engine::join_game(string username) {
 	if (!verify_game_status(START)) return;
 	Player p(username);
-	mPlayers.push_back(p);
+	players_.push_back(p);
 }
 
 void Engine::leave_game(string username) {
 	if (!verify_game_status(START)) return;
-	auto it = std::find(mPlayers.begin(), mPlayers.end(), username);
-	if (it != mPlayers.end())
-		mPlayers.erase(it);
+	auto it = std::find(players_.begin(), players_.end(), username);
+	if (it != players_.end())
+		players_.erase(it);
 }
 
 void Engine::leave_game(int id) {
 	if (!verify_game_status(START)) return;
-	mPlayers.erase(mPlayers.begin() + id);
+	players_.erase(players_.begin() + id);
 }
 
 void Engine::modify_board(int nRows, int nCols, int nTotalMines) {
 	if (!verify_game_status(START)) return;
 
 	try {
-		mBoard->modify_board(nRows, nCols, nTotalMines);
+		board_->modify_board(nRows, nCols, nTotalMines);
 	} catch (SweeperException& ex) {
-		mInteraction->dispatch_error(ex.get_sweeper_error());
+		interaction_->dispatch_error(ex.get_sweeper_error());
 	}
 }
 
@@ -75,15 +75,15 @@ void Engine::turn_played(int row, int col) {
 
 	list<BoardPosition *> listRevealed;
 	try {
-		listRevealed = mBoard->revealPosition(row, col);
+		listRevealed = board_->reveal_position(row, col);
 	} catch (SweeperException& ex) {
-		mInteraction->dispatch_error(ex.get_sweeper_error());
+		interaction_->dispatch_error(ex.get_sweeper_error());
 		return;
 	}
 
 	bool foundMine = false;
 	for (BoardPosition * revealed : listRevealed) {
-		if (revealed->isMine()) {
+		if (revealed->is_mine()) {
 			foundMine = true;
 			break;
 		}
@@ -91,12 +91,12 @@ void Engine::turn_played(int row, int col) {
 
 	if (!foundMine) 
 		next_player();
-	this->mInteraction->board_position_revealed(listRevealed);
+	this->interaction_->board_position_revealed(listRevealed);
 
 	if (is_game_finished()) {
-		currentStatus = START;
-		currentPlayer = nullptr;
-		this->mInteraction->game_finished();
+		current_status_ = START;
+		current_player_ = nullptr;
+		this->interaction_->game_finished();
 	}
 }
 
@@ -107,40 +107,40 @@ void Engine::surrender(Player player)
 Player* Engine::next_player() {
 	if (!verify_game_status(RUN)) return nullptr;
 
-	if (currentPlayer == nullptr) {
+	if (current_player_ == nullptr) {
 		srand((unsigned int) time(NULL));
-		currentPlayerIdx = rand() % mPlayers.size();
-		currentPlayer = &mPlayers[currentPlayerIdx];
-		return currentPlayer;
+		current_player_index_ = rand() % players_.size();
+		current_player_ = &players_[current_player_index_];
+		return current_player_;
 	}
-	currentPlayer = &mPlayers[++currentPlayerIdx % mPlayers.size()];
-	return currentPlayer;
+	current_player_ = &players_[++current_player_index_ % players_.size()];
+	return current_player_;
 }
 
 Player const& Engine::get_current_player() const {
-	return *currentPlayer;
+	return *current_player_;
 }
 
 std::vector<Player> const& Engine::get_players_list() const {
-	return mPlayers;
+	return players_;
 }
 
 ostream& operator<<(ostream& os, const Engine& obj) {
-	os << *(obj.mBoard);
+	os << *(obj.board_);
 	return os;
 }
 
 bool Engine::is_game_finished() {
-	return mBoard->allMinesRevealed();
+	return board_->all_mines_revealed();
 }
 
 bool Engine::verify_game_status(Status expected) {
-	if (expected == currentStatus)
+	if (expected == current_status_)
 		return true;
 
-	if (currentStatus == START)
-		mInteraction->dispatch_error(SweeperError::GAME_NOT_RUNNING);
-	if (currentStatus == RUN)
-		mInteraction->dispatch_error(SweeperError::GAME_ALREADY_STARTED);
+	if (current_status_ == START)
+		interaction_->dispatch_error(SweeperError::GAME_NOT_RUNNING);
+	if (current_status_ == RUN)
+		interaction_->dispatch_error(SweeperError::GAME_ALREADY_STARTED);
 	return false;
 }

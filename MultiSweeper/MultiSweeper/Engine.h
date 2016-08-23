@@ -9,12 +9,12 @@ class Engine
 {
 public:
 	Engine();
-	Engine(InterfaceVisual* iv);
-	Engine(InterfaceVisual* iv, int nRows, int nCols, int nMines);
+	Engine(InterfaceVisual* interaction);
+	Engine(InterfaceVisual* interaction, int rows, int cols, int mines);
 	virtual ~Engine();
 
 	void start_game();
-	void modify_board(int nRows, int nCols, int nTotalMines);
+	void modify_board(int rows, int cols, int total_mines);
 	void join_game(std::string username);
 	void leave_game(std::string username);
 	void leave_game(int id);
@@ -37,12 +37,12 @@ private:
 	bool verify_game_status(Status expected);
 
 	const int kMaxPlayers;
-	Status currentStatus;
+	Status current_status_;
 
-	int currentPlayerIdx;
-	Player* currentPlayer;
-	InterfaceVisual* mInteraction;
-	std::vector<Player> mPlayers;
-	std::unique_ptr<Board> mBoard;
+	int current_player_index_;
+	Player* current_player_;
+	InterfaceVisual* interaction_;
+	std::vector<Player> players_;
+	std::unique_ptr<Board> board_;
 };
 
