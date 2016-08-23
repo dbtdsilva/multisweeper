@@ -28,7 +28,8 @@ Engine::~Engine()
 {
 }
 
-void Engine::start_game() {
+void Engine::start_game() 
+{
 	if (!verify_game_status(START)) return;
 	if (this->players_.size() == 0) {
 		interaction_->dispatch_error(SweeperError::NO_PLAYERS);
@@ -42,25 +43,29 @@ void Engine::start_game() {
 	this->interaction_->game_started();
 }
 
-void Engine::join_game(string username) {
+void Engine::join_game(string username) 
+{
 	if (!verify_game_status(START)) return;
 	Player p(username);
 	players_.push_back(p);
 }
 
-void Engine::leave_game(string username) {
+void Engine::leave_game(string username) 
+{
 	if (!verify_game_status(START)) return;
 	auto it = std::find(players_.begin(), players_.end(), username);
 	if (it != players_.end())
 		players_.erase(it);
 }
 
-void Engine::leave_game(int id) {
+void Engine::leave_game(int id) 
+{
 	if (!verify_game_status(START)) return;
 	players_.erase(players_.begin() + id);
 }
 
-void Engine::modify_board(int nRows, int nCols, int nTotalMines) {
+void Engine::modify_board(int nRows, int nCols, int nTotalMines) 
+{
 	if (!verify_game_status(START)) return;
 
 	try {
@@ -70,7 +75,8 @@ void Engine::modify_board(int nRows, int nCols, int nTotalMines) {
 	}
 }
 
-void Engine::turn_played(int row, int col) {
+void Engine::turn_played(int row, int col) 
+{
 	if (!verify_game_status(RUN)) return;
 
 	list<BoardPosition *> listRevealed;
@@ -104,7 +110,8 @@ void Engine::surrender(Player player)
 {
 }
 
-Player* Engine::next_player() {
+Player* Engine::next_player() 
+{
 	if (!verify_game_status(RUN)) return nullptr;
 
 	if (current_player_ == nullptr) {
@@ -117,15 +124,18 @@ Player* Engine::next_player() {
 	return current_player_;
 }
 
-Player const& Engine::get_current_player() const {
+Player const& Engine::get_current_player() const 
+{
 	return *current_player_;
 }
 
-std::vector<Player> const& Engine::get_players_list() const {
+std::vector<Player> const& Engine::get_players_list() const 
+{
 	return players_;
 }
 
-ostream& operator<<(ostream& os, const Engine& obj) {
+ostream& operator<<(ostream& os, const Engine& obj) 
+{
 	os << *(obj.board_);
 	return os;
 }
@@ -134,7 +144,8 @@ bool Engine::is_game_finished() {
 	return board_->all_mines_revealed();
 }
 
-bool Engine::verify_game_status(Status expected) {
+bool Engine::verify_game_status(Status expected) 
+{
 	if (expected == current_status_)
 		return true;
 

@@ -16,15 +16,18 @@ Player::~Player()
 {
 }
 
-string const& Player::get_username() const {
+string const& Player::get_username() const 
+{
 	return username_;
 }
 
-bool Player::operator==(const Player& other) const {
+bool Player::operator==(const Player& other) const 
+{
 	return this->username_ == other.username_;
 }
 
-ostream& operator<<(ostream& os, const Player& obj) {
+ostream& operator<<(ostream& os, const Player& obj) 
+{
 	os << obj.username_;
 	return os;
 }

@@ -17,7 +17,8 @@ Board::~Board()
 {
 }
 
-void Board::generate_mines() {
+void Board::generate_mines() 
+{
 	if (total_mines_ >= rows_ * cols_) {
 		throw SweeperException(SweeperError::MINES_EXCEED);
 	}
@@ -56,7 +57,8 @@ void Board::generate_mines() {
 	}
 }
 
-void Board::modify_board(int rows, int cols, int total_mines) {
+void Board::modify_board(int rows, int cols, int total_mines) 
+{
 	this->total_mines_ = total_mines;
 	
 	this->positions_.resize(rows);
@@ -72,7 +74,8 @@ void Board::modify_board(int rows, int cols, int total_mines) {
 	this->generate_mines();
 }
 
-list<BoardPosition *> Board::reveal_position(int row, int col) {
+list<BoardPosition *> Board::reveal_position(int row, int col) 
+{
 	list<BoardPosition *> positionsRevealed;
 	// If the position was already revealed, return empty.
 	if (positions_[row][col]->is_revealed()) {
@@ -89,7 +92,8 @@ list<BoardPosition *> Board::reveal_position(int row, int col) {
 	return positionsRevealed;
 }
 
-list<BoardPosition *> Board::reveal_free_positions(int row, int col) {
+list<BoardPosition *> Board::reveal_free_positions(int row, int col) 
+{
 	list<BoardPosition *> positionsRevealed;
 	positions_[row][col]->set_revealed();
 	if (positions_[row][col]->get_count_neighbour_mines() != 0)
@@ -111,7 +115,8 @@ list<BoardPosition *> Board::reveal_free_positions(int row, int col) {
 	return positionsRevealed;
 }
 
-void Board::clear_mines() {
+void Board::clear_mines() 
+{
 	for (int i = 0; i < rows_; i++) {
 		for (int j = 0; j < cols_; j++) {
 			positions_[i][j] = make_unique<BoardPosition>(i, j);
@@ -124,7 +129,8 @@ bool Board::all_mines_revealed() {
 	return total_mines_revealed_ == total_mines_;
 }
 
-ostream& operator<<(ostream& os, const Board& obj) {
+ostream& operator<<(ostream& os, const Board& obj) 
+{
 	for (int i = 0; i < obj.rows_; i++) {
 		for (int j = 0; j < obj.cols_; j++) {
 			os << obj.positions_[i][j]->is_mine();

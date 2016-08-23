@@ -10,6 +10,7 @@ InterfaceVisual::~InterfaceVisual()
 {
 }
 
-void InterfaceVisual::dispatch_error(const SweeperError& error) {
+void InterfaceVisual::dispatch_error(const SweeperError& error) 
+{
 	throw SweeperException(error);
 }

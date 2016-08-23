@@ -38,7 +38,8 @@ Curses::~Curses()
 {
 }
 
-void Curses::loop() {
+void Curses::loop() 
+{
 	do {
 		display_curses();
 		int key = getch();
@@ -92,7 +93,8 @@ void Curses::init()
 	erase();
 }
 
-void Curses::display_curses() {
+void Curses::display_curses() 
+{
 	switch (state_) {
 	case MAIN_MENU:
 		display_menu(options_main_);
@@ -127,7 +129,8 @@ void Curses::display_curses() {
 	}
 }
 
-void Curses::process_key(int key) {
+void Curses::process_key(int key) 
+{
 	switch (state_) {
 	case MAIN_MENU:
 		process_menu_key(key, options_main_);
@@ -157,7 +160,8 @@ void Curses::process_key(int key) {
 	}
 }
 
-void Curses::display_instructions() {
+void Curses::display_instructions() 
+{
 	attrset(A_BOLD);
 	mvaddstr_centered(1, "INSTRUCTIONS");
 	attrset(A_NORMAL);
@@ -183,14 +187,16 @@ void Curses::display_instructions() {
 	attrset(A_NORMAL);
 }
 
-void Curses::display_board_status(int row) {
+void Curses::display_board_status(int row) 
+{
 	stringstream ss;
 	ss << "Board has " << rows_ << " rows and " << cols_ << " columns";
 	ss << " with " << mines_ << " mines";
 	mvaddstr_centered(row, ss.str());
 }
 
-void Curses::display_game_status(int row) {
+void Curses::display_game_status(int row) 
+{
 	if (player_list_.empty()) {
 		mvaddstr_centered(row, "There is no players registered yet");
 	} else {
@@ -200,7 +206,8 @@ void Curses::display_game_status(int row) {
 	}
 }
 
-void Curses::display_game() {
+void Curses::display_game() 
+{
 	engine_->start_game();
 
 	tuple<int, int> newPosSelected = { 0, 0 };
@@ -239,7 +246,8 @@ void Curses::display_game() {
 	}
 }
 
-void Curses::represent_board_cursor(int new_row, int new_col, int row_offset, int col_offset) {
+void Curses::represent_board_cursor(int new_row, int new_col, int row_offset, int col_offset) 
+{
 	int& row = get<0>(board_position_selected_);
 	int& col = get<1>(board_position_selected_);
 
@@ -253,19 +261,23 @@ void Curses::represent_board_cursor(int new_row, int new_col, int row_offset, in
 	mvaddstr(row_offset + row, col_offset + col * 2 + 2, "]");
 }
 
-void Curses::game_started() {
+void Curses::game_started() 
+{
 	game_is_running_ = true;
 }
 
-void Curses::game_finished() {
+void Curses::game_finished() 
+{
 	game_is_running_ = false;
 }
 
-void Curses::dispatch_error(const SweeperError& err) {
+void Curses::dispatch_error(const SweeperError& err) 
+{
 	display_error(err.get_error_code(), err.get_message());
 }
 
-void Curses::display_error(int row, std::string message) {
+void Curses::display_error(int row, std::string message) 
+{
 	attrset(A_BOLD);
 	init_pair(1, COLOR_RED, COLOR_BLACK);
 	attron(COLOR_PAIR(1));
@@ -275,7 +287,8 @@ void Curses::display_error(int row, std::string message) {
 	refresh();
 }
 
-void Curses::board_position_revealed(list<BoardPosition *> positions) {
+void Curses::board_position_revealed(list<BoardPosition *> positions) 
+{
 	for (BoardPosition * pos : positions) {
 		tuple<int, int> const& position = pos->get_position();
 		mvaddstr(2 + get<0>(position), 
@@ -284,15 +297,18 @@ void Curses::board_position_revealed(list<BoardPosition *> positions) {
 	}
 }
 
-void Curses::board_created(int height, int width) {
+void Curses::board_created(int height, int width) 
+{
 	cout << "Board created" << endl;
 }
 
-void Curses::player_won(Player player) {
+void Curses::player_won(Player player) 
+{
 	cout << player.get_username() << " has won" << endl;
 }
 
-void Curses::modify_rows() {
+void Curses::modify_rows() 
+{
 	int nRows;
 	display_board_status(1);
 	mvscanw_robust("Enter the total number of ROWS", 3, &nRows);
@@ -305,7 +321,8 @@ void Curses::modify_rows() {
 	display_board_status(6);
 }
 
-void Curses::modify_cols() {
+void Curses::modify_cols() 
+{
 	int nCols;
 	display_board_status(1);
 	mvscanw_robust("Enter the total number of COLUMNS", 3, &nCols);
@@ -314,7 +331,8 @@ void Curses::modify_cols() {
 	display_board_status(6);
 }
 
-void Curses::modify_mines() {
+void Curses::modify_mines() 
+{
 	int nMines;
 	display_board_status(1);
 	mvscanw_robust("Enter the total number of MINES", 3, &nMines);
@@ -323,13 +341,15 @@ void Curses::modify_mines() {
 	display_board_status(6);
 }
 
-void Curses::add_player() {
+void Curses::add_player() 
+{
 	string username;
 	mvscanw_robust("Enter player's username", 3, &username);
 	engine_->join_game(username.c_str());
 }
 
-void Curses::remove_player() {
+void Curses::remove_player() 
+{
 	attrset(A_BOLD);
 	mvaddstr_centered(1, "Current player list");
 	attrset(A_NORMAL);
@@ -345,7 +365,8 @@ void Curses::remove_player() {
 	engine_->leave_game(id);
 }
 
-void Curses::mvaddstr_centered(int row, string message) {
+void Curses::mvaddstr_centered(int row, string message) 
+{
 	mvaddstr(row, (COLS - (int)message.size()) / 2, message.c_str());
 }
 

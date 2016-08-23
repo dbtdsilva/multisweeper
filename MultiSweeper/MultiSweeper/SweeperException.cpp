@@ -13,12 +13,14 @@ SweeperException::~SweeperException()
 {
 }
 
-const char* SweeperException::what() const throw() {
+const char* SweeperException::what() const throw() 
+{
 	stringstream ss;
 	ss << "Error " << err_.get_error_code() << ":" << err_.get_message();
 	return ss.str().c_str();
 }
 
-SweeperError const& SweeperException::get_sweeper_error() const {
+SweeperError const& SweeperException::get_sweeper_error() const 
+{
 	return err_;
 }

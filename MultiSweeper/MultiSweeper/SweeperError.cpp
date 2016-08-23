@@ -5,11 +5,13 @@ SweeperError::SweeperError(int error_code, std::string message) :
 {
 }
 
-std::string const& SweeperError::get_message() const {
+std::string const& SweeperError::get_message() const 
+{
 	return message_;
 }
 
-int const& SweeperError::get_error_code() const {
+int const& SweeperError::get_error_code() const 
+{
 	return error_code_;
 }
 
