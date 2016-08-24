@@ -15,6 +15,8 @@ public:
 	static const SweeperError GAME_NOT_RUNNING;
 	static const SweeperError POSITION_ALREADY_REVEALED;
 	static const SweeperError MINES_EXCEED;
+	static const SweeperError PLAYER_ALREADY_EXISTS;
+	static const SweeperError PLAYER_USERNAME_INVALID;
 	
 	std::string const& get_message() const;
 	int const& get_error_code() const;

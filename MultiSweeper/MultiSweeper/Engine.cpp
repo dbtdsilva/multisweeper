@@ -45,8 +45,17 @@ void Engine::start_game()
 void Engine::join_game(string username) 
 {
 	if (!verify_game_status(START)) return;
-	Player p(username);
-	players_.push_back(p);
+	if (username.length() < 3 || username.length() > 20) {
+		interaction_->dispatch_error(SweeperError::PLAYER_USERNAME_INVALID);
+		return;
+	}
+
+	Player player(username);
+	if (std::find(players_.begin(), players_.end(), player) != players_.end()) {
+		interaction_->dispatch_error(SweeperError::PLAYER_ALREADY_EXISTS);
+		return;
+	}
+	players_.push_back(player);
 }
 
 void Engine::leave_game(string username) 

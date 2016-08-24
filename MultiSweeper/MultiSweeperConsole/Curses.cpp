@@ -514,15 +514,19 @@ void Curses::mvscanw_robust(string intro, int start_row, T* return_value)
 	refresh();
 	echo();
 	curs_set(true);
+
+	int scan_result;
 	if (is_same<T, int>::value) {
 		mvscanw(start_row + 1, (COLS - 2) / 2, "%d", return_value);
-	}
-	else if (is_same<T, string>::value) {
-		mvscanw(start_row + 1, (COLS - (int)intro.size()) / 2, "%s", return_value);
-	}
-	else {
+	} else if (is_same<T, string>::value) {
+		char word[31];
+		mvscanw(start_row + 1, (COLS - (int)intro.size()) / 2, "%30s", word);
+		stringstream ss(word);
+		ss >> *return_value;
+	} else {
 		throw runtime_error("Invalid type received into the function readValue");
 	}
+
 	noecho();
 	curs_set(false);
 	attrset(A_BOLD);
