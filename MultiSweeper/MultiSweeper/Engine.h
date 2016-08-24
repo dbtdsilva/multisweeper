@@ -21,13 +21,13 @@ public:
 	void turn_played(int row, int col);
 	void surrender(Player player);
 
+	int const& get_current_player_index();
 	Board const& get_board() const;
-	Player const& get_current_player() const;
 	std::vector<Player> const& get_players_list() const;
 
 	friend std::ostream& operator<<(std::ostream& os, const Engine& obj);
 private:
-	Player* next_player();
+	Player & next_player();
 
 	enum Status {
 		START,
@@ -41,7 +41,6 @@ private:
 	Status current_status_;
 
 	int current_player_index_;
-	Player* current_player_;
 	InterfaceVisual* interaction_;
 	std::vector<Player> players_;
 	std::unique_ptr<Board> board_;

@@ -8,7 +8,7 @@ using namespace std;
 typedef struct command cmd;
 
 Curses::Curses() :
-	width_(120), height_(30), menu_new_opt_(0), menu_old_opt_(-1),
+	width_(10), height_(30), menu_new_opt_(0), menu_old_opt_(-1),
 	color_schema_index_(2),	engine_(make_unique<Engine>(this, 10, 20, 10)),
 	cols_(engine_->get_board().get_cols()), 
 	rows_(engine_->get_board().get_rows()), 
@@ -16,14 +16,14 @@ Curses::Curses() :
 	player_list_(engine_->get_players_list()),
 	options_main_({
 		{ "Instructions", [=](WINDOW * win) { state_ = INSTRUCTIONS; } },
-		{ "Modify Board", [=](WINDOW * win) { state_ = BOARD_OPTIONS; } },
-		{ "Add/Remove Players", [=](WINDOW * win) { state_ = PLAYERS_OPTIONS; } },
+		{ "Adjust Board", [=](WINDOW * win) { state_ = BOARD_OPTIONS; } },
+		{ "Manage Players", [=](WINDOW * win) { state_ = PLAYERS_OPTIONS; } },
 		{ "Start Game", [=](WINDOW * win) { state_ = GAME; } },
 		{ "Exit", [=](WINDOW * win) { state_ = EXIT_REQUEST; } } }),
 	options_board_({
-		{ "Change rows", [=](WINDOW * win) { state_ = MODIFY_ROWS; } },
-		{ "Change lines", [=](WINDOW * win) { state_ = MODIFY_COLS; } },
-		{ "Change number of mines", [=](WINDOW * win) { state_ = MODIFY_MINES; } },
+		{ "Rows", [=](WINDOW * win) { state_ = MODIFY_ROWS; } },
+		{ "Columns", [=](WINDOW * win) { state_ = MODIFY_COLS; } },
+		{ "Number of mines", [=](WINDOW * win) { state_ = MODIFY_MINES; } },
 		{ "Return to Main Menu", [=](WINDOW * win) { state_ = MAIN_MENU; } } }),
 	options_players_({
 		{ "Add player", [=](WINDOW * win) { state_ = PLAYER_ADD; } },
@@ -189,9 +189,13 @@ void Curses::display_instructions()
 	// Left aligned and centered according to the biggest bullet item
 	mvaddstr(10, (COLS - 62) / 2, "* Number on the square is the number of adjacent mines;");
 	mvaddstr(11, (COLS - 62) / 2, "\tE.g. \"4\" means that there is 4 mines adjacent to that square");
-	mvaddstr(12, (COLS - 62) / 2, "* \"X\" is a revealed mine;");
-	mvaddstr(13, (COLS - 62) / 2, "* \"O\" appears when there is no adjacent mines to this square;");
-	mvaddstr(14, (COLS - 62) / 2, "* If the square is empty, it has not been revealed yet;");
+	mvaddstr(12, (COLS - 62) / 2, "*");
+	mvaddch(12, (COLS - 62) / 2 + 2, ACS_DIAMOND);
+	mvaddstr(12, (COLS - 62) / 2 + 4, "is a revealed mine;");
+	mvaddstr(13, (COLS - 62) / 2, "*");
+	mvaddch(13, (COLS - 62) / 2 + 2, 250 | A_ALTCHARSET);
+	mvaddstr(13, (COLS - 62) / 2 + 4, "appears when there the square was not revealed yet;");
+	mvaddstr(14, (COLS - 62) / 2, "* If the square is empty, it has no adjacent mines to that square.");
 
 	attrset(A_BOLD);
 	attron(COLOR_PAIR(color_schema_index_));
@@ -222,27 +226,28 @@ void Curses::display_game_status(int row)
 void Curses::display_game() 
 {
 	engine_->start_game();
-	int row_offset = 2;
+	int row_offset = 1;
+	int game_window_offset = row_offset + 3;
 	int col_offset = (COLS - (cols_ * 2 + 2)) / 2;
 	
 	attron(COLOR_PAIR(color_schema_index_));
-	mvaddch(row_offset - 1, col_offset - 1, ACS_ULCORNER);
-	mvaddch(row_offset - 1, col_offset + cols_ * 2 + 1, ACS_URCORNER);
-	mvaddch(row_offset + rows_, col_offset - 1, ACS_LLCORNER);
-	mvaddch(row_offset + rows_, col_offset + cols_ * 2 + 1, ACS_LRCORNER);
+	mvaddch(game_window_offset - 1, col_offset - 1, ACS_ULCORNER);
+	mvaddch(game_window_offset - 1, col_offset + cols_ * 2 + 1, ACS_URCORNER);
+	mvaddch(game_window_offset + rows_, col_offset - 1, ACS_LLCORNER);
+	mvaddch(game_window_offset + rows_, col_offset + cols_ * 2 + 1, ACS_LRCORNER);
 	for (int row = 0; row < rows_; row++) {
-		mvaddch(row + row_offset, col_offset - 1, ACS_VLINE);
-		mvaddch(row + row_offset, col_offset + cols_ * 2 + 1, ACS_VLINE);
+		mvaddch(row + game_window_offset, col_offset - 1, ACS_VLINE);
+		mvaddch(row + game_window_offset, col_offset + cols_ * 2 + 1, ACS_VLINE);
 	}
 	for (int col = 0; col < cols_ * 2 + 1; col++) {
-		mvaddch(row_offset + rows_, col + col_offset, ACS_HLINE);
-		mvaddch(row_offset - 1, col + col_offset, ACS_HLINE);
+		mvaddch(game_window_offset + rows_, col + col_offset, ACS_HLINE);
+		mvaddch(game_window_offset - 1, col + col_offset, ACS_HLINE);
 	}
 	attroff(COLOR_PAIR(color_schema_index_));
 
 	for (int row = 0; row < rows_; row++) {
 		for (int col = 0; col < cols_; col++) {
-			mvaddch(row + row_offset, 1 + col * 2 + col_offset, 250 | A_ALTCHARSET);
+			mvaddch(row + game_window_offset, 1 + col * 2 + col_offset, 250 | A_ALTCHARSET);
 		}
 	}
 
@@ -252,12 +257,19 @@ void Curses::display_game()
 
 	int key;
 	stringstream ss;
-	Player const& current_player = engine_->get_current_player();
+	int const &current_player_index = engine_->get_current_player_index();
+
+	string empty_string;
+	for (int i = 0; i < COLS - 2; i++) {
+		empty_string.append(" ");
+	}
+
 	while (game_is_running_) {
-		represent_board_cursor(row, col, row_offset, col_offset);
+		represent_board_cursor(row, col, game_window_offset, col_offset);
 		ss.str("");
-		ss << "Current player: " << current_player.get_username();
-		mvaddstr_centered(0, ss.str());
+		ss << "Current player: " << player_list_[current_player_index].get_username();
+		mvaddstr_centered(row_offset, empty_string);
+		mvaddstr_centered(row_offset, ss.str());
 		key = getch();
 		switch (key)
 		{
@@ -326,18 +338,23 @@ void Curses::display_error(int row, std::string message)
 
 void Curses::board_position_revealed(list<BoardPosition *> positions) 
 {
+	string position_character;
 	for (BoardPosition * pos : positions) {
 		tuple<int, int> const& position = pos->get_position();
-
-		string position_character;
+		
 		if (pos->is_mine()) {
-			position_character = "X";
+			mvaddch(4 + get<0>(position),
+				(COLS - (cols_ * 2 + 2)) / 2 + get<1>(position) * 2 + 1, ACS_DIAMOND);
 		} else {
 			int neighbour_mines = pos->get_count_neighbour_mines();
 			position_character = neighbour_mines == 0 ? " " : to_string(neighbour_mines).c_str();
+
+			attron(COLOR_PAIR(color_schema_index_));
+			mvaddstr(4 + get<0>(position),
+				(COLS - (cols_ * 2 + 2)) / 2 + get<1>(position) * 2 + 1, position_character.c_str());
+			attroff(COLOR_PAIR(color_schema_index_));
 		}
-		mvaddstr(2 + get<0>(position), 
-			(COLS - (cols_ * 2 + 2)) / 2 + get<1>(position) * 2 + 1, position_character.c_str());
+		
 	}
 }
 
@@ -356,7 +373,7 @@ void Curses::modify_rows()
 	int new_rows;
 	display_board_status(1);
 	mvscanw_robust("Enter the total number of ROWS", 3, &new_rows);
-	if (new_rows <= 0 || new_rows >= rows_) {
+	if (new_rows <= 0) {
 		display_error(2, "Number of rows inserted is invalid");
 		return;
 	}
@@ -369,7 +386,7 @@ void Curses::modify_cols()
 	int new_cols;
 	display_board_status(1);
 	mvscanw_robust("Enter the total number of COLUMNS", 3, &new_cols);
-	if (new_cols <= 0 || new_cols >= COLS) {
+	if (new_cols <= 0) {
 		display_error(2, "Number of columns inserted is invalid");
 		return;
 	}

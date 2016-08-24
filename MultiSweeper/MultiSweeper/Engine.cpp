@@ -19,7 +19,7 @@ Engine::Engine(InterfaceVisual* interaction) : Engine(interaction, 10, 5, 10)
 }
 
 Engine::Engine(InterfaceVisual* interaction, int rows, int cols, int mines) :
-	kMaxPlayers(4), current_status_(START), current_player_index_(0), current_player_(nullptr),
+	kMaxPlayers(4), current_status_(START), current_player_index_(0),
 	board_(make_unique<Board>(rows, cols, mines)), interaction_(interaction)
 {
 }
@@ -38,7 +38,6 @@ void Engine::start_game()
 
 	this->current_status_ = RUN;
 	random_shuffle(players_.begin(), players_.end());
-	next_player();
 
 	this->interaction_->game_started();
 }
@@ -100,8 +99,8 @@ void Engine::turn_played(int row, int col)
 	this->interaction_->board_position_revealed(listRevealed);
 
 	if (is_game_finished()) {
-		current_status_ = START;
-		current_player_ = nullptr;
+		this->current_status_ = START;
+		this->current_player_index_ = 0;
 		this->interaction_->game_finished();
 	}
 }
@@ -110,18 +109,12 @@ void Engine::surrender(Player player)
 {
 }
 
-Player* Engine::next_player() 
+Player & Engine::next_player() 
 {
-	if (!verify_game_status(RUN)) return nullptr;
+	if (!verify_game_status(RUN)) return players_[current_player_index_];
 
-	if (current_player_ == nullptr) {
-		srand((unsigned int) time(NULL));
-		current_player_index_ = rand() % players_.size();
-		current_player_ = &players_[current_player_index_];
-		return current_player_;
-	}
-	current_player_ = &players_[++current_player_index_ % players_.size()];
-	return current_player_;
+	current_player_index_ = ++current_player_index_ % players_.size();
+	return players_[current_player_index_];
 }
 
 Board const& Engine::get_board() const
@@ -129,9 +122,8 @@ Board const& Engine::get_board() const
 	return *board_;
 }
 
-Player const& Engine::get_current_player() const 
-{
-	return *current_player_;
+int const& Engine::get_current_player_index() {
+	return current_player_index_;
 }
 
 std::vector<Player> const& Engine::get_players_list() const 
