@@ -114,14 +114,44 @@ void Engine::turn_played(int row, int col)
 		}
 	}
 
-	if (!foundMine)
+	if (!foundMine) {
+		players_[current_player_index_].increase_mines_missed();
 		next_player();
+	} else {
+		players_[current_player_index_].increase_mines_revealed();
+	}
 	this->interaction_->board_position_revealed(listRevealed);
 
 	if (is_game_finished()) {
+		vector<Player *> winners;
+		winners.push_back(&players_[0]);
+		for (int i = 1; i < players_.size(); i++) {
+			if (players_[i].get_mines_revealed() > winners.back()->get_mines_revealed()) {
+				for (auto winner : winners)
+					winner->update_game_stats(false);
+				winners.clear();
+				winners.push_back(&players_[i]);
+			} 
+			else if (players_[i].get_mines_revealed() < winners.back()->get_mines_revealed()) {
+				players_[i].update_game_stats(false);
+			}
+			else {
+				winners.push_back(&players_[i]);
+			}
+		}
+		// If vector only has 1 element, that player has won
+		// Otherwise, they tied.
+		vector<const Player*> winners_const;
+		for (auto winner : winners) {
+			winner->update_game_stats(winners.size() == 1);
+			winners_const.push_back(winner);
+		}
+		
+		this->interaction_->player_won(winners_const);
 		this->current_status_ = START;
 		this->current_player_index_ = 0;
 		this->interaction_->game_finished();
+		this->board_->generate_mines();
 	}
 }
 

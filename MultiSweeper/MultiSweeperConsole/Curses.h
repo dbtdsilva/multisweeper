@@ -17,7 +17,7 @@ public:
 	virtual void game_finished();
 	virtual void board_position_revealed(std::list<BoardPosition *> states);
 	virtual void board_created(int height, int width);
-	virtual void player_won(Player player);
+	virtual void player_won(vector<const Player*> players);
 	virtual void dispatch_error(const SweeperError& error);
 private:
 	struct command

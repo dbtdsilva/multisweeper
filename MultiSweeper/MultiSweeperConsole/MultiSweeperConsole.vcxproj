@@ -138,8 +138,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Curses.h" />
+    <ClInclude Include="CursesExtended.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CursesExtended.cpp" />
     <ClCompile Include="MultiSweeperConsole.cpp" />
     <ClCompile Include="Curses.cpp" />
   </ItemGroup>

@@ -228,7 +228,7 @@ void Curses::display_game()
 {
 	engine_->start_game();
 	int row_offset = 1;
-	int game_window_offset = 3;
+	int game_window_offset = 4;
 	int col_offset = (COLS - (cols_ * 2 + 2)) / 2;
 	
 	attron(COLOR_PAIR(color_schema_index_));
@@ -276,9 +276,9 @@ void Curses::display_game()
 			}
 			ss.str("");
 			ss << player_list_[player_index].get_username();
-			ss << "[ " << player_list_[player_index].
-			mvaddstr_centered(LINES - player_list_.size() + player_index -1, empty_string);
-			mvaddstr_centered(LINES - player_list_.size() + player_index - 1, ss.str());
+			ss << " [ Mines revealed: " << player_list_[player_index].get_mines_revealed() << " ]";
+			mvaddstr_centered(LINES - (int)player_list_.size() + player_index -1, empty_string);
+			mvaddstr_centered(LINES - (int)player_list_.size() + player_index - 1, ss.str());
 			if (current_player) {
 				attroff(COLOR_PAIR(color_schema_index_));
 			}
@@ -359,14 +359,14 @@ void Curses::board_position_revealed(list<BoardPosition *> positions)
 		tuple<int, int> const& position = pos->get_position();
 		
 		if (pos->is_mine()) {
-			mvaddch(3 + get<0>(position),
+			mvaddch(4 + get<0>(position),
 				(COLS - (cols_ * 2 + 2)) / 2 + get<1>(position) * 2 + 1, ACS_DIAMOND);
 		} else {
 			int neighbour_mines = pos->get_count_neighbour_mines();
 			position_character = neighbour_mines == 0 ? " " : to_string(neighbour_mines).c_str();
 
 			attron(COLOR_PAIR(color_schema_index_));
-			mvaddstr(3 + get<0>(position),
+			mvaddstr(4 + get<0>(position),
 				(COLS - (cols_ * 2 + 2)) / 2 + get<1>(position) * 2 + 1, position_character.c_str());
 			attroff(COLOR_PAIR(color_schema_index_));
 		}
@@ -377,7 +377,7 @@ void Curses::board_created(int height, int width)
 {
 }
 
-void Curses::player_won(Player player) 
+void Curses::player_won(vector<const Player*> players)
 {
 }
 

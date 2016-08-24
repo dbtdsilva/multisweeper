@@ -4,7 +4,8 @@ using namespace std;
 
 Player::Player(string username) :
 	username_(username), special_used_(false), games_played_(0),
-	mines_missed_(0), mines_revealed_(0)
+	mines_missed_(0), mines_revealed_(0), games_tied_(0),
+	games_won_(0)
 {
 }
 
@@ -26,12 +27,16 @@ void Player::increase_mines_revealed()
 	mines_revealed_++;
 }
 
+void Player::increase_mines_missed() 
+{
+	mines_missed_++;
+}
 string const& Player::get_username() const 
 {
 	return username_;
 }
 
-int const& Player::get_mines_reaveled() const
+int const& Player::get_mines_revealed() const
 {
 	return mines_revealed_;
 }
