@@ -21,6 +21,12 @@
     <ClInclude Include="CursesExtended.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CursesMenuExtended.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SweeperCurses.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiSweeperConsole.cpp">
@@ -30,6 +36,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CursesExtended.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CursesMenuExtended.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SweeperCurses.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

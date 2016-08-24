@@ -139,11 +139,15 @@
   <ItemGroup>
     <ClInclude Include="Curses.h" />
     <ClInclude Include="CursesExtended.h" />
+    <ClInclude Include="CursesMenuExtended.h" />
+    <ClInclude Include="SweeperCurses.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CursesExtended.cpp" />
+    <ClCompile Include="CursesMenuExtended.cpp" />
     <ClCompile Include="MultiSweeperConsole.cpp" />
     <ClCompile Include="Curses.cpp" />
+    <ClCompile Include="SweeperCurses.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MultiSweeper\MultiSweeper.vcxproj">
