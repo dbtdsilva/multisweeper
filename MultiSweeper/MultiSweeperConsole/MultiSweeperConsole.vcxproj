@@ -137,7 +137,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Curses.h" />
     <ClInclude Include="CursesExtended.h" />
     <ClInclude Include="CursesMenuExtended.h" />
     <ClInclude Include="SweeperCurses.h" />
@@ -146,7 +145,6 @@
     <ClCompile Include="CursesExtended.cpp" />
     <ClCompile Include="CursesMenuExtended.cpp" />
     <ClCompile Include="MultiSweeperConsole.cpp" />
-    <ClCompile Include="Curses.cpp" />
     <ClCompile Include="SweeperCurses.cpp" />
   </ItemGroup>
   <ItemGroup>

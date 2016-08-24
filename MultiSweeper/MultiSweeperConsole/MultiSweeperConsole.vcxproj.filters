@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Curses.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CursesExtended.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -30,9 +27,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MultiSweeperConsole.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Curses.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CursesExtended.cpp">
