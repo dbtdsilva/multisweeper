@@ -129,6 +129,21 @@ bool Board::all_mines_revealed() {
 	return total_mines_revealed_ == total_mines_;
 }
 
+int const& Board::get_rows() const
+{
+	return rows_;
+}
+
+int const& Board::get_total_mines() const
+{
+	return total_mines_;
+}
+
+int const& Board::get_cols() const
+{
+	return cols_;
+}
+
 ostream& operator<<(ostream& os, const Board& obj) 
 {
 	for (int i = 0; i < obj.rows_; i++) {

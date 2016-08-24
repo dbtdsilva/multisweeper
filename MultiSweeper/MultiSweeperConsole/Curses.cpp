@@ -9,8 +9,10 @@ typedef struct command cmd;
 
 Curses::Curses() :
 	width_(120), height_(30), menu_new_opt_(0), menu_old_opt_(-1),
-	cols_(20), rows_(10), mines_(10), color_schema_index_(2),
-	engine_(make_unique<Engine>(this, rows_, cols_, mines_)),
+	color_schema_index_(2),	engine_(make_unique<Engine>(this, 10, 20, 10)),
+	cols_(engine_->get_board().get_cols()), 
+	rows_(engine_->get_board().get_rows()), 
+	mines_(engine_->get_board().get_total_mines()),
 	player_list_(engine_->get_players_list()),
 	options_main_({
 		{ "Instructions", [=](WINDOW * win) { state_ = INSTRUCTIONS; } },
@@ -351,39 +353,36 @@ void Curses::player_won(Player player)
 
 void Curses::modify_rows() 
 {
-	int nRows;
+	int new_rows;
 	display_board_status(1);
-	mvscanw_robust("Enter the total number of ROWS", 3, &nRows);
-	if (nRows <= 0 || nRows >= rows_) {
+	mvscanw_robust("Enter the total number of ROWS", 3, &new_rows);
+	if (new_rows <= 0 || new_rows >= rows_) {
 		display_error(2, "Number of rows inserted is invalid");
 		return;
 	}
-	this->rows_ = nRows;
-	engine_->modify_board(rows_, cols_, mines_);
+	engine_->modify_board(new_rows, cols_, mines_);
 	display_board_status(7);
 }
 
 void Curses::modify_cols() 
 {
-	int nCols;
+	int new_cols;
 	display_board_status(1);
-	mvscanw_robust("Enter the total number of COLUMNS", 3, &nCols);
-	if (nCols <= 0 || nCols >= cols_) {
-		display_error(2, "Number of rows inserted is invalid");
+	mvscanw_robust("Enter the total number of COLUMNS", 3, &new_cols);
+	if (new_cols <= 0 || new_cols >= COLS) {
+		display_error(2, "Number of columns inserted is invalid");
 		return;
 	}
-	this->cols_ = nCols;
-	engine_->modify_board(rows_, cols_, mines_);
+	engine_->modify_board(rows_, new_cols, mines_);
 	display_board_status(7);
 }
 
 void Curses::modify_mines() 
 {
-	int nMines;
+	int new_total_mines;
 	display_board_status(1);
-	mvscanw_robust("Enter the total number of MINES", 3, &nMines);
-	this->mines_ = nMines;
-	engine_->modify_board(rows_, cols_, mines_);
+	mvscanw_robust("Enter the total number of MINES", 3, &new_total_mines);
+	engine_->modify_board(rows_, cols_, new_total_mines);
 	display_board_status(7);
 }
 

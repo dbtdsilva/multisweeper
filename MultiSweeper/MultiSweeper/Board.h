@@ -17,6 +17,9 @@ public:
 	std::list<BoardPosition *> reveal_position(int row, int col);
 	bool all_mines_revealed();
 
+	int const& get_rows() const;
+	int const& get_total_mines() const;
+	int const& get_cols() const;
 	friend std::ostream& operator<<(std::ostream& os, const Board& obj);
 
 private:

@@ -124,6 +124,11 @@ Player* Engine::next_player()
 	return current_player_;
 }
 
+Board const& Engine::get_board() const
+{
+	return *board_;
+}
+
 Player const& Engine::get_current_player() const 
 {
 	return *current_player_;

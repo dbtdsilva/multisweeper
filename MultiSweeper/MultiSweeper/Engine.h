@@ -21,6 +21,7 @@ public:
 	void turn_played(int row, int col);
 	void surrender(Player player);
 
+	Board const& get_board() const;
 	Player const& get_current_player() const;
 	std::vector<Player> const& get_players_list() const;
 

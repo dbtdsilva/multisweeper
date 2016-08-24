@@ -62,7 +62,6 @@ private:
 	void mvscanw_robust(string intro, int start_row, T * return_value);
 	void mvaddstr_centered(int row, string message);
 
-	int rows_, cols_, mines_;
 	VisualState state_;
 	std::vector<cmd> options_main_, options_board_, options_players_;
 	std::tuple<int, int> board_position_selected_;
@@ -70,6 +69,7 @@ private:
 	int height_, width_;
 	WINDOW *window_;
 	std::unique_ptr<Engine> engine_;
+	int const &mines_, &rows_, &cols_;
 	bool game_is_running_;
 	vector<Player> const& player_list_;
 	int color_schema_index_;
