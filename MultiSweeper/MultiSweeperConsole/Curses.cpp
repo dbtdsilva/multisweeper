@@ -11,8 +11,9 @@ Curses::Curses() :
 	width_(10), height_(30), menu_new_opt_(0), menu_old_opt_(-1),
 	color_schema_index_(2),	engine_(make_unique<Engine>(this, 10, 20, 10)),
 	cols_(engine_->get_board().get_cols()), 
-	rows_(engine_->get_board().get_rows()), 
+	rows_(engine_->get_board().get_rows()),
 	mines_(engine_->get_board().get_total_mines()),
+	mines_revealed_(engine_->get_board().get_total_mines_revealed()),
 	player_list_(engine_->get_players_list()),
 	options_main_({
 		{ "Instructions", [=](WINDOW * win) { state_ = INSTRUCTIONS; } },
@@ -227,7 +228,7 @@ void Curses::display_game()
 {
 	engine_->start_game();
 	int row_offset = 1;
-	int game_window_offset = row_offset + 3;
+	int game_window_offset = 3;
 	int col_offset = (COLS - (cols_ * 2 + 2)) / 2;
 	
 	attron(COLOR_PAIR(color_schema_index_));
@@ -264,11 +265,26 @@ void Curses::display_game()
 		empty_string.append(" ");
 	}
 
+	bool current_player;
 	while (game_is_running_) {
 		represent_board_cursor(row, col, game_window_offset, col_offset);
+
+		for (int player_index = 0; player_index < player_list_.size(); player_index++) {
+			current_player = player_list_[player_index] == player_list_[current_player_index];
+			if (current_player) {
+				attron(COLOR_PAIR(color_schema_index_));
+			}
+			ss.str("");
+			ss << player_list_[player_index].get_username();
+			ss << "[ " << player_list_[player_index].
+			mvaddstr_centered(LINES - player_list_.size() + player_index -1, empty_string);
+			mvaddstr_centered(LINES - player_list_.size() + player_index - 1, ss.str());
+			if (current_player) {
+				attroff(COLOR_PAIR(color_schema_index_));
+			}
+		}
 		ss.str("");
-		ss << "Current player: " << player_list_[current_player_index].get_username();
-		mvaddstr_centered(row_offset, empty_string);
+		ss << mines_revealed_ << " out of " << mines_ << " were revealed";
 		mvaddstr_centered(row_offset, ss.str());
 		key = getch();
 		switch (key)
@@ -343,41 +359,42 @@ void Curses::board_position_revealed(list<BoardPosition *> positions)
 		tuple<int, int> const& position = pos->get_position();
 		
 		if (pos->is_mine()) {
-			mvaddch(4 + get<0>(position),
+			mvaddch(3 + get<0>(position),
 				(COLS - (cols_ * 2 + 2)) / 2 + get<1>(position) * 2 + 1, ACS_DIAMOND);
 		} else {
 			int neighbour_mines = pos->get_count_neighbour_mines();
 			position_character = neighbour_mines == 0 ? " " : to_string(neighbour_mines).c_str();
 
 			attron(COLOR_PAIR(color_schema_index_));
-			mvaddstr(4 + get<0>(position),
+			mvaddstr(3 + get<0>(position),
 				(COLS - (cols_ * 2 + 2)) / 2 + get<1>(position) * 2 + 1, position_character.c_str());
 			attroff(COLOR_PAIR(color_schema_index_));
 		}
-		
 	}
 }
 
 void Curses::board_created(int height, int width) 
 {
-	cout << "Board created" << endl;
 }
 
 void Curses::player_won(Player player) 
 {
-	cout << player.get_username() << " has won" << endl;
 }
 
 void Curses::modify_rows() 
 {
 	int new_rows;
 	display_board_status(1);
-	mvscanw_robust("Enter the total number of ROWS", 3, &new_rows);
-	if (new_rows <= 0) {
-		display_error(2, "Number of rows inserted is invalid");
-		return;
+	try {
+		mvscanw_robust("Enter the total number of ROWS", 3, &new_rows);
+		if (new_rows <= 0) {
+			display_error(2, "Number of rows inserted is invalid");
+			return;
+		}
+		engine_->modify_board(new_rows, cols_, mines_);
+	} catch (...) {
+		display_error(2, "Received invalid input!");
 	}
-	engine_->modify_board(new_rows, cols_, mines_);
 	display_board_status(7);
 }
 
@@ -385,12 +402,16 @@ void Curses::modify_cols()
 {
 	int new_cols;
 	display_board_status(1);
-	mvscanw_robust("Enter the total number of COLUMNS", 3, &new_cols);
-	if (new_cols <= 0) {
-		display_error(2, "Number of columns inserted is invalid");
-		return;
+	try {
+		mvscanw_robust("Enter the total number of COLUMNS", 3, &new_cols);
+		if (new_cols <= 0) {
+			display_error(2, "Number of columns inserted is invalid");
+			return;
+		}
+		engine_->modify_board(rows_, new_cols, mines_);
+	} catch (...) {
+		display_error(2, "Received invalid input!");
 	}
-	engine_->modify_board(rows_, new_cols, mines_);
 	display_board_status(7);
 }
 
@@ -398,20 +419,36 @@ void Curses::modify_mines()
 {
 	int new_total_mines;
 	display_board_status(1);
-	mvscanw_robust("Enter the total number of MINES", 3, &new_total_mines);
-	engine_->modify_board(rows_, cols_, new_total_mines);
+	try {
+		mvscanw_robust("Enter the total number of MINES", 3, &new_total_mines);
+		if (new_total_mines <= 0) {
+			display_error(2, "Number of mines inserted is invalid");
+			return;
+		}
+		engine_->modify_board(rows_, cols_, new_total_mines);
+	} catch (...) {
+		display_error(2, "Received invalid input!");
+	}
 	display_board_status(7);
 }
 
 void Curses::add_player() 
 {
 	string username;
-	mvscanw_robust("Enter player's username", 3, &username);
-	engine_->join_game(username.c_str());
+	try {
+		mvscanw_robust("Enter player's username", 3, &username);
+		engine_->join_game(username.c_str());
+	} catch (...) {
+		display_error(2, "Received invalid input!");
+	}
 }
 
 void Curses::remove_player() 
 {
+	if (player_list_.size() == 0) {
+		display_error(2, "There is no players to remove");
+		return;
+	}
 	attrset(A_BOLD);
 	mvaddstr_centered(1, "Current player list");
 	attrset(A_NORMAL);
@@ -419,12 +456,17 @@ void Curses::remove_player()
 	for (int i = 0; i < player_list_.size(); i++) {
 		ss.str("");
 		ss << i << ": " << player_list_[i].get_username();
-		mvaddstr(i + 2, (COLS - 20) / 2, ss.str().c_str());
+		mvaddstr(i + 3, (COLS - 20) / 2, ss.str().c_str());
 	}
 
 	int id;
-	mvscanw_robust("Enter player's ID that you which to remove", (int)player_list_.size() + 3, &id);
-	engine_->leave_game(id);
+
+	try {
+		mvscanw_robust("Enter player's ID that you which to remove", (int)player_list_.size() + 4, &id);
+		engine_->leave_game(id);
+	} catch (...) {
+		display_error(2, "Received invalid input");
+	}
 }
 
 void Curses::mvaddstr_centered(int row, string message) 
@@ -515,16 +557,18 @@ void Curses::mvscanw_robust(string intro, int start_row, T* return_value)
 	echo();
 	curs_set(true);
 
-	int scan_result;
+	int valid_scan_result;
 	if (is_same<T, int>::value) {
-		mvscanw(start_row + 1, (COLS - 2) / 2, "%d", return_value);
+		valid_scan_result = mvscanw(start_row + 1, (COLS - 10) / 2, "%d", return_value);
 	} else if (is_same<T, string>::value) {
 		char word[31];
-		mvscanw(start_row + 1, (COLS - (int)intro.size()) / 2, "%30s", word);
+		valid_scan_result = mvscanw(start_row + 1, (COLS - (int)intro.size()) / 2, "%30s", word);
 		stringstream ss(word);
 		ss >> *return_value;
-	} else {
-		throw runtime_error("Invalid type received into the function readValue");
+	}
+
+	if (!valid_scan_result) {
+		throw runtime_error("Invalid input received");
 	}
 
 	noecho();

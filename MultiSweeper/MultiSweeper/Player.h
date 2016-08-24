@@ -8,7 +8,12 @@ public:
 	Player(std::string username);
 	~Player();
 
+	void update_game_stats(bool won);
+	void increase_mines_revealed();
 	std::string const& get_username() const;
+	int const& get_mines_reaveled() const;
+	int const& get_games_won() const;
+	int const& get_games_played() const;
 	bool operator==(const Player& other) const;
 	friend std::ostream& operator<<(std::ostream& os, const Player& obj);
 private:

@@ -17,6 +17,7 @@ public:
 	static const SweeperError MINES_EXCEED;
 	static const SweeperError PLAYER_ALREADY_EXISTS;
 	static const SweeperError PLAYER_USERNAME_INVALID;
+	static const SweeperError PLAYER_NOT_EXISTS;
 	
 	std::string const& get_message() const;
 	int const& get_error_code() const;

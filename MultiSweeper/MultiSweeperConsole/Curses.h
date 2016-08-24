@@ -69,7 +69,7 @@ private:
 	int height_, width_;
 	WINDOW *window_;
 	std::unique_ptr<Engine> engine_;
-	int const &mines_, &rows_, &cols_;
+	int const &mines_, &rows_, &cols_, &mines_revealed_;
 	bool game_is_running_;
 	vector<Player> const& player_list_;
 	int color_schema_index_;

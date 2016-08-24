@@ -28,7 +28,7 @@ Engine::~Engine()
 {
 }
 
-void Engine::start_game() 
+void Engine::start_game()
 {
 	if (!verify_game_status(START)) return;
 	if (this->players_.size() == 0) {
@@ -42,7 +42,7 @@ void Engine::start_game()
 	this->interaction_->game_started();
 }
 
-void Engine::join_game(string username) 
+void Engine::join_game(string username)
 {
 	if (!verify_game_status(START)) return;
 	if (username.length() < 3 || username.length() > 20) {
@@ -58,39 +58,50 @@ void Engine::join_game(string username)
 	players_.push_back(player);
 }
 
-void Engine::leave_game(string username) 
+void Engine::leave_game(string username)
 {
 	if (!verify_game_status(START)) return;
 	auto it = std::find(players_.begin(), players_.end(), username);
-	if (it != players_.end())
+	if (it != players_.end()) {
 		players_.erase(it);
+	}
+	else {
+		interaction_->dispatch_error(SweeperError::PLAYER_NOT_EXISTS);
+	}
 }
 
-void Engine::leave_game(int id) 
+void Engine::leave_game(int id)
 {
 	if (!verify_game_status(START)) return;
-	players_.erase(players_.begin() + id);
+	if (id >= players_.size()) {
+		interaction_->dispatch_error(SweeperError::PLAYER_NOT_EXISTS);
+	}
+	else {
+		players_.erase(players_.begin() + id);
+	}
 }
 
-void Engine::modify_board(int rows, int cols, int total_mines) 
+void Engine::modify_board(int rows, int cols, int total_mines)
 {
 	if (!verify_game_status(START)) return;
 
 	try {
 		board_->modify_board(rows, cols, total_mines);
-	} catch (SweeperException& ex) {
+	}
+	catch (SweeperException& ex) {
 		interaction_->dispatch_error(ex.get_sweeper_error());
 	}
 }
 
-void Engine::turn_played(int row, int col) 
+void Engine::turn_played(int row, int col)
 {
 	if (!verify_game_status(RUN)) return;
 
 	list<BoardPosition *> listRevealed;
 	try {
 		listRevealed = board_->reveal_position(row, col);
-	} catch (SweeperException& ex) {
+	}
+	catch (SweeperException& ex) {
 		interaction_->dispatch_error(ex.get_sweeper_error());
 		return;
 	}
@@ -103,7 +114,7 @@ void Engine::turn_played(int row, int col)
 		}
 	}
 
-	if (!foundMine) 
+	if (!foundMine)
 		next_player();
 	this->interaction_->board_position_revealed(listRevealed);
 
@@ -118,7 +129,7 @@ void Engine::surrender(Player player)
 {
 }
 
-Player & Engine::next_player() 
+Player & Engine::next_player()
 {
 	if (!verify_game_status(RUN)) return players_[current_player_index_];
 
@@ -135,12 +146,12 @@ int const& Engine::get_current_player_index() {
 	return current_player_index_;
 }
 
-std::vector<Player> const& Engine::get_players_list() const 
+std::vector<Player> const& Engine::get_players_list() const
 {
 	return players_;
 }
 
-ostream& operator<<(ostream& os, const Engine& obj) 
+ostream& operator<<(ostream& os, const Engine& obj)
 {
 	os << *(obj.board_);
 	return os;
@@ -150,7 +161,7 @@ bool Engine::is_game_finished() {
 	return board_->all_mines_revealed();
 }
 
-bool Engine::verify_game_status(Status expected) 
+bool Engine::verify_game_status(Status expected)
 {
 	if (expected == current_status_)
 		return true;

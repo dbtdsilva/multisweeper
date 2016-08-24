@@ -20,6 +20,7 @@ public:
 	int const& get_rows() const;
 	int const& get_total_mines() const;
 	int const& get_cols() const;
+	int const& get_total_mines_revealed() const;
 	friend std::ostream& operator<<(std::ostream& os, const Board& obj);
 
 private:

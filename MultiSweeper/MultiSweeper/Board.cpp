@@ -152,6 +152,11 @@ int const& Board::get_cols() const
 	return cols_;
 }
 
+int const& Board::get_total_mines_revealed() const
+{
+	return total_mines_revealed_;
+}
+
 ostream& operator<<(ostream& os, const Board& obj) 
 {
 	for (int i = 0; i < obj.rows_; i++) {
