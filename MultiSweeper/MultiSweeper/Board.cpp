@@ -25,34 +25,34 @@ void Board::generate_mines()
 	clear_mines();
 
 	srand((unsigned int) time(NULL));
-	int minesPlaced = 0;
-	int mineC, mineR;
-	while (minesPlaced < total_mines_) {
-		mineC = rand() % cols_;
-		mineR = rand() % rows_;
+	int mines_places = 0;
+	int mine_col, mine_row;
+	while (mines_places < total_mines_) {
+		mine_col = rand() % cols_;
+		mine_row = rand() % rows_;
 
-		if (!positions_[mineR][mineC]->is_mine()) {
-			positions_[mineR][mineC]->set_mine();
-			minesPlaced++;
+		if (!positions_[mine_row][mine_col]->is_mine()) {
+			positions_[mine_row][mine_col]->set_mine();
+			mines_places++;
 		}
 	}
 
-	int positionMineCounter;
+	int position_mine_counter;
 	// Run over all board
 	for (int row = 0; row < rows_; row++) {
 		for (int col = 0; col < cols_; col++) {
-			positionMineCounter = 0;
+			position_mine_counter = 0;
 			// Count all mines in adjacencies and itself
-			for (int adjRow = -1; adjRow <= 1; adjRow++) {
-				for (int adjCol = -1; adjCol <= 1; adjCol++) {
-					if (row + adjRow >= 0 && row + adjRow < rows_ 
-							&& col + adjCol >= 0 && col + adjCol < cols_ 
-							&& positions_[row + adjRow][col + adjCol]->is_mine()) {
-						positionMineCounter++;
+			for (int adj_row = -1; adj_row <= 1; adj_row++) {
+				for (int adj_col = -1; adj_col <= 1; adj_col++) {
+					if (row + adj_row >= 0 && row + adj_row < rows_
+							&& col + adj_col >= 0 && col + adj_col < cols_
+							&& positions_[row + adj_row][col + adj_col]->is_mine()) {
+						position_mine_counter++;
 					}
 				}
 			}
-			positions_[row][col]->set_count_neighbour_mines(positionMineCounter);
+			positions_[row][col]->set_count_neighbour_mines(position_mine_counter);
 		}
 	}
 }
@@ -76,43 +76,51 @@ void Board::modify_board(int rows, int cols, int total_mines)
 
 list<BoardPosition *> Board::reveal_position(int row, int col) 
 {
-	list<BoardPosition *> positionsRevealed;
+	list<BoardPosition *> positions_revealed;
 	// If the position was already revealed, return empty.
 	if (positions_[row][col]->is_revealed()) {
 		throw SweeperException(SweeperError::POSITION_ALREADY_REVEALED);
 	}
-	positionsRevealed.push_back(positions_[row][col].get());
+	positions_[row][col]->set_revealed();
+	positions_revealed.push_back(positions_[row][col].get());
 	if (positions_[row][col]->is_mine()) {
 		total_mines_revealed_++;
-	} else {
-		for (BoardPosition * freePosition : reveal_free_positions(row, col))
-			positionsRevealed.push_back(freePosition);
+	} else if (positions_[row][col]->get_count_neighbour_mines() == 0) {
+		for (BoardPosition * new_position_revealed : reveal_free_positions(row, col))
+			positions_revealed.push_back(new_position_revealed);
 	}
-	positions_[row][col]->set_revealed();
-	return positionsRevealed;
+	return positions_revealed;
 }
 
 list<BoardPosition *> Board::reveal_free_positions(int row, int col) 
 {
-	list<BoardPosition *> positionsRevealed;
-	positions_[row][col]->set_revealed();
-	if (positions_[row][col]->get_count_neighbour_mines() != 0)
-		return positionsRevealed;
-
-	for (int adjRow = -1; adjRow <= 1; adjRow++) {
-		for (int adjCol = -1; adjCol <= 1; adjCol++) {
-			if ((adjRow != 0 || adjCol != 0) 
-					&& row + adjRow >= 0 && row + adjRow < rows_
-					&& col + adjCol >= 0 && col + adjCol < cols_
-					&& !positions_[row + adjRow][col + adjCol]->is_revealed())
-			{
-				positionsRevealed.push_back(positions_[row + adjRow][col + adjCol].get());
-				for (BoardPosition * freePosition : reveal_free_positions(row + adjRow, col + adjCol))
-					positionsRevealed.push_back(freePosition);
+	list<BoardPosition *> positions_revealed;
+	vector<BoardPosition *> empty_neighbour_mines = { positions_[row][col].get() };
+	BoardPosition * zero_position;
+	while (!empty_neighbour_mines.empty()) {
+		zero_position = empty_neighbour_mines.back();
+		tuple<int, int> const& value = zero_position->get_position();
+		int const& zero_row = get<0>(value);
+		int const& zero_col = get<1>(value);
+		empty_neighbour_mines.pop_back();
+		for (int adj_row = -1; adj_row <= 1; adj_row++) {
+			for (int adj_col = -1; adj_col <= 1; adj_col++) {
+				int new_row = zero_row + adj_row;
+				int new_col = zero_col + adj_col;
+				if (new_row >= 0 && new_row < rows_
+					&& new_col >= 0 && new_col < cols_
+					&& !positions_[new_row][new_col]->is_revealed())
+				{
+					positions_revealed.push_back(positions_[new_row][new_col].get());
+					positions_[new_row][new_col]->set_revealed();
+					if (positions_[new_row][new_col]->get_count_neighbour_mines() == 0) {
+						empty_neighbour_mines.push_back(positions_[new_row][new_col].get());
+					}
+				}
 			}
 		}
 	}
-	return positionsRevealed;
+	return positions_revealed;
 }
 
 void Board::clear_mines() 
