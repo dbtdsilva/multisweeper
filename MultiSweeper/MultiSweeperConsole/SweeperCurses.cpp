@@ -26,8 +26,7 @@ SweeperCurses::SweeperCurses() :
 		{ "Add player", [=](WINDOW * win) { state_ = PLAYER_ADD; } },
 		{ "Remove player", [=](WINDOW * win) { state_ = PLAYER_REMOVE; } },
 		{ "Return to Main Menu", [=](WINDOW * win) { state_ = MAIN_MENU; } } }),
-	state_(MAIN_MENU),
-	game_is_running_(false)
+	state_(MAIN_MENU), game_is_running_(false), error_offset_(2), game_offset_row_(4)
 {
 }
 
@@ -174,28 +173,26 @@ void SweeperCurses::display_game_status(int row)
 void SweeperCurses::display_game()
 {
 	engine_->start_game();
-	int row_offset = 1;
-	int game_window_offset = 4;
-	int col_offset = (COLS - (cols_ * 2 + 2)) / 2;
 
+	int game_offset_col = ((COLS - (cols_ * 2 + 2)) / 2);
 	attron(COLOR_PAIR(get_color_schema_index()));
-	mvaddch(game_window_offset - 1, col_offset - 1, ACS_ULCORNER);
-	mvaddch(game_window_offset - 1, col_offset + cols_ * 2 + 1, ACS_URCORNER);
-	mvaddch(game_window_offset + rows_, col_offset - 1, ACS_LLCORNER);
-	mvaddch(game_window_offset + rows_, col_offset + cols_ * 2 + 1, ACS_LRCORNER);
+	mvaddch(game_offset_row_ - 1, game_offset_col - 1, ACS_ULCORNER);
+	mvaddch(game_offset_row_ - 1, game_offset_col + cols_ * 2 + 1, ACS_URCORNER);
+	mvaddch(game_offset_row_ + rows_, game_offset_col - 1, ACS_LLCORNER);
+	mvaddch(game_offset_row_ + rows_, game_offset_col + cols_ * 2 + 1, ACS_LRCORNER);
 	for (int row = 0; row < rows_; row++) {
-		mvaddch(row + game_window_offset, col_offset - 1, ACS_VLINE);
-		mvaddch(row + game_window_offset, col_offset + cols_ * 2 + 1, ACS_VLINE);
+		mvaddch(row + game_offset_row_, game_offset_col - 1, ACS_VLINE);
+		mvaddch(row + game_offset_row_, game_offset_col + cols_ * 2 + 1, ACS_VLINE);
 	}
 	for (int col = 0; col < cols_ * 2 + 1; col++) {
-		mvaddch(game_window_offset + rows_, col + col_offset, ACS_HLINE);
-		mvaddch(game_window_offset - 1, col + col_offset, ACS_HLINE);
+		mvaddch(game_offset_row_ + rows_, col + game_offset_col, ACS_HLINE);
+		mvaddch(game_offset_row_ - 1, col + game_offset_col, ACS_HLINE);
 	}
 	attroff(COLOR_PAIR(get_color_schema_index()));
 
 	for (int row = 0; row < rows_; row++) {
 		for (int col = 0; col < cols_; col++) {
-			mvaddch(row + game_window_offset, 1 + col * 2 + col_offset, 250 | A_ALTCHARSET);
+			mvaddch(row + game_offset_row_, 1 + col * 2 + game_offset_col, 250 | A_ALTCHARSET);
 		}
 	}
 
@@ -206,15 +203,10 @@ void SweeperCurses::display_game()
 	int key;
 	stringstream ss;
 	int const &current_player_index = engine_->get_current_player_index();
-
-	string empty_string;
-	for (int i = 0; i < COLS - 2; i++) {
-		empty_string.append(" ");
-	}
-
+	
 	bool current_player;
 	while (game_is_running_) {
-		represent_board_cursor(row, col, game_window_offset, col_offset);
+		represent_board_cursor(row, col);
 
 		for (int player_index = 0; player_index < player_list_.size(); player_index++) {
 			current_player = player_list_[player_index] == player_list_[current_player_index];
@@ -223,8 +215,8 @@ void SweeperCurses::display_game()
 			}
 			ss.str("");
 			ss << player_list_[player_index].get_username();
-			ss << " [ Mines revealed: " << player_list_[player_index].get_mines_revealed() << " ]";
-			mvaddstr_centered(LINES - (int)player_list_.size() + player_index - 1, empty_string);
+			ss << " [ Mines found: " << player_list_[player_index].get_mines_revealed() << " ]";
+			clear_specific(LINES - (int)player_list_.size() + player_index - 1, COLS - 2);
 			mvaddstr_centered(LINES - (int)player_list_.size() + player_index - 1, ss.str());
 			if (current_player) {
 				attroff(COLOR_PAIR(get_color_schema_index()));
@@ -232,13 +224,14 @@ void SweeperCurses::display_game()
 		}
 		ss.str("");
 		ss << mines_revealed_ << " out of " << mines_ << " were revealed";
-		mvaddstr_centered(row_offset, ss.str());
+		mvaddstr_centered(game_offset_row_ - 3, ss.str());
 		key = getch();
 		switch (key)
 		{
 		case 10:
 		case 13:
 		case KEY_ENTER:
+			clear_specific(error_offset_, COLS - 2);
 			engine_->turn_played(row, col);
 			break;
 		case KEY_DOWN:
@@ -257,20 +250,20 @@ void SweeperCurses::display_game()
 	}
 }
 
-void SweeperCurses::represent_board_cursor(int new_row, int new_col, int row_offset, int col_offset)
+void SweeperCurses::represent_board_cursor(int new_row, int new_col)
 {
+	int game_offset_col = ((COLS - (cols_ * 2 + 2)) / 2);
 	int& row = get<0>(board_position_selected_);
 	int& col = get<1>(board_position_selected_);
-
-	mvaddstr(row_offset + row, col_offset + col * 2, " ");
-	mvaddstr(row_offset + row, col_offset + col * 2 + 2, " ");
+	mvaddstr(game_offset_row_ + row, game_offset_col + col * 2, " ");
+	mvaddstr(game_offset_row_ + row, game_offset_col + col * 2 + 2, " ");
 
 	row = new_row;
 	col = new_col;
 
 	attron(COLOR_PAIR(get_color_schema_index()));
-	mvaddstr(row_offset + row, col_offset + col * 2, "[");
-	mvaddstr(row_offset + row, col_offset + col * 2 + 2, "]");
+	mvaddstr(game_offset_row_ + row, game_offset_col + col * 2, "[");
+	mvaddstr(game_offset_row_ + row, game_offset_col + col * 2 + 2, "]");
 	attroff(COLOR_PAIR(get_color_schema_index()));
 }
 
@@ -286,26 +279,27 @@ void SweeperCurses::game_finished()
 
 void SweeperCurses::dispatch_error(const SweeperError& err)
 {
-	display_error(2, err.get_message());
+	display_error(error_offset_, err.get_message());
 }
 
 void SweeperCurses::board_position_revealed(list<BoardPosition *> positions)
 {
+	int game_offset_col = ((COLS - (cols_ * 2 + 2)) / 2);
 	string position_character;
 	for (BoardPosition * pos : positions) {
 		tuple<int, int> const& position = pos->get_position();
 
 		if (pos->is_mine()) {
-			mvaddch(4 + get<0>(position),
-				(COLS - (cols_ * 2 + 2)) / 2 + get<1>(position) * 2 + 1, ACS_DIAMOND);
+			mvaddch(game_offset_row_ + get<0>(position), 
+				game_offset_col + get<1>(position) * 2 + 1, ACS_DIAMOND);
 		}
 		else {
 			int neighbour_mines = pos->get_count_neighbour_mines();
 			position_character = neighbour_mines == 0 ? " " : to_string(neighbour_mines).c_str();
 
 			attron(COLOR_PAIR(get_color_schema_index()));
-			mvaddstr(4 + get<0>(position),
-				(COLS - (cols_ * 2 + 2)) / 2 + get<1>(position) * 2 + 1, position_character.c_str());
+			mvaddstr(game_offset_row_ + get<0>(position),
+				game_offset_col + get<1>(position) * 2 + 1, position_character.c_str());
 			attroff(COLOR_PAIR(get_color_schema_index()));
 		}
 	}
@@ -325,14 +319,14 @@ void SweeperCurses::modify_rows()
 	display_board_status(1);
 	try {
 		mvscanw_robust("Enter the total number of ROWS", 3, &new_rows);
-		if (new_rows <= 0) {
-			display_error(2, "Number of rows inserted is invalid");
+		if (new_rows <= 0 || new_rows >= (LINES - engine_->get_max_players() - game_offset_row_ - 1)) {
+			display_error(error_offset_, "Number of rows inserted is invalid");
 			return;
 		}
 		engine_->modify_board(new_rows, cols_, mines_);
 	}
 	catch (...) {
-		display_error(2, "Received invalid input!");
+		display_error(error_offset_, "Received invalid input!");
 	}
 	display_board_status(7);
 }
@@ -343,8 +337,8 @@ void SweeperCurses::modify_cols()
 	display_board_status(1);
 	try {
 		mvscanw_robust("Enter the total number of COLUMNS", 3, &new_cols);
-		if (new_cols <= 0) {
-			display_error(2, "Number of columns inserted is invalid");
+		if (new_cols <= 0 || new_cols >= COLS / 2 - 2) {
+			display_error(error_offset_, "Number of columns inserted is invalid");
 			return;
 		}
 		engine_->modify_board(rows_, new_cols, mines_);
@@ -362,13 +356,13 @@ void SweeperCurses::modify_mines()
 	try {
 		mvscanw_robust("Enter the total number of MINES", 3, &new_total_mines);
 		if (new_total_mines <= 0) {
-			display_error(2, "Number of mines inserted is invalid");
+			display_error(error_offset_, "Number of mines inserted is invalid");
 			return;
 		}
 		engine_->modify_board(rows_, cols_, new_total_mines);
 	}
 	catch (...) {
-		display_error(2, "Received invalid input!");
+		display_error(error_offset_, "Received invalid input!");
 	}
 	display_board_status(7);
 }
@@ -381,14 +375,14 @@ void SweeperCurses::add_player()
 		engine_->join_game(username.c_str());
 	}
 	catch (...) {
-		display_error(2, "Received invalid input!");
+		display_error(error_offset_, "Received invalid input!");
 	}
 }
 
 void SweeperCurses::remove_player()
 {
 	if (player_list_.size() == 0) {
-		display_error(2, "There is no players to remove");
+		display_error(error_offset_, "There is no players to remove");
 		return;
 	}
 	attrset(A_BOLD);
@@ -408,6 +402,6 @@ void SweeperCurses::remove_player()
 		engine_->leave_game(id);
 	}
 	catch (...) {
-		display_error(2, "Received invalid input");
+		display_error(error_offset_, "Received invalid input");
 	}
 }

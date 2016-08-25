@@ -25,7 +25,7 @@ private:
 	void display_curses();
 	void process_key(int key);
 	void display_instructions();
-	void represent_board_cursor(int new_row, int new_col, int row_offset, int col_offset);
+	void represent_board_cursor(int new_row, int new_col);
 	void modify_rows();
 	void modify_cols();
 	void modify_mines();
@@ -54,6 +54,8 @@ private:
 	std::tuple<int, int> board_position_selected_;
 	std::unique_ptr<Engine> engine_;
 	int const &mines_, &rows_, &cols_, &mines_revealed_;
+	int error_offset_;
+	int game_offset_row_;
 	bool game_is_running_;
 	std::vector<Player> const& player_list_;
 };

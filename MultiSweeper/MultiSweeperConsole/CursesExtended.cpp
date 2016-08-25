@@ -84,6 +84,14 @@ void CursesExtended::display_error(int row, string message)
 	refresh();
 }
 
+void CursesExtended::clear_specific(int row, int size)
+{
+	string empty = "";
+	for (int i = 0; i < size; i++)
+		empty.append(" ");
+	mvaddstr_centered(row, empty);
+}
+
 void CursesExtended::set_color_schema_index(const int &index)
 {
 	color_schema_index_ = index;

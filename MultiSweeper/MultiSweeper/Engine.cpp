@@ -45,6 +45,10 @@ void Engine::start_game()
 void Engine::join_game(string username)
 {
 	if (!verify_game_status(START)) return;
+	if (players_.size() >= kMaxPlayers) {
+		interaction_->dispatch_error(SweeperError::MAX_PLAYERS_REACHED);
+		return;
+	}
 	if (username.length() < 3 || username.length() > 20) {
 		interaction_->dispatch_error(SweeperError::PLAYER_USERNAME_INVALID);
 		return;
@@ -179,6 +183,10 @@ int const& Engine::get_current_player_index() {
 std::vector<Player> const& Engine::get_players_list() const
 {
 	return players_;
+}
+
+int const& Engine::get_max_players() const {
+	return kMaxPlayers;
 }
 
 ostream& operator<<(ostream& os, const Engine& obj)

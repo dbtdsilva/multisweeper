@@ -24,6 +24,7 @@ public:
 	int const& get_current_player_index();
 	Board const& get_board() const;
 	std::vector<Player> const& get_players_list() const;
+	int const& get_max_players() const;
 
 	friend std::ostream& operator<<(std::ostream& os, const Engine& obj);
 private:

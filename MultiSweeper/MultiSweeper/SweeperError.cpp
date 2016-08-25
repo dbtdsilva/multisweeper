@@ -29,3 +29,4 @@ const SweeperError SweeperError::MINES_EXCEED(5, "There is more mines than board
 const SweeperError SweeperError::PLAYER_ALREADY_EXISTS(6, "Player already exists");
 const SweeperError SweeperError::PLAYER_USERNAME_INVALID(7, "Player username must have between 3 and 20 characters");
 const SweeperError SweeperError::PLAYER_NOT_EXISTS(8, "Player does not exists");
+const SweeperError SweeperError::MAX_PLAYERS_REACHED(9, "Total number of players has been reached");
