@@ -31,6 +31,7 @@ private:
 	void modify_mines();
 	void add_player();
 	void remove_player();
+	void change_theme();
 	void display_board_status(int row);
 	void display_game_status(int row);
 	void display_game();
@@ -38,6 +39,7 @@ private:
 	
 	enum VisualState {
 		MAIN_MENU,
+		THEME,
 		BOARD_OPTIONS,
 		INSTRUCTIONS,
 		PLAYERS_OPTIONS,

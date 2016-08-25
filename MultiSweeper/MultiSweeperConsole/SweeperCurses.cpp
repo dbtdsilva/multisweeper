@@ -13,6 +13,7 @@ SweeperCurses::SweeperCurses() :
 	player_list_(engine_->get_players_list()),
 	options_main_({
 		{ "Instructions", [=](WINDOW * win) { state_ = INSTRUCTIONS; } },
+		{ "Change Color Schema", [=](WINDOW * win) { state_ = THEME; } },
 		{ "Adjust Board", [=](WINDOW * win) { state_ = BOARD_OPTIONS; } },
 		{ "Manage Players", [=](WINDOW * win) { state_ = PLAYERS_OPTIONS; } },
 		{ "Start Game", [=](WINDOW * win) { state_ = GAME; } },
@@ -37,10 +38,7 @@ SweeperCurses::~SweeperCurses()
 void SweeperCurses::loop()
 {
 	do {
-		attron(COLOR_PAIR(get_color_schema_index()));
-		border(ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE,
-			ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
-		attroff(COLOR_PAIR(get_color_schema_index()));
+		display_border();
 		display_curses();
 		int key = getch();
 		process_key(key);
@@ -64,6 +62,9 @@ void SweeperCurses::display_curses()
 		break;
 	case PLAYERS_OPTIONS:
 		display_menu(options_players_, "Multisweeper Console");
+		break;
+	case THEME:
+		change_theme();
 		break;
 	case PLAYER_ADD:
 		add_player();
@@ -99,6 +100,7 @@ void SweeperCurses::process_key(int key)
 		process_menu_key(key, options_players_);
 		break;
 	case INSTRUCTIONS:
+	case THEME:
 	case GAME:
 		state_ = MAIN_MENU;	// Any key to continue
 		erase();
@@ -148,6 +150,44 @@ void SweeperCurses::display_instructions()
 	mvaddstr_centered(16, "Press any key to continue");
 	attroff(COLOR_PAIR(get_color_schema_index()));
 	attrset(A_NORMAL);
+}
+
+void SweeperCurses::change_theme() {
+	int key;
+	do {
+		display_border();
+
+		attrset(A_BOLD);
+		attron(COLOR_PAIR(get_color_schema_index()));
+		mvaddstr_centered(3, "Color Schema");
+		attroff(COLOR_PAIR(get_color_schema_index()));
+		attrset(A_NORMAL);
+
+		mvaddstr_centered(4, "Use arrows UP and DOWN to change current theme.");
+		stringstream ss;
+		ss << "Current theme: " << get_color_schema_index();
+		mvaddstr_centered(6, ss.str());
+		attrset(A_BOLD);
+		attron(COLOR_PAIR(get_color_schema_index()));
+		mvaddstr_centered(8, "Press ENTER to finish");
+		attroff(COLOR_PAIR(get_color_schema_index()));
+		attrset(A_NORMAL);
+		
+		refresh();
+		key = getch();
+
+		switch (key)
+		{
+		case KEY_DOWN:
+			change_color_schema(false);
+			break;
+		case KEY_UP:
+			change_color_schema(true);
+			break;
+		}
+	} while (key != KEY_ENTER && key != 10 && key != 13);
+
+	display_error(9, "Color has been set!");
 }
 
 void SweeperCurses::display_board_status(int row)

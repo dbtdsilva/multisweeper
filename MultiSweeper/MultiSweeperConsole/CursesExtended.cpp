@@ -5,12 +5,13 @@ using namespace std;
 CursesExtended::CursesExtended() :
 	window_(nullptr), width_(10), height_(30),
 	pair_colors_({
-		{COLOR_WHITE, COLOR_BLACK},
-		{COLOR_YELLOW, COLOR_BLACK},
-		{COLOR_CYAN, COLOR_BLACK},
-		{COLOR_RED, COLOR_BLACK},
-		{COLOR_GREEN, COLOR_BLACK},
-		{COLOR_MAGENTA, COLOR_BLACK}
+		{ COLOR_WHITE, COLOR_BLACK },
+		{ COLOR_YELLOW, COLOR_BLACK },
+		{ COLOR_CYAN, COLOR_BLACK },
+		{ COLOR_RED, COLOR_BLACK },
+		{ COLOR_GREEN, COLOR_BLACK },
+		{ COLOR_MAGENTA, COLOR_BLACK },
+		{ COLOR_BLUE, COLOR_BLACK }
 	}), color_schema_index_(2)
 {
 	setlocale(LC_ALL, "");
@@ -92,9 +93,20 @@ void CursesExtended::clear_specific(int row, int size)
 	mvaddstr_centered(row, empty);
 }
 
-void CursesExtended::change_color_schema()
+void CursesExtended::display_border() 
 {
-	color_schema_index_ = ++color_schema_index_ % pair_colors_.size();
+	attron(COLOR_PAIR(color_schema_index_));
+	border(ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE,
+		ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
+	attroff(COLOR_PAIR(color_schema_index_));
+}
+
+void CursesExtended::change_color_schema(bool direction)
+{
+	color_schema_index_ = direction ? color_schema_index_ + 1 : color_schema_index_ - 1;
+	color_schema_index_ %= pair_colors_.size() + 1;
+	if (color_schema_index_ == 0)
+		color_schema_index_ = direction ? 1 : pair_colors_.size();
 }
 
 const int& CursesExtended::get_color_schema_index()

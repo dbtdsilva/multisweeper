@@ -18,8 +18,9 @@ protected:
 	void mvscanw_robust(std::string intro, int start_row, T * return_value);
 	void mvaddstr_centered(int row, std::string message);
 	void display_error(int row, std::string message);
+	void display_border();
 	void clear_specific(int row, int size);
-	void change_color_schema();
+	void change_color_schema(bool direction = false);
 	const int& get_color_schema_index();
 	const int& get_height();
 	const int& get_width();
