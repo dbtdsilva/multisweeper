@@ -257,7 +257,7 @@ ostream& operator<<(ostream& os, const Engine& obj)
 
 bool Engine::is_game_finished() {
 	bool all_players_surrendered = true;
-	for (Player p : players_)
+	for (const Player& p : players_)
 	{
 		if (!p.has_surrendered())
 			all_players_surrendered = false;
