@@ -13,6 +13,62 @@ Board::Board(int rows, int cols, int total_mines) :
 	this->modify_board(rows, cols, total_mines);
 }
 
+Board::~Board() {
+
+}
+
+Board::Board(const Board& other)
+{
+	*this = other;
+}
+
+Board::Board(Board&& other)
+{
+	this->rows_ = other.rows_;
+	this->cols_ = other.cols_;
+	this->total_mines_ = other.total_mines_;
+	this->total_mines_revealed_ = other.total_mines_revealed_;
+	for (int i = 0; i < positions_.size(); i++) {
+		for (int j = 0; j < positions_[j].size(); j++) {
+			this->positions_[i][j] = std::move(other.positions_[i][j]);
+		}
+	}
+}
+
+Board& Board::operator=(const Board& other)
+{
+	if (this != &other) 
+	{
+		this->rows_ = other.rows_;
+		this->cols_ = other.cols_;
+		this->total_mines_ = other.total_mines_;
+		this->total_mines_revealed_ = other.total_mines_revealed_;
+		for (int i = 0; i < positions_.size(); i++) {
+			for (int j = 0; j < positions_[j].size(); j++) {
+				this->positions_[i][j] = make_unique<BoardPosition>(other.positions_[i][j]);
+			}
+		}
+	}
+	return *this;
+}
+
+Board& Board::operator=(Board&& other)
+{
+	if (this != &other) 
+	{
+		this->rows_ = other.rows_;
+		this->cols_ = other.cols_;
+		this->total_mines_ = other.total_mines_;
+		this->total_mines_revealed_ = other.total_mines_revealed_;
+		for (int i = 0; i < positions_.size(); i++) {
+			for (int j = 0; j < positions_[j].size(); j++) {
+				this->positions_[i][j] = std::move(other.positions_[i][j]);
+			}
+		}
+	}
+	return *this;
+}
+
 void Board::generate_mines() 
 {
 	if (total_mines_ >= rows_ * cols_) {
