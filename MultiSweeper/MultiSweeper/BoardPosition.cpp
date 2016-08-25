@@ -12,11 +12,6 @@ BoardPosition::BoardPosition(int row, int col, bool isMine) :
 {
 }
 
-
-BoardPosition::~BoardPosition()
-{
-}
-
 void BoardPosition::set_count_neighbour_mines(unsigned int const& count_neighbour_mines) 
 {
 	this->count_neighbour_mines_ = count_neighbour_mines;

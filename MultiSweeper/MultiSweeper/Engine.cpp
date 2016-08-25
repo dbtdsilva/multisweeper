@@ -24,10 +24,6 @@ Engine::Engine(InterfaceVisual* interaction, int rows, int cols, int mines) :
 {
 }
 
-Engine::~Engine()
-{
-}
-
 void Engine::start_game()
 {
 	if (!verify_game_status(START)) return;

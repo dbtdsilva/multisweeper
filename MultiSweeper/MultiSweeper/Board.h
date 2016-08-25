@@ -10,7 +10,6 @@ class Board
 {
 public:	
 	Board(int rows, int cols, int total_mines);
-	virtual ~Board();
 
 	void generate_mines();
 	void modify_board(int rows, int cols, int total_mines);

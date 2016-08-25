@@ -12,7 +12,6 @@ class SweeperCurses : public CursesMenuExtended, public InterfaceVisual
 {
 public:
 	SweeperCurses();
-	~SweeperCurses();
 
 	void loop();
 	virtual void game_started();

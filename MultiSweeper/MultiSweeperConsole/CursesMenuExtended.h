@@ -7,7 +7,6 @@ class CursesMenuExtended : public CursesExtended
 {
 public:
 	CursesMenuExtended();
-	~CursesMenuExtended();
 
 protected:
 	struct command

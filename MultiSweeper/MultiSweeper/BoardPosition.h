@@ -7,7 +7,6 @@ class BoardPosition
 public:
 	BoardPosition(int row, int col);
 	BoardPosition(int row, int col, bool is_mine);
-	~BoardPosition();
 
 	void set_count_neighbour_mines(unsigned int const& count_neighbour_mines);
 	void set_mine();

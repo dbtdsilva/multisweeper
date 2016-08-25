@@ -13,10 +13,6 @@ Board::Board(int rows, int cols, int total_mines) :
 	this->modify_board(rows, cols, total_mines);
 }
 
-Board::~Board()
-{
-}
-
 void Board::generate_mines() 
 {
 	if (total_mines_ >= rows_ * cols_) {

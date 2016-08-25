@@ -9,15 +9,6 @@ SweeperException::SweeperException(SweeperError err) :
 {
 }
 
-SweeperException::SweeperException(const SweeperException& ex) : 
-	SweeperException(ex.err_)
-{
-}
-
-SweeperException::~SweeperException()
-{
-}
-
 const char* SweeperException::what() const throw() 
 {
 	stringstream ss;

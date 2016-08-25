@@ -9,10 +9,6 @@ Player::Player(string username) :
 {
 }
 
-Player::~Player()
-{
-}
-
 void Player::update_game_stats(bool won) {
 	games_played_++;
 	if (won == true) {

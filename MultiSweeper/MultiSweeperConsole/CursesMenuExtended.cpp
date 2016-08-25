@@ -7,11 +7,6 @@ CursesMenuExtended::CursesMenuExtended() :
 {
 }
 
-
-CursesMenuExtended::~CursesMenuExtended()
-{
-}
-
 void CursesMenuExtended::process_menu_key(int key, vector<struct command> menu_vector)
 {
 	switch (key)

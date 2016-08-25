@@ -11,7 +11,6 @@ public:
 	Engine();
 	Engine(InterfaceVisual* interaction);
 	Engine(InterfaceVisual* interaction, int rows, int cols, int mines);
-	virtual ~Engine();
 
 	void start_game();
 	void modify_board(int rows, int cols, int total_mines);

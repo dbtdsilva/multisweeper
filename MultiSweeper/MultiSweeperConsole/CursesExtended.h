@@ -9,7 +9,6 @@ class CursesExtended
 {
 public:
 	CursesExtended();
-	virtual ~CursesExtended();
 	virtual void loop() = 0;
 
 protected:

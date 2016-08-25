@@ -10,7 +10,6 @@ class InterfaceVisual
 {
 public:
 	InterfaceVisual();
-	virtual ~InterfaceVisual();
 
 	virtual void game_started() = 0;
 	virtual void game_finished() = 0;

@@ -5,11 +5,6 @@ SweeperError::SweeperError(int error_code, std::string message) :
 {
 }
 
-SweeperError::SweeperError(const SweeperError& error) :
-	SweeperError(error.error_code_, error.message_)
-{
-}
-
 std::string const& SweeperError::get_message() const 
 {
 	return message_;

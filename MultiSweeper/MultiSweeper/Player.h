@@ -6,7 +6,6 @@ class Player
 {
 public:
 	Player(std::string username);
-	~Player();
 
 	void update_game_stats(bool won);
 	void increase_mines_revealed();

@@ -7,8 +7,6 @@ using namespace std;
 class SweeperError
 {
 public:
-	SweeperError(const SweeperError& error);
-
 	static const SweeperError SUCCESS;
 	static const SweeperError NO_PLAYERS;
 	static const SweeperError GAME_ALREADY_STARTED;

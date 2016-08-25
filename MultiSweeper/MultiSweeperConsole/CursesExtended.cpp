@@ -18,11 +18,6 @@ CursesExtended::CursesExtended() :
 	init();
 }
 
-
-CursesExtended::~CursesExtended()
-{
-}
-
 void CursesExtended::init()
 {
 #ifdef XCURSES
@@ -106,7 +101,7 @@ void CursesExtended::change_color_schema(bool direction)
 	color_schema_index_ = direction ? color_schema_index_ + 1 : color_schema_index_ - 1;
 	color_schema_index_ %= pair_colors_.size() + 1;
 	if (color_schema_index_ == 0)
-		color_schema_index_ = direction ? 1 : pair_colors_.size();
+		color_schema_index_ = direction ? 1 : (int)pair_colors_.size();
 }
 
 const int& CursesExtended::get_color_schema_index()

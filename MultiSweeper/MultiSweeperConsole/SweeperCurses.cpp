@@ -31,10 +31,6 @@ SweeperCurses::SweeperCurses() :
 {
 }
 
-SweeperCurses::~SweeperCurses()
-{
-}
-
 void SweeperCurses::loop()
 {
 	do {
@@ -324,7 +320,7 @@ void SweeperCurses::display_highscore() {
 
 	attrset(A_BOLD);
 	attron(COLOR_PAIR(get_color_schema_index()));
-	mvaddstr_centered(7 + player_list_.size(), "Press any key to continue");
+	mvaddstr_centered(7 + (int)player_list_.size(), "Press any key to continue");
 	attroff(COLOR_PAIR(get_color_schema_index()));
 	attrset(A_NORMAL);
 }
@@ -452,7 +448,7 @@ void SweeperCurses::add_player()
 	string username;
 	try {
 		mvscanw_robust("Enter player's username", 3, &username);
-		engine_->join_game(username.c_str());
+		engine_->join_game(username);
 	}
 	catch (...) {
 		display_error(error_offset_, "Received invalid input!");
