@@ -16,7 +16,7 @@ void Player::update_game_stats(bool won) {
 	}
 	mines_revealed_ = 0;
 	mines_missed_ = 0;
-	surrender_ = true;
+	surrender_ = false;
 }
 
 void Player::increase_mines_revealed() 

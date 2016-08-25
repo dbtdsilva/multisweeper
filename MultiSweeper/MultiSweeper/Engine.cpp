@@ -213,7 +213,10 @@ Player & Engine::next_player()
 {
 	if (!verify_game_status(RUN)) return players_[current_player_index_];
 
-	current_player_index_ = ++current_player_index_ % players_.size();
+	do {
+		current_player_index_ = ++current_player_index_ % players_.size();
+	} while (players_[current_player_index_].has_surrendered());
+
 	return players_[current_player_index_];
 }
 

@@ -243,6 +243,12 @@ void SweeperCurses::display_game()
 	stringstream ss;
 	int const &current_player_index = engine_->get_current_player_index();
 	
+	attrset(A_BOLD);
+	attron(COLOR_PAIR(get_color_schema_index()));
+	mvaddstr_centered(LINES - 2, "USE: Arrows to move cursor; ENTER to find a mine; Q to surrender");
+	attroff(COLOR_PAIR(get_color_schema_index()));
+	attrset(A_NORMAL);
+
 	bool game_has_started = game_is_running_;
 	bool current_player;
 	while (game_is_running_) {
@@ -256,9 +262,13 @@ void SweeperCurses::display_game()
 			}
 			ss.str("");
 			ss << player_list_[player_index].get_username();
-			ss << " [ Mines found: " << player_list_[player_index].get_mines_revealed() << " ]";
-			clear_specific(LINES - (int)player_list_.size() + player_index - 1, COLS - 2);
-			mvaddstr_centered(LINES - (int)player_list_.size() + player_index - 1, ss.str());
+			ss << " [ Mines found: " << player_list_[player_index].get_mines_revealed();
+			if (player_list_[player_index].has_surrendered()) {
+				ss << ", surrendered";
+			}
+			ss << " ]";
+			clear_specific(LINES - (int)player_list_.size() + player_index - 3, COLS - 2);
+			mvaddstr_centered(LINES - (int)player_list_.size() + player_index - 3, ss.str());
 			if (current_player) {
 				attroff(COLOR_PAIR(get_color_schema_index()));
 			}
@@ -287,6 +297,10 @@ void SweeperCurses::display_game()
 			break;
 		case KEY_RIGHT:
 			col = col < cols_ - 1 ? col + 1 : col;
+			break;
+		case 'Q':
+		case 'q':
+			engine_->surrender();
 			break;
 		}
 	}
@@ -404,7 +418,7 @@ void SweeperCurses::modify_rows()
 	display_board_status(1);
 	try {
 		mvscanw_robust("Enter the total number of ROWS", 3, &new_rows);
-		if (new_rows <= 0 || new_rows >= (LINES - engine_->get_max_players() - game_offset_row_ - 1)) {
+		if (new_rows <= 0 || new_rows >= (LINES - engine_->get_max_players() - game_offset_row_ - 3)) {
 			display_error(error_offset_, "Number of rows inserted is invalid");
 			return;
 		}
