@@ -90,10 +90,12 @@ void CursesExtended::clear_specific(int row, int size)
 
 void CursesExtended::display_border() 
 {
+	attrset(A_BOLD);
 	attron(COLOR_PAIR(color_schema_index_));
 	border(ACS_VLINE, ACS_VLINE, ACS_HLINE, ACS_HLINE,
 		ACS_ULCORNER, ACS_URCORNER, ACS_LLCORNER, ACS_LRCORNER);
 	attroff(COLOR_PAIR(color_schema_index_));
+	attrset(A_NORMAL);
 }
 
 void CursesExtended::change_color_schema(bool direction)

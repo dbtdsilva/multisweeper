@@ -211,6 +211,7 @@ void SweeperCurses::display_game()
 	engine_->start_game();
 
 	int game_offset_col = ((COLS - (cols_ * 2 + 2)) / 2);
+	attrset(A_BOLD);
 	attron(COLOR_PAIR(get_color_schema_index()));
 	mvaddch(game_offset_row_ - 1, game_offset_col - 1, ACS_ULCORNER);
 	mvaddch(game_offset_row_ - 1, game_offset_col + cols_ * 2 + 1, ACS_URCORNER);
@@ -225,12 +226,14 @@ void SweeperCurses::display_game()
 		mvaddch(game_offset_row_ - 1, col + game_offset_col, ACS_HLINE);
 	}
 	attroff(COLOR_PAIR(get_color_schema_index()));
+	
 
 	for (int row = 0; row < rows_; row++) {
 		for (int col = 0; col < cols_; col++) {
 			mvaddch(row + game_offset_row_, 1 + col * 2 + game_offset_col, 250 | A_ALTCHARSET);
 		}
 	}
+	attrset(A_NORMAL);
 
 	tuple<int, int> new_position_selected = { 0, 0 };
 	int& row = get<0>(new_position_selected);
@@ -245,6 +248,7 @@ void SweeperCurses::display_game()
 	while (game_is_running_) {
 		represent_board_cursor(row, col);
 
+		attrset(A_BOLD);
 		for (int player_index = 0; player_index < player_list_.size(); player_index++) {
 			current_player = player_list_[player_index] == player_list_[current_player_index];
 			if (current_player) {
@@ -262,6 +266,7 @@ void SweeperCurses::display_game()
 		ss.str("");
 		ss << mines_revealed_ << " out of " << mines_ << " were revealed";
 		mvaddstr_centered(game_offset_row_ - 3, ss.str());
+		attrset(A_NORMAL);
 		key = getch();
 		switch (key)
 		{
@@ -336,10 +341,12 @@ void SweeperCurses::represent_board_cursor(int new_row, int new_col)
 	row = new_row;
 	col = new_col;
 
+	attrset(A_BOLD);
 	attron(COLOR_PAIR(get_color_schema_index()));
 	mvaddstr(game_offset_row_ + row, game_offset_col + col * 2, "[");
 	mvaddstr(game_offset_row_ + row, game_offset_col + col * 2 + 2, "]");
 	attroff(COLOR_PAIR(get_color_schema_index()));
+	attrset(A_NORMAL);
 }
 
 void SweeperCurses::game_started()
@@ -364,6 +371,7 @@ void SweeperCurses::board_position_revealed(list<BoardPosition *> positions)
 	for (BoardPosition * pos : positions) {
 		tuple<int, int> const& position = pos->get_position();
 
+		attrset(A_BOLD);
 		if (pos->is_mine()) {
 			mvaddch(game_offset_row_ + get<0>(position), 
 				game_offset_col + get<1>(position) * 2 + 1, ACS_DIAMOND);
@@ -377,6 +385,7 @@ void SweeperCurses::board_position_revealed(list<BoardPosition *> positions)
 				game_offset_col + get<1>(position) * 2 + 1, position_character.c_str());
 			attroff(COLOR_PAIR(get_color_schema_index()));
 		}
+		attrset(A_NORMAL);
 	}
 }
 
