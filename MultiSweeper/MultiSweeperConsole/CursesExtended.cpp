@@ -92,9 +92,9 @@ void CursesExtended::clear_specific(int row, int size)
 	mvaddstr_centered(row, empty);
 }
 
-void CursesExtended::set_color_schema_index(const int &index)
+void CursesExtended::change_color_schema()
 {
-	color_schema_index_ = index;
+	color_schema_index_ = ++color_schema_index_ % pair_colors_.size();
 }
 
 const int& CursesExtended::get_color_schema_index()

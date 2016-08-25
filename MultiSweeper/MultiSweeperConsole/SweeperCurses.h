@@ -34,6 +34,7 @@ private:
 	void display_board_status(int row);
 	void display_game_status(int row);
 	void display_game();
+	void display_highscore();
 	
 	enum VisualState {
 		MAIN_MENU,
@@ -58,5 +59,6 @@ private:
 	int game_offset_row_;
 	bool game_is_running_;
 	std::vector<Player> const& player_list_;
+	std::vector<const Player *> winners_;
 };
 

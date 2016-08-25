@@ -19,7 +19,7 @@ protected:
 	void mvaddstr_centered(int row, std::string message);
 	void display_error(int row, std::string message);
 	void clear_specific(int row, int size);
-	void set_color_schema_index(const int &index);
+	void change_color_schema();
 	const int& get_color_schema_index();
 	const int& get_height();
 	const int& get_width();

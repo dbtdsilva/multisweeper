@@ -204,6 +204,7 @@ void SweeperCurses::display_game()
 	stringstream ss;
 	int const &current_player_index = engine_->get_current_player_index();
 	
+	bool game_has_started = game_is_running_;
 	bool current_player;
 	while (game_is_running_) {
 		represent_board_cursor(row, col);
@@ -248,6 +249,44 @@ void SweeperCurses::display_game()
 			break;
 		}
 	}
+	
+	if (game_has_started) {
+		stringstream stream;
+		if (player_list_.size() > 1 && winners_.size() == 1)
+			stream << "Game has finished! " << *winners_[0] << " WON!";
+		else if (player_list_.size() > 1 && winners_.size() > 1)
+			stream << "Game has finished! It is a DRAW.";
+		else
+			stream << "Game has finished!";
+		display_error(error_offset_, stream.str());
+		getch();
+		display_highscore();
+	}
+}
+
+void SweeperCurses::display_highscore() {
+	for (int i = 1; i < LINES - 1; i++)
+		clear_specific(i, COLS - 2);
+	attrset(A_BOLD);
+	attron(COLOR_PAIR(get_color_schema_index()));
+	mvaddstr_centered(3, "Current Highscore");
+	attroff(COLOR_PAIR(get_color_schema_index()));
+	attrset(A_NORMAL);
+	mvaddstr_centered(4, "(games won - win rate)");
+	stringstream stream;
+	for (int i = 0; i < player_list_.size(); i++) {
+		stream.str("");
+		stream << player_list_[i].get_username();
+		stream << " (" << player_list_[i].get_games_won() << " - ";
+		stream << (player_list_[i].get_games_won() * 100) / player_list_[i].get_games_played() << "%)";
+		mvaddstr_centered(6 + i, stream.str());
+	}
+
+	attrset(A_BOLD);
+	attron(COLOR_PAIR(get_color_schema_index()));
+	mvaddstr_centered(7 + player_list_.size(), "Press any key to continue");
+	attroff(COLOR_PAIR(get_color_schema_index()));
+	attrset(A_NORMAL);
 }
 
 void SweeperCurses::represent_board_cursor(int new_row, int new_col)
@@ -311,6 +350,7 @@ void SweeperCurses::board_created(int height, int width)
 
 void SweeperCurses::player_won(vector<const Player*> players)
 {
+	winners_ = players;
 }
 
 void SweeperCurses::modify_rows()
