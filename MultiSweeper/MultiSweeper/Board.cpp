@@ -45,7 +45,7 @@ Board& Board::operator=(const Board& other)
 		this->total_mines_revealed_ = other.total_mines_revealed_;
 		for (int i = 0; i < positions_.size(); i++) {
 			for (int j = 0; j < positions_[j].size(); j++) {
-				this->positions_[i][j] = make_unique<BoardPosition>(other.positions_[i][j]);
+				this->positions_[i][j] = make_unique<BoardPosition>(*(other.positions_[i][j]));
 			}
 		}
 	}
