@@ -8,7 +8,6 @@
 class Engine
 {
 public:
-	Engine();
 	Engine(InterfaceVisual* interaction);
 	Engine(InterfaceVisual* interaction, int rows, int cols, int mines);
 

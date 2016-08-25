@@ -10,10 +10,6 @@
 
 using namespace std;
 
-Engine::Engine() : Engine(nullptr)
-{
-}
-
 Engine::Engine(InterfaceVisual* interaction) : Engine(interaction, 10, 5, 10)
 {
 }
