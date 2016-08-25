@@ -10,6 +10,12 @@ class Engine
 public:
 	Engine(InterfaceVisual* interaction);
 	Engine(InterfaceVisual* interaction, int rows, int cols, int mines);
+	Engine(const Engine & other);
+	Engine(Engine&& other);
+	virtual ~Engine();
+
+	Engine& operator=(const Engine& other);
+	Engine& operator=(Engine&& other);
 
 	void start_game();
 	void modify_board(int rows, int cols, int total_mines);

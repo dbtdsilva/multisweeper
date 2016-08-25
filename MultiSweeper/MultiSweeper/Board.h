@@ -12,7 +12,7 @@ public:
 	Board(int rows, int cols, int total_mines);
 	Board(const Board & other);
 	Board(Board&& other);
-	~Board();
+	virtual ~Board();
 
 	Board& operator=(const Board& other);
 	Board& operator=(Board&& other);

@@ -22,12 +22,9 @@ Board::Board(const Board& other)
 	*this = other;
 }
 
-Board::Board(Board&& other)
+Board::Board(Board&& other) : rows_(other.rows_), cols_(other.cols_),
+	total_mines_(other.total_mines_), total_mines_revealed_(other.total_mines_revealed_)
 {
-	this->rows_ = other.rows_;
-	this->cols_ = other.cols_;
-	this->total_mines_ = other.total_mines_;
-	this->total_mines_revealed_ = other.total_mines_revealed_;
 	for (int i = 0; i < positions_.size(); i++) {
 		for (int j = 0; j < positions_[j].size(); j++) {
 			this->positions_[i][j] = std::move(other.positions_[i][j]);

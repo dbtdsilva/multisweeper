@@ -20,6 +20,46 @@ Engine::Engine(InterfaceVisual* interaction, int rows, int cols, int mines) :
 {
 }
 
+Engine::~Engine() 
+{
+}
+
+Engine::Engine(const Engine & other) : kMaxPlayers(other.kMaxPlayers)
+{
+	*this = other;
+}
+
+Engine::Engine(Engine&& other) : kMaxPlayers(other.kMaxPlayers),
+	current_status_(other.current_status_), current_player_index_(other.current_player_index_),
+	players_(other.players_), interaction_(other.interaction_)
+{
+	this->board_ = std::move(other.board_);
+}
+
+Engine& Engine::operator=(const Engine& other)
+{
+	if (this != &other) {
+		this->current_status_ = other.current_status_;
+		this->current_player_index_ = other.current_player_index_;
+		this->players_ = other.players_;
+		this->interaction_ = other.interaction_;
+		this->board_ = make_unique<Board>(*(other.board_));
+	}
+	return *this;
+}
+
+Engine& Engine::operator=(Engine&& other)
+{
+	if (this != &other) {
+		this->current_status_ = other.current_status_;
+		this->current_player_index_ = other.current_player_index_;
+		this->players_ = other.players_;
+		this->interaction_ = other.interaction_;
+		this->board_ = std::move(other.board_);
+	}
+	return *this;
+}
+
 void Engine::start_game()
 {
 	if (!verify_game_status(START)) return;
@@ -51,7 +91,7 @@ void Engine::join_game(string username)
 		interaction_->dispatch_error(SweeperError::PLAYER_ALREADY_EXISTS);
 		return;
 	}
-	players_.push_back(player);
+	players_.push_back(std::move(player));
 }
 
 void Engine::leave_game(string username)
