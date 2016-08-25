@@ -142,15 +142,15 @@ void Engine::turn_played(int row, int col)
 		return;
 	}
 
-	bool foundMine = false;
+	bool found_mine = false;
 	for (BoardPosition * revealed : listRevealed) {
 		if (revealed->is_mine()) {
-			foundMine = true;
+			found_mine = true;
 			break;
 		}
 	}
 
-	if (!foundMine) {
+	if (!found_mine) {
 		players_[current_player_index_].increase_mines_missed();
 		next_player();
 	} else {

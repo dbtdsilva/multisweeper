@@ -48,7 +48,7 @@ void CursesMenuExtended::process_menu_key(int key, vector<struct command> menu_v
 
 void CursesMenuExtended::display_menu(vector<struct command> options, string title)
 {
-	int menuMargin = 3;
+	int menu_margin = 3;
 
 	if (menu_old_opt_ == -1) {
 		int i;
@@ -63,14 +63,14 @@ void CursesMenuExtended::display_menu(vector<struct command> options, string tit
 		//display_board_status(LINES - 4);
 
 		for (i = 0; i < options.size(); i++)
-			mvaddstr_centered(menuMargin + i, options[i].text);
+			mvaddstr_centered(menu_margin + i, options[i].text);
 	}
 	else {
-		mvaddstr_centered(menuMargin + menu_old_opt_, options[menu_old_opt_].text);
+		mvaddstr_centered(menu_margin + menu_old_opt_, options[menu_old_opt_].text);
 	}
 
 	attrset(A_REVERSE);
-	mvaddstr_centered(menuMargin + menu_new_opt_, options[menu_new_opt_].text);
+	mvaddstr_centered(menu_margin + menu_new_opt_, options[menu_new_opt_].text);
 	attrset(A_NORMAL);
 
 	attrset(A_BOLD);
