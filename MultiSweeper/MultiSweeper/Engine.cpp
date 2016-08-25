@@ -166,25 +166,36 @@ void Engine::turn_played(int row, int col)
 void Engine::game_finished() 
 {
 	vector<Player *> winners;
-	winners.push_back(&players_[0]);
-	for (int i = 1; i < players_.size(); i++) {
-		if (players_[i].get_mines_revealed() > winners.back()->get_mines_revealed()) {
+	for (Player& p : players_)
+	{
+		if (p.has_surrendered()) 
+		{
+			p.update_game_stats(false);
+			continue;
+		}
+
+		if (winners.empty()) {
+			winners.push_back(&p);
+			continue;
+		}
+
+		if (p.get_mines_revealed() > winners.back()->get_mines_revealed()) {
 			for (auto winner : winners)
 				winner->update_game_stats(false);
 			winners.clear();
-			winners.push_back(&players_[i]);
+			winners.push_back(&p);
 		}
-		else if (players_[i].get_mines_revealed() < winners.back()->get_mines_revealed()) {
-			players_[i].update_game_stats(false);
+		else if (p.get_mines_revealed() < winners.back()->get_mines_revealed()) {
+			p.update_game_stats(false);
 		}
 		else {
-			winners.push_back(&players_[i]);
+			winners.push_back(&p);
 		}
 	}
 	// If vector only has 1 element, that player has won
 	// Otherwise, they tied.
 	vector<const Player*> winners_const;
-	for (auto winner : winners) {
+	for (const auto &winner : winners) {
 		winner->update_game_stats(winners.size() == 1);
 		winners_const.push_back(winner);
 	}

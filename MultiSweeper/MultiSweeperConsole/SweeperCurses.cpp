@@ -240,8 +240,6 @@ void SweeperCurses::display_game()
 	int& col = get<1>(new_position_selected);
 
 	int key;
-	stringstream ss;
-	int const &current_player_index = engine_->get_current_player_index();
 	
 	attrset(A_BOLD);
 	attron(COLOR_PAIR(get_color_schema_index()));
@@ -250,33 +248,9 @@ void SweeperCurses::display_game()
 	attrset(A_NORMAL);
 
 	bool game_has_started = game_is_running_;
-	bool current_player;
 	while (game_is_running_) {
 		represent_board_cursor(row, col);
-
-		attrset(A_BOLD);
-		for (int player_index = 0; player_index < player_list_.size(); player_index++) {
-			current_player = player_list_[player_index] == player_list_[current_player_index];
-			if (current_player) {
-				attron(COLOR_PAIR(get_color_schema_index()));
-			}
-			ss.str("");
-			ss << player_list_[player_index].get_username();
-			ss << " [ Mines found: " << player_list_[player_index].get_mines_revealed();
-			if (player_list_[player_index].has_surrendered()) {
-				ss << ", surrendered";
-			}
-			ss << " ]";
-			clear_specific(LINES - (int)player_list_.size() + player_index - 3, COLS - 2);
-			mvaddstr_centered(LINES - (int)player_list_.size() + player_index - 3, ss.str());
-			if (current_player) {
-				attroff(COLOR_PAIR(get_color_schema_index()));
-			}
-		}
-		ss.str("");
-		ss << mines_revealed_ << " out of " << mines_ << " were revealed";
-		mvaddstr_centered(game_offset_row_ - 3, ss.str());
-		attrset(A_NORMAL);
+		represent_game_stats();
 		key = getch();
 		switch (key)
 		{
@@ -317,6 +291,36 @@ void SweeperCurses::display_game()
 		getch();
 		display_highscore();
 	}
+}
+
+void SweeperCurses::represent_game_stats() 
+{
+	bool current_player;
+	stringstream ss;
+	int const &current_player_index = engine_->get_current_player_index();
+	attrset(A_BOLD);
+	for (int player_index = 0; player_index < player_list_.size(); player_index++) {
+		current_player = player_list_[player_index] == player_list_[current_player_index];
+		if (current_player) {
+			attron(COLOR_PAIR(get_color_schema_index()));
+		}
+		ss.str("");
+		ss << player_list_[player_index].get_username();
+		ss << " [ Mines found: " << player_list_[player_index].get_mines_revealed();
+		if (player_list_[player_index].has_surrendered()) {
+			ss << ", surrendered";
+		}
+		ss << " ]";
+		clear_specific(LINES - (int)player_list_.size() + player_index - 3, COLS - 2);
+		mvaddstr_centered(LINES - (int)player_list_.size() + player_index - 3, ss.str());
+		if (current_player) {
+			attroff(COLOR_PAIR(get_color_schema_index()));
+		}
+	}
+	ss.str("");
+	ss << mines_revealed_ << " out of " << mines_ << " were revealed";
+	mvaddstr_centered(game_offset_row_ - 3, ss.str());
+	attrset(A_NORMAL);
 }
 
 void SweeperCurses::display_highscore() {

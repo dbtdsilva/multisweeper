@@ -25,6 +25,7 @@ private:
 	void process_key(int key);
 	void display_instructions();
 	void represent_board_cursor(int new_row, int new_col);
+	void represent_game_stats();
 	void modify_rows();
 	void modify_cols();
 	void modify_mines();
