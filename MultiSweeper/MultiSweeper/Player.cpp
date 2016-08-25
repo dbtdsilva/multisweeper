@@ -5,7 +5,7 @@ using namespace std;
 Player::Player(string username) :
 	username_(username), special_used_(false), games_played_(0),
 	mines_missed_(0), mines_revealed_(0), games_tied_(0),
-	games_won_(0)
+	games_won_(0), surrender_(false)
 {
 }
 
@@ -16,6 +16,7 @@ void Player::update_game_stats(bool won) {
 	}
 	mines_revealed_ = 0;
 	mines_missed_ = 0;
+	surrender_ = true;
 }
 
 void Player::increase_mines_revealed() 
@@ -27,6 +28,12 @@ void Player::increase_mines_missed()
 {
 	mines_missed_++;
 }
+
+void Player::surrender()
+{
+	surrender_ = true;
+}
+
 string const& Player::get_username() const 
 {
 	return username_;
@@ -45,6 +52,11 @@ int const& Player::get_games_won() const
 int const& Player::get_games_played() const
 {
 	return games_played_;
+}
+
+bool const& Player::has_surrendered() const
+{
+	return surrender_;
 }
 
 bool Player::operator==(const Player& other) const 

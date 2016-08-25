@@ -23,7 +23,7 @@ public:
 	void leave_game(std::string username);
 	void leave_game(int id);
 	void turn_played(int row, int col);
-	void surrender(Player player);
+	void surrender();
 
 	int const& get_current_player_index();
 	Board const& get_board() const;
@@ -32,6 +32,7 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, const Engine& obj);
 private:
+	void game_finished();
 	Player & next_player();
 
 	enum Status {
