@@ -1,3 +1,12 @@
+/*! \brief SweeperException class is a complement to SweeperError allowing
+*          to throw exceptions with SweeperError objects.
+*
+*  SweeperException complements SweeperError inheriting the runtime_error
+*  exception which already supports a message.
+*
+*  Author: Diogo Silva <dbtdsilva@gmail.com>
+*/
+
 #include "SweeperException.h"
 
 #include <sstream>

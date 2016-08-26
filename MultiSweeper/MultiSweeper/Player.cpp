@@ -1,3 +1,12 @@
+/*! \brief Player class which represents a Multisweeper user which stats associated.
+*
+*  Player class which represents a Multisweeper user which stats associated (such as,
+*  games that player has won/played) and game variables.
+*  Any errors will be reported using SweeperException.
+*
+*  Author: Diogo Silva <dbtdsilva@gmail.com>
+*/
+
 #include "Player.h"
 #include <iostream>
 
@@ -7,8 +16,7 @@ using namespace std;
 
 Player::Player(string username) :
 	username_(username), special_used_(false), games_played_(0),
-	mines_missed_(0), mines_revealed_(0), games_tied_(0),
-	games_won_(0), surrender_(false)
+	mines_missed_(0), mines_revealed_(0), games_won_(0), surrender_(false)
 {
 }
 

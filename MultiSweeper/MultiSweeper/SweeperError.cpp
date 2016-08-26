@@ -1,3 +1,12 @@
+/*! \brief SweeperError class helps to represent a game error.
+*
+*  This class stores a bunch of static const decorators that represent
+*  every possible error in the game engine. Each error has a message
+*  and an error code associated.
+*
+*  Author: Diogo Silva <dbtdsilva@gmail.com>
+*/
+
 #include "SweeperError.h"
 
 SweeperError::SweeperError(int error_code, std::string message) :

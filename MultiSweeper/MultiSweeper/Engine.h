@@ -1,3 +1,14 @@
+/*! \brief Engine class represents the MultiSweeper game engine providing an interface
+*  for any visual framework that wants to use it.
+*
+*  This class represents the MultiSweeper game engine providing an interface
+*  for any visual framework that wants to use it. All errors are reported to that
+*  interface. Engine currently supports error handling, players, game stats and the
+*  game itself.
+*
+*  Author: Diogo Silva <dbtdsilva@gmail.com>
+*/
+
 #pragma once
 
 #include "Board.h"

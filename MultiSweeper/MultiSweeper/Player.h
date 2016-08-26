@@ -1,3 +1,12 @@
+/*! \brief Player class which represents a Multisweeper user which stats associated.
+*
+*  Player class which represents a Multisweeper user which stats associated (such as,
+*  games that player has won/played) and game variables.
+*  Any errors will be reported using SweeperException.
+*
+*  Author: Diogo Silva <dbtdsilva@gmail.com>
+*/
+
 #pragma once
 
 #include <string>
@@ -28,7 +37,6 @@ private:
 	int mines_revealed_;
 	int mines_missed_;	
 	int games_won_;
-	int games_tied_;
 	int games_played_; 
 	bool surrender_;
 };

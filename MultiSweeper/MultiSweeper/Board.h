@@ -1,3 +1,12 @@
+/*! \brief Board class which represents a MultiSweeper board which holds BoardPositions.
+*
+*  This class represents a MultiSweeper with specific columns, rows and mines.
+*  It also allows to hide/reveal positions. Any errors will be reported using
+*  SweeperException.
+*
+*  Author: Diogo Silva <dbtdsilva@gmail.com>
+*/
+
 #pragma once
 
 #include <memory>

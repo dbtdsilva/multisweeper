@@ -1,3 +1,13 @@
+/*! \brief BoardPosition class which represents a pair of row, pair and each pair
+*          has a mine associated to it.
+*
+*  This class represents a position, where each position has several values associated
+*  to it, such as, neighbour mines to that position, also says when position is a mine
+*  or not. Also, shows when the position is hidden or revealed.
+*
+*  Author: Diogo Silva <dbtdsilva@gmail.com>
+*/
+
 #pragma once
 
 #include <tuple>
