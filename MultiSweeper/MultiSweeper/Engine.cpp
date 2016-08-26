@@ -146,12 +146,10 @@ void Engine::turn_played(int row, int col, bool special_bomb)
 	list<BoardPosition *> listRevealed;
 
 	try {
-		if (special_bomb) {
+		if (special_bomb) 
 			players_[current_player_index_].use_special();
-		}
 		listRevealed = board_->reveal_position(row, col, special_bomb);
-	}
-	catch (SweeperException& ex) {
+	} catch (SweeperException& ex) {
 		interaction_->dispatch_error(ex.get_sweeper_error());
 		return;
 	}
@@ -160,18 +158,18 @@ void Engine::turn_played(int row, int col, bool special_bomb)
 	for (BoardPosition * revealed : listRevealed) {
 		if (revealed->is_mine()) {
 			found_mine = true;
-			break;
+			players_[current_player_index_].increase_mines_revealed();
 		}
 	}
 
-	if (!found_mine) {
+	if (special_bomb) {
+		next_player();
+	} else if (!found_mine) {
 		players_[current_player_index_].increase_mines_missed();
 		next_player();
-	} else {
-		players_[current_player_index_].increase_mines_revealed();
 	}
+	
 	this->interaction_->board_position_revealed(listRevealed);
-
 	if (is_game_finished()) {
 		game_finished();
 	}

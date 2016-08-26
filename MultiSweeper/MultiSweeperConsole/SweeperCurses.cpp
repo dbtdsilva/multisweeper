@@ -265,6 +265,7 @@ void SweeperCurses::display_game()
 		case KEY_ENTER:
 			clear_specific(error_offset_, COLS - 2);
 			engine_->turn_played(row, col, special);
+			special = false;
 			break;
 		case KEY_DOWN:
 			row = row < rows_ - 1 ? row + 1 : row;
@@ -282,6 +283,7 @@ void SweeperCurses::display_game()
 		case 'q':
 			clear_specific(error_offset_, COLS - 2);
 			engine_->surrender();
+			special = false;
 			break;
 		case 'X':
 		case 'x':
@@ -321,11 +323,10 @@ void SweeperCurses::represent_game_stats()
 		ss.str("");
 		ss << player_list_[player_index].get_username();
 		ss << " [ Mines found: " << player_list_[player_index].get_mines_revealed();
+		ss << "; Special Bomb: ";
+		ss << (player_list_[player_index].has_used_special() ? "NO" : "YES");
 		if (player_list_[player_index].has_surrendered()) {
 			ss << ", surrendered";
-		}
-		if (!player_list_[player_index].has_used_special()) {
-			ss << ", has special bomb";
 		}
 		ss << " ]";
 		clear_specific(LINES - (int)player_list_.size() + player_index - 3, COLS - 2);
