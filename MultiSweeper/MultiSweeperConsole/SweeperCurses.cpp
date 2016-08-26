@@ -248,14 +248,14 @@ void SweeperCurses::display_game()
 	
 	attrset(A_BOLD);
 	attron(COLOR_PAIR(get_color_schema_index()));
-	mvaddstr_centered(LINES - 2, "USE: Arrows to move cursor; ENTER to find a mine; Q to surrender");
+	mvaddstr_centered(LINES - 2, "USE: Arrows to move; ENTER to find a mine; Q to surrender; X to special");
 	attroff(COLOR_PAIR(get_color_schema_index()));
 	attrset(A_NORMAL);
 
 	bool special = false;
 	bool game_has_started = game_is_running_;
 	while (game_is_running_) {
-		represent_board_cursor(row, col);
+		represent_board_cursor(row, col, special);
 		represent_game_stats();
 		key = getch();
 		switch (key)
@@ -366,19 +366,37 @@ void SweeperCurses::display_highscore() {
 	attrset(A_NORMAL);
 }
 
-void SweeperCurses::represent_board_cursor(int new_row, int new_col)
+void SweeperCurses::represent_board_cursor(int new_row, int new_col, bool special)
 {
 	int game_offset_col = ((COLS - (cols_ * 2 + 2)) / 2);
 	int& row = get<0>(board_position_selected_);
 	int& col = get<1>(board_position_selected_);
-	mvaddstr(game_offset_row_ + row, game_offset_col + col * 2, " ");
-	mvaddstr(game_offset_row_ + row, game_offset_col + col * 2 + 2, " ");
+	for (int adj_row = -1; adj_row <= 1; adj_row++) {
+		for (int adj_col = -1; adj_col <= 1; adj_col++) {
+			if (row + adj_row >= 0 && row + adj_row < rows_
+					&& col + adj_col >= 0 && col + adj_col < cols_) {
+				mvaddstr(game_offset_row_ + row + adj_row, game_offset_col + (col + adj_col) * 2, " ");
+				mvaddstr(game_offset_row_ + row + adj_row, game_offset_col + (col + adj_col) * 2 + 2, " ");
+			}
+		}
+	}
 
 	row = new_row;
 	col = new_col;
 
 	attrset(A_BOLD);
 	attron(COLOR_PAIR(get_color_schema_index()));
+	if (special) {
+		for (int adj_row = -1; adj_row <= 1; adj_row++) {
+			for (int adj_col = -1; adj_col <= 1; adj_col += 1) {
+				if (row + adj_row >= 0 && row + adj_row < rows_
+					&& col + adj_col >= 0 && col + adj_col < cols_) {
+					mvaddstr(game_offset_row_ + row + adj_row, game_offset_col + (col + adj_col) * 2, "|");
+					mvaddstr(game_offset_row_ + row + adj_row, game_offset_col + (col + adj_col) * 2 + 2, "|");
+				}
+			}
+		}
+	}
 	mvaddstr(game_offset_row_ + row, game_offset_col + col * 2, "[");
 	mvaddstr(game_offset_row_ + row, game_offset_col + col * 2 + 2, "]");
 	attroff(COLOR_PAIR(get_color_schema_index()));
