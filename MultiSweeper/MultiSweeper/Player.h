@@ -11,12 +11,14 @@ public:
 	void increase_mines_revealed();
 	void increase_mines_missed();
 	void surrender();
-	
+	void use_special();
+
 	std::string const& get_username() const;
 	int const& get_mines_revealed() const;
 	int const& get_games_won() const;
 	int const& get_games_played() const;
 	bool const& has_surrendered() const;
+	bool const& has_special() const;
 
 	bool operator==(const Player& other) const;
 	friend std::ostream& operator<<(std::ostream& os, const Player& obj);

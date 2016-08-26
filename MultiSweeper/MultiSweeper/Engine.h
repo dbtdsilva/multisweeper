@@ -22,7 +22,7 @@ public:
 	void join_game(std::string username);
 	void leave_game(std::string username);
 	void leave_game(int id);
-	void turn_played(int row, int col);
+	void turn_played(int row, int col, bool special_bomb = false);
 	void surrender();
 
 	int const& get_current_player_index();

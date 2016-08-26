@@ -17,6 +17,8 @@ public:
 	static const SweeperError PLAYER_USERNAME_INVALID;
 	static const SweeperError PLAYER_NOT_EXISTS;
 	static const SweeperError MAX_PLAYERS_REACHED;
+	static const SweeperError SPECIAL_BOMB_ALREADY_USED;
+	static const SweeperError PLAYER_ALREADY_SURRENDERED;
 	
 	std::string const& get_message() const;
 	int const& get_error_code() const;

@@ -129,9 +129,10 @@ void Engine::modify_board(int rows, int cols, int total_mines)
 	}
 }
 
-void Engine::turn_played(int row, int col)
+void Engine::turn_played(int row, int col, bool special_bomb)
 {
 	if (!verify_game_status(RUN)) return;
+	//if (!players_[current_player_index_].)
 
 	list<BoardPosition *> listRevealed;
 	try {

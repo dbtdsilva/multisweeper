@@ -1,5 +1,8 @@
 #include "Player.h"
 #include <iostream>
+
+#include "SweeperError.h"
+#include "SweeperException.h"
 using namespace std;
 
 Player::Player(string username) :
@@ -17,6 +20,7 @@ void Player::update_game_stats(bool won) {
 	mines_revealed_ = 0;
 	mines_missed_ = 0;
 	surrender_ = false;
+	special_used_ = false;
 }
 
 void Player::increase_mines_revealed() 
@@ -31,7 +35,16 @@ void Player::increase_mines_missed()
 
 void Player::surrender()
 {
+	if (surrender_)
+		throw SweeperException(SweeperError::SPECIAL_BOMB_ALREADY_USED);
 	surrender_ = true;
+}
+
+void Player::use_special() 
+{
+	if (special_used_)
+		throw SweeperException(SweeperError::SPECIAL_BOMB_ALREADY_USED);
+	special_used_ = true;
 }
 
 string const& Player::get_username() const 
@@ -57,6 +70,10 @@ int const& Player::get_games_played() const
 bool const& Player::has_surrendered() const
 {
 	return surrender_;
+}
+
+bool const& Player::has_special() const {
+	return special_used_;
 }
 
 bool Player::operator==(const Player& other) const 

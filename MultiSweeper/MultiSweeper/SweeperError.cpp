@@ -25,3 +25,5 @@ const SweeperError SweeperError::PLAYER_ALREADY_EXISTS(6, "Player already exists
 const SweeperError SweeperError::PLAYER_USERNAME_INVALID(7, "Player username must have between 3 and 20 characters");
 const SweeperError SweeperError::PLAYER_NOT_EXISTS(8, "Player does not exists");
 const SweeperError SweeperError::MAX_PLAYERS_REACHED(9, "Total number of players has been reached");
+const SweeperError SweeperError::SPECIAL_BOMB_ALREADY_USED(10, "Special bomb was already used");
+const SweeperError SweeperError::PLAYER_ALREADY_SURRENDERED(10, "Player has already surrendered");
