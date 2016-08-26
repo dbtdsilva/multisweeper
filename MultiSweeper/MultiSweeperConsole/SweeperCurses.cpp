@@ -1,3 +1,8 @@
+/*! \brief SweeperCurses class is the visual implementation of the game.
+*
+*  Author: Diogo Silva <dbtdsilva@gmail.com>
+*/
+
 #include "SweeperCurses.h"
 
 #include <sstream>

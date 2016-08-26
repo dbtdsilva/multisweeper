@@ -1,3 +1,13 @@
+/*! \brief CursesExtended class represents an extension to curses library
+*          allowing it to has some abstraction.
+*
+*  This class has: a more robust way to read input from user; a function
+*  that allows to represent a centered string to the screen; color schema
+*  support.
+*
+*  Author: Diogo Silva <dbtdsilva@gmail.com>
+*/
+
 #include "CursesExtended.h"
 
 using namespace std;

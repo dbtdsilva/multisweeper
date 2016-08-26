@@ -1,3 +1,9 @@
+/*! \brief CursesMenuExtended class represents an extension to CursesExtended
+*          where it adds the possibility to represent menus and submenus.
+*
+*  Author: Diogo Silva <dbtdsilva@gmail.com>
+*/
+
 #include "CursesExtended.h"
 
 #include <vector>

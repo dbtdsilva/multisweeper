@@ -1,3 +1,9 @@
+/*! \brief MultiSweeperConsole.cpp is the main file which will execute the 
+*          console game.
+*
+*  Author: Diogo Silva <dbtdsilva@gmail.com>
+*/
+
 #include <iostream>
 
 #include "SweeperCurses.h"
