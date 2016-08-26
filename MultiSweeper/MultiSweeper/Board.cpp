@@ -123,20 +123,39 @@ void Board::modify_board(int rows, int cols, int total_mines)
 	this->generate_mines();
 }
 
-list<BoardPosition *> Board::reveal_position(int row, int col) 
+list<BoardPosition *> Board::reveal_position(int row, int col, bool special_bomb)
 {
 	list<BoardPosition *> positions_revealed;
 	// If the position was already revealed, return empty.
-	if (positions_[row][col]->is_revealed()) {
+	if (positions_[row][col]->is_revealed() && !special_bomb) {
 		throw SweeperException(SweeperError::POSITION_ALREADY_REVEALED);
 	}
-	positions_[row][col]->set_revealed();
-	positions_revealed.push_back(positions_[row][col].get());
-	if (positions_[row][col]->is_mine()) {
-		total_mines_revealed_++;
-	} else if (positions_[row][col]->get_count_neighbour_mines() == 0) {
-		for (BoardPosition * new_position_revealed : reveal_free_positions(row, col))
-			positions_revealed.push_back(new_position_revealed);
+	vector<tuple<int, int> > positions_to_check;
+	if (special_bomb) {
+		for (int adj_row = -1; adj_row <= 1; adj_row++) {
+			for (int adj_col = -1; adj_col <= 1; adj_col++) {
+				if (row + adj_row >= 0 && row + adj_row < rows_
+					&& col + adj_col >= 0 && col + adj_col < cols_
+					&& !positions_[row + adj_row][col + adj_col]->is_revealed())
+				positions_to_check.push_back({ row + adj_row, col + adj_col });
+			}
+		}
+	} else {
+		positions_to_check.push_back({ row, col });
+	}
+
+	for (const auto& pos : positions_to_check)
+	{
+		const int& row_check = get<0>(pos);
+		const int& col_check = get<0>(pos);
+		positions_[row_check][col_check]->set_revealed();
+		positions_revealed.push_back(positions_[row_check][col_check].get());
+		if (positions_[row_check][col_check]->is_mine()) {
+			total_mines_revealed_++;
+		} else if (positions_[row_check][col_check]->get_count_neighbour_mines() == 0) {
+			for (BoardPosition * new_position_revealed : reveal_free_positions(row_check, col_check))
+				positions_revealed.push_back(new_position_revealed);
+		}
 	}
 	return positions_revealed;
 }

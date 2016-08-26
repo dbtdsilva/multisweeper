@@ -19,7 +19,7 @@ public:
 
 	void generate_mines();
 	void modify_board(int rows, int cols, int total_mines);
-	std::list<BoardPosition *> reveal_position(int row, int col);
+	std::list<BoardPosition *> reveal_position(int row, int col, bool special_bomb = false);
 	bool all_mines_revealed();
 	int const& get_rows() const;
 	int const& get_total_mines() const;

@@ -247,6 +247,7 @@ void SweeperCurses::display_game()
 	attroff(COLOR_PAIR(get_color_schema_index()));
 	attrset(A_NORMAL);
 
+	bool special = false;
 	bool game_has_started = game_is_running_;
 	while (game_is_running_) {
 		represent_board_cursor(row, col);
@@ -275,6 +276,10 @@ void SweeperCurses::display_game()
 		case 'Q':
 		case 'q':
 			engine_->surrender();
+			break;
+		case 'X':
+		case 'x':
+			special = true;
 			break;
 		}
 	}

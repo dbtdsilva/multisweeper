@@ -132,10 +132,12 @@ void Engine::modify_board(int rows, int cols, int total_mines)
 void Engine::turn_played(int row, int col, bool special_bomb)
 {
 	if (!verify_game_status(RUN)) return;
-	//if (!players_[current_player_index_].)
-
 	list<BoardPosition *> listRevealed;
+
 	try {
+		if (special_bomb) {
+			players_[current_player_index_].use_special();
+		}
 		listRevealed = board_->reveal_position(row, col);
 	}
 	catch (SweeperException& ex) {
