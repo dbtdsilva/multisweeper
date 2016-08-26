@@ -27,7 +27,7 @@ public:
 	int const& get_games_won() const;
 	int const& get_games_played() const;
 	bool const& has_surrendered() const;
-	bool const& has_special() const;
+	bool const& has_used_special() const;
 
 	bool operator==(const Player& other) const;
 	friend std::ostream& operator<<(std::ostream& os, const Player& obj);

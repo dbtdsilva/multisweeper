@@ -80,7 +80,7 @@ bool const& Player::has_surrendered() const
 	return surrender_;
 }
 
-bool const& Player::has_special() const {
+bool const& Player::has_used_special() const {
 	return special_used_;
 }
 
