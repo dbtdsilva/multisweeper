@@ -264,7 +264,7 @@ void SweeperCurses::display_game()
 		case 13:
 		case KEY_ENTER:
 			clear_specific(error_offset_, COLS - 2);
-			engine_->turn_played(row, col);
+			engine_->turn_played(row, col, special);
 			break;
 		case KEY_DOWN:
 			row = row < rows_ - 1 ? row + 1 : row;
@@ -280,11 +280,15 @@ void SweeperCurses::display_game()
 			break;
 		case 'Q':
 		case 'q':
+			clear_specific(error_offset_, COLS - 2);
 			engine_->surrender();
 			break;
 		case 'X':
 		case 'x':
-			special = true;
+			clear_specific(error_offset_, COLS - 2);
+			special = !special;
+			if (special)
+				display_error(error_offset_, "Special is currently active!");
 			break;
 		}
 	}
@@ -319,6 +323,9 @@ void SweeperCurses::represent_game_stats()
 		ss << " [ Mines found: " << player_list_[player_index].get_mines_revealed();
 		if (player_list_[player_index].has_surrendered()) {
 			ss << ", surrendered";
+		}
+		if (!player_list_[player_index].has_used_special()) {
+			ss << ", has special bomb";
 		}
 		ss << " ]";
 		clear_specific(LINES - (int)player_list_.size() + player_index - 3, COLS - 2);

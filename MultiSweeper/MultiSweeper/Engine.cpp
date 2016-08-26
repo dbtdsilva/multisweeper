@@ -149,7 +149,7 @@ void Engine::turn_played(int row, int col, bool special_bomb)
 		if (special_bomb) {
 			players_[current_player_index_].use_special();
 		}
-		listRevealed = board_->reveal_position(row, col);
+		listRevealed = board_->reveal_position(row, col, special_bomb);
 	}
 	catch (SweeperException& ex) {
 		interaction_->dispatch_error(ex.get_sweeper_error());

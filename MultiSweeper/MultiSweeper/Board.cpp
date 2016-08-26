@@ -156,7 +156,7 @@ list<BoardPosition *> Board::reveal_position(int row, int col, bool special_bomb
 	for (const auto& pos : positions_to_check)
 	{
 		const int& row_check = get<0>(pos);
-		const int& col_check = get<0>(pos);
+		const int& col_check = get<1>(pos);
 		positions_[row_check][col_check]->set_revealed();
 		positions_revealed.push_back(positions_[row_check][col_check].get());
 		if (positions_[row_check][col_check]->is_mine()) {
