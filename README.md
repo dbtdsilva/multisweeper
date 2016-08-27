@@ -1,4 +1,4 @@
-# multisweeper
+# Multisweeper
 **Multisweeper** is a game where the objective consists in discovering the maximum numbers of mines as possible.
 
 There is a 2D board with mines hidden on it. Each player (on their turn) will have the chance to reveal a position from the board; it might has a mine or a number on it. If it is a number, it means the total number of adjacent mines to that position. 
@@ -12,7 +12,7 @@ The logic is contained in the project "Multisweeper" which is implemented in C++
 At the moment there is only a Console version implemented using PDCurses (more details can be found in the following section).
 
 ## Console version
-This implementation was done using PDCurses (to support multiplatform since ncurses is only for Linux).
+This implementation was done using PDCurses (to support multiplatform since ncurses is only for Linux) and can be found in the project "MultisweeperConsole".
 
 This visual interface example implements all the functionality previwed by the Engine. It means that it is possible to manipulate board, players and the game. The following image shows and example of a game with 4 players.
 
